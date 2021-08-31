@@ -1,0 +1,10 @@
+insert into user (username, nickname, email, avatar) values ('hwybrow0', 'mabbate0', 'bcolliar0@example.com', 'http://dummyimage.com/112x100.png/cc0000/ffffff');
+insert into user (username, nickname, email, avatar) values ('stupp1', 'slistone1', 'hhandforth1@shinystat.com', 'http://dummyimage.com/130x100.png/cc0000/ffffff');
+insert into user (username, nickname, email, avatar) values ('tdandy2', 'edosedale2', 'dbukac2@senate.gov', 'http://dummyimage.com/238x100.png/5fa2dd/ffffff');
+insert into user (username, nickname, email, avatar) values ('lcosson3', 'bhancox3', 'gdrewe3@adobe.com', 'http://dummyimage.com/172x100.png/dddddd/000000');
+insert into user (username, nickname, email, avatar) values ('mlys4', 'eireland4', 'pbardill4@homestead.com', 'http://dummyimage.com/112x100.png/ff4444/ffffff');
+insert into user (username, nickname, email, avatar) values ('rcross5', 'pskyram5', 'jofielly5@dell.com', 'http://dummyimage.com/250x100.png/5fa2dd/ffffff');
+insert into user (username, nickname, email, avatar) values ('zfooter6', 'oarmatidge6', 'aschieferstein6@marriott.com', 'http://dummyimage.com/193x100.png/ff4444/ffffff');
+insert into user (username, nickname, email, avatar) values ('cbuller7', 'gdemetr7', 'ltallyn7@wix.com', 'http://dummyimage.com/106x100.png/cc0000/ffffff');
+insert into user (username, nickname, email, avatar) values ('lbartoszinski8', 'hbuttriss8', 'zlunge8@meetup.com', 'http://dummyimage.com/121x100.png/dddddd/000000');
+insert into user (username, nickname, email, avatar) values ('wwinterbottom9', 'ibartot9', 'jgallafant9@sciencedirect.com', 'http://dummyimage.com/111x100.png/cc0000/ffffff');

@@ -1,0 +1,106 @@
+import React, { useState } from 'react';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import InputBase from '@material-ui/core/InputBase';
+import Paper from '@material-ui/core/Paper';
+
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    height: '650px',
+    width: '1000px',
+    backgroundColor: 'white',
+    border: '1px solid white',
+    borderRadius: '10px',
+    boxShadow: '3.5px 3.5px 3px gray',
+    textAlign: 'center',
+  },
+  explain: {
+    transform: 'translateY(120px)',
+    color: '#282E4E',
+    fontSize: '70px',
+    letterSpacing: '3px',
+    textShadow: '1px 1px 1px gray',
+  },
+  inputBar: {
+    transform: 'translateY(200px)',
+    width: '520px',
+    height: '70px',
+    fontSize: '40px',
+    border: '2px solid #282E4E',
+    borderRadius: '6px',
+    boxShadow: '1px 1px 0.5px gray',
+    paddingLeft: '5px',
+  },
+  submitButton: {
+    position: 'absolute',
+    top: '70%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#282E4E',
+    color: '#F4F3FF',
+    width: 200,
+    height: 60,
+    fontSize: '25px',
+    letterSpacing: '2px',
+    borderRadius: '8px',
+    textTransform: 'none',
+    textShadow: '1px 1px 0.5px gray',
+    boxShadow: '1px 1px 0.5px gray',
+    '&:hover': {
+      backgroundColor: '#0F1535',
+    },
+  },
+}));
+
+const clickSubmitButton = (form: { verifyCode: string; }) => {
+  console.log('clickSubmitButton');
+  console.log(form.verifyCode);
+};
+
+function EmailVerifyPage() {
+  const classes = useStyles();
+
+  const [form, setForm] = useState({
+    verifyCode: '',
+  });
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setForm({
+      ...form,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    clickSubmitButton(form);
+  };
+
+  return (
+    <Paper className={classes.root}>
+      <form onSubmit={handleSubmit}>
+        <div className={classes.explain}>
+          Please check your email.
+        </div>
+        <InputBase
+          className={classes.inputBar}
+          placeholder="Enter your verification code."
+          type="text"
+          name="verifyCode"
+          onChange={onChange}
+        />
+        <Button type="submit" className={classes.submitButton}>
+          Submit
+        </Button>
+      </form>
+    </Paper>
+  );
+}
+
+export default React.memo(EmailVerifyPage);

@@ -1,0 +1,30 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    networks:
+      - database
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./db/.env
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d
+    restart: always
+    container_name: db
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    networks:
+      - database
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    restart: always
+    container_name: back
+
+networks:
+  database:
+    driver: bridge
