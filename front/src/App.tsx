@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import ProfileUI from './components/ProfileUI';
 import LoginPage from './components/LoginPage';
 import SignUpPage from './components/SignUpPage';
@@ -24,9 +24,9 @@ function App(): JSX.Element {
       <Route path="/auth" component={AuthControl} />
       <Route path="/notfound" component={NotFoundPage} />
       <Route path="/setting" component={Setting} />
-      {/* <Route component={NotFoundPage} /> */}
+      <Route component={NotFoundPage} />
     </Switch>
   );
 }
 
-export default App;
+export default withRouter(App);

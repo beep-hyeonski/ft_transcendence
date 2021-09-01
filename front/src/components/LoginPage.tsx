@@ -44,10 +44,9 @@ function LoginPage() {
     <>
       <Avatar
         className={classes.loginLogo}
-        alt="Remy Sharp"
         src="http://www.economytalk.kr/news/photo/201909/197343_74419_2755.jpg"
       />
-      <Button className={classes.loginButton} variant="contained" href="http://api.pongski.com/auth/login">
+      <Button className={classes.loginButton} variant="contained" href={`${String(process.env.REACT_APP_API_URL)}/auth/login`}>
         42 Login
       </Button>
     </>

@@ -1,8 +1,9 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar, Button } from '@material-ui/core';
+import axios from 'axios';
 import SideMenu from './SideMenu';
-import SignUpInputs from './SignUpInputs';
+import SettingInputs from './SettingInputs';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -51,6 +52,15 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
+const getMyInfo = async () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  console.log(axios.defaults.headers.common.Authorization);
+  const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/me`);
+  console.log(response);
+  console.log('res');
+  return response;
+};
+
 function Setting() {
   const classes = useStyles();
 
@@ -59,7 +69,8 @@ function Setting() {
   };
 
   const clickSaveButton = (form: { nickname: string; email: string; }) => {
-    console.log(form);
+    // const res = getMyInfo();
+    // console.log(res);
   };
 
   return (
@@ -70,13 +81,12 @@ function Setting() {
         </div>
         <Avatar
           className={classes.profileImage}
-          alt="Remy Sharp"
           src="https://i.pinimg.com/736x/8d/47/d2/8d47d2a8b2220c562508b7bda34bb2fb.jpg"
         />
         <Button className={classes.changeButton} variant="text" onClick={clickChangeImageButton}>
           Change Image
         </Button>
-        <SignUpInputs onSubmit={clickSaveButton} buttonName="Save" />
+        <SettingInputs onSubmit={clickSaveButton} buttonName="Save" />
       </div>
       <SideMenu type="PROFILE" />
     </>
