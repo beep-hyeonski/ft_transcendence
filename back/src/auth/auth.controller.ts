@@ -78,10 +78,9 @@ export class AuthController {
       req.user,
       userInfo,
     );
-    res
-      .cookie('p_auth', signUpRet.jwt)
-      .redirect(`${process.env.CLIENT_APP_URL}/auth?type=${signUpRet.status}`);
-    return;
+    return {
+      jwt: signUpRet.jwt,
+    };
   }
 
   @ApiOperation({
@@ -104,10 +103,9 @@ export class AuthController {
       req.user,
       twoFactorTokenDto,
     );
-    res
-      .cookie('p_auth', twoFARet.jwt)
-      .redirect(`${process.env.CLIENT_APP_URL}/auth?type=${twoFARet.status}`);
-    return;
+    return {
+      jwt: twoFARet.jwt,
+    };
   }
 
   @ApiOperation({
