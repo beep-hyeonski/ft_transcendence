@@ -6,8 +6,11 @@ import {
   ManyToMany,
   JoinTable,
   BaseEntity,
+  OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { ChatRoom } from 'src/chat/entities/chat-room.entity';
+import { Message } from 'src/chat/entities/message.entity';
 
 export enum UserStatus {
   ONLINE = 'online',
@@ -143,6 +146,48 @@ export class User extends BaseEntity {
     default: '0',
   })
   defeat: number;
+
+  @ApiProperty({
+    example: '[1, 2, 3]',
+    description: 'owner 로 참가하고 있는 채팅방 INDEX 리스트',
+  })
+  @OneToMany(() => ChatRoom, (ownerChannels) => ownerChannels.ownerUser)
+  ownerChannels: ChatRoom[];
+
+  @ApiProperty({
+    example: '[1, 2, 3]',
+    description: 'admin 으로 참가하고 있는 채팅방 index 리스트',
+  })
+  @ManyToMany(() => ChatRoom, (adminChannels) => adminChannels.adminUsers)
+  adminChannels: ChatRoom[];
+
+  @ApiProperty({
+    example: '[2, 3]',
+    description: '현재 참가하고 있는 채널 리스트',
+  })
+  @ManyToMany(() => ChatRoom, (joinChannels) => joinChannels.joinUsers)
+  joinChannels: ChatRoom[];
+
+  @ApiProperty({
+    example: '[1, 2]',
+    description: '현재 Mute 처리 된 채널 Index 리스트',
+  })
+  @ManyToMany(() => ChatRoom, (mutedChannels) => mutedChannels.mutedUsers)
+  mutedChannels: ChatRoom[];
+
+  @ApiProperty({
+    example: '[1, 3]',
+    description: '현재 Ban 처리 된 채널 Index 리스트'
+  })
+  @ManyToMany(() => ChatRoom, (bannedChannels) => bannedChannels.bannedUsers)
+  bannedChannels: ChatRoom[];
+
+  @ApiProperty({
+    example: '[1, 2, 3]',
+    description: 'User 가 전송한 메시지 Index 리스트'
+  })
+  @OneToMany(() => Message, (sendMessages) => sendMessages.sendUser)
+  sendMessages: Message[];
 
   @ApiProperty({
     example: 'true',
