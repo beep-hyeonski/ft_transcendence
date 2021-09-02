@@ -47,6 +47,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         request.user.permission === JwtPermission.ADMIN
       )
         return true;
+      return false;
     }
 
     if (!permissions.includes(request.user.permission))
