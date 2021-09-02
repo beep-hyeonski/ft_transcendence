@@ -30,17 +30,6 @@ export class UsersController {
     return this.usersService.getUsers();
   }
 
-  @ApiOperation({
-    summary: 'username 검색',
-    description: 'username에 해당하는 user의 정보를 조회한다.',
-  })
-  @ApiOkResponse({ type: User })
-  @UseGuards(JwtAuthGuard)
-  @Get(':username')
-  getUser(@Param('username') username: string) {
-    return this.usersService.getUser(username);
-  }
-
   @ApiOperation({ summary: '내 정보 검색' })
   @ApiOkResponse({ type: User })
   @UseGuards(JwtAuthGuard)
@@ -55,5 +44,16 @@ export class UsersController {
   @Patch('me')
   patchUser(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.patchUser(req.user, updateUserDto);
+  }
+
+  @ApiOperation({
+    summary: 'username 검색',
+    description: 'username에 해당하는 user의 정보를 조회한다.',
+  })
+  @ApiOkResponse({ type: User })
+  @UseGuards(JwtAuthGuard)
+  @Get(':username')
+  getUser(@Param('username') username: string) {
+    return this.usersService.getUser(username);
   }
 }
