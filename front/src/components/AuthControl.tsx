@@ -1,6 +1,7 @@
 import React from 'react';
 import qs from 'qs';
 import { Redirect } from 'react-router-dom';
+import { Cookies } from 'react-cookie';
 import axios from 'axios';
 
 interface AuthControlProps {
@@ -12,6 +13,16 @@ interface AuthControlProps {
   }
 }
 
+const cookies = new Cookies();
+
+export const setCookie = (key: string, value: string) => {
+  cookies.set(key, value, { path: '/' });
+};
+
+export function getCookie(key: string) {
+  return String(cookies.get(key));
+}
+
 function AuthControl({ location }: AuthControlProps) {
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
@@ -19,6 +30,7 @@ function AuthControl({ location }: AuthControlProps) {
     alert(query.token);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     axios.defaults.headers.common.Authorization = query.token;
+    setCookie('p_auth', String(query.token));
   }
 
   switch (query.type) {

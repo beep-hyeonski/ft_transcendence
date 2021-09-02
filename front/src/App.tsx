@@ -15,7 +15,7 @@ function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
   return (
     <Switch>
-      <Route exact path="/login" component={LoginPage} />
+      <Route exact path="/" component={LoginPage} />
       <Route exact path="/signup" component={SignUpPage} />
       <Route exact path="/twofa" component={EmailVerifyPage} />
       <Route exact path="/main" component={MainUI} />

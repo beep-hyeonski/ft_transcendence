@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/no-unknown-property */
 import React, { useState } from 'react';
@@ -7,6 +8,7 @@ import qs from 'qs';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import SignUpInputs from './SignUpInputs';
+import { setCookie } from './AuthControl';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -68,8 +70,8 @@ function SignUpPage() {
   const history = useHistory();
 
   const coo = qs.parse(document.cookie, { ignoreQueryPrefix: true });
+  setCookie('p_auth', String(coo.p_auth));
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   axios.defaults.headers.common.Authorization = `Bearer ${String(coo.p_auth)}`;
 
   // https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg
@@ -98,7 +100,6 @@ function SignUpPage() {
       formData.set('image', file);
     }
     const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     setImage(ret.data.image);
   };
 

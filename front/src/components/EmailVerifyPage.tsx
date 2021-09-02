@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -6,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
 import qs from 'qs';
+import { setCookie } from './AuthControl';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -84,13 +86,10 @@ function EmailVerifyPage() {
       TwoFAToken: form.verifyCode,
     };
     const coo = qs.parse(document.cookie, { ignoreQueryPrefix: true });
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     axios.defaults.headers.common.Authorization = `Bearer ${String(coo.p_auth)}`;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     try {
       const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/twofa`, twofaForm);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      setCookie('p_auth', String(ret.data.jwt));
       history.push(`/auth?type=success&token=Bearer ${String(ret.data.jwt)}`);
     } catch (error) {
       alert('코드를 다시 확인해주세요.');

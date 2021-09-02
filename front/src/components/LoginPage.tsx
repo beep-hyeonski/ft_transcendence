@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     boxShadow: '1.5px 1.5px 1.5px gray',
   },
 }));
+// https://thumbs.gfycat.com/LightCautiousAlbino-size_restricted.gif 슬기
 
 function LoginPage() {
   const classes = useStyles();
@@ -44,7 +45,7 @@ function LoginPage() {
     <>
       <Avatar
         className={classes.loginLogo}
-        src="http://www.economytalk.kr/news/photo/201909/197343_74419_2755.jpg"
+        src="https://thumbs.gfycat.com/EthicalTornElephantseal-size_restricted.gif"
       />
       <Button className={classes.loginButton} variant="contained" href={`${String(process.env.REACT_APP_API_URL)}/auth/login`}>
         42 Login
