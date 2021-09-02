@@ -63,9 +63,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 interface UserSignUpProps {
   onSubmit: (form: { nickname: string; email: string; }) => void;
   buttonName: string;
+  username: string;
 }
 
-function SignUpInputs({ onSubmit, buttonName } : UserSignUpProps) {
+function SignUpInputs({ onSubmit, buttonName, username } : UserSignUpProps) {
   const classes = useStyles();
 
   const [form, setForm] = useState({
@@ -91,9 +92,9 @@ function SignUpInputs({ onSubmit, buttonName } : UserSignUpProps) {
       <form onSubmit={handleSubmit}>
         <InputBase
           className={classes.nickName}
-          placeholder="Nickname"
           type="text"
           name="nickname"
+          value={username}
           onChange={onChange}
         />
         <Button type="submit" className={classes.signUpButton} variant="text">

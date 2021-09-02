@@ -1,7 +1,11 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import React, { useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar, Button } from '@material-ui/core';
 import axios from 'axios';
+import { getCookie } from './AuthControl';
 import SideMenu from './SideMenu';
 import SettingInputs from './SettingInputs';
 
@@ -53,24 +57,32 @@ const useStyles = makeStyles(() => createStyles({
 }));
 
 const getMyInfo = async () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  console.log(axios.defaults.headers.common.Authorization);
+  axios.defaults.headers.common.Authorization = getCookie('p_auth');
   const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/me`);
-  console.log(response);
-  console.log('res');
   return response;
 };
 
 function Setting() {
   const classes = useStyles();
+  // const [userdata, setData] = useState({
+  //   nickname: '',
+  //   avatar: '',
+  // });
+
+  // const data = getMyInfo().then((res) => {
+  //   setData({
+  //     ...userdata,
+  //     nickname: res.data.nickname,
+  //     avatar: res.data.avatar,
+  //   });
+  // });
+  // console.log(userdata);
 
   const clickChangeImageButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     console.log('clickChangeButton');
   };
 
   const clickSaveButton = (form: { nickname: string; email: string; }) => {
-    // const res = getMyInfo();
-    // console.log(res);
   };
 
   return (
@@ -86,7 +98,7 @@ function Setting() {
         <Button className={classes.changeButton} variant="text" onClick={clickChangeImageButton}>
           Change Image
         </Button>
-        <SettingInputs onSubmit={clickSaveButton} buttonName="Save" />
+        <SettingInputs onSubmit={clickSaveButton} buttonName="Save" username="sdsd" />
       </div>
       <SideMenu type="PROFILE" />
     </>
