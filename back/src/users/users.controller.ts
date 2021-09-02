@@ -46,7 +46,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@Req() req: any) {
-    return this.usersService.getUser(req.user);
+    return this.usersService.getUser(req.user.username);
   }
 
   @ApiOperation({ summary: '내 정보 수정' })
