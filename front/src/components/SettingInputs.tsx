@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
+import { Box } from '@material-ui/core';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   root: {
     position: 'absolute',
     left: '65%',
@@ -19,19 +23,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     border: '2px solid black',
     borderRadius: '10px',
     margin: '80px 20px 10px 30px',
-    paddingLeft: '5px',
-    backgroundColor: 'white',
-    width: '500px',
-    height: '60px',
-    fontSize: '24px',
-    letterSpacing: '1px',
-    boxShadow: '1px 1px 1px gray',
-  },
-  email: {
-    border: '2px solid black',
-    borderRadius: '10px',
-    margin: '40px 20px 0px 30px',
-    paddingLeft: '5px',
+    paddingLeft: '10px',
     backgroundColor: 'white',
     width: '500px',
     height: '60px',
@@ -58,10 +50,22 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
       backgroundColor: '#0F1535',
     },
   },
+  twofaButton: {
+    paddingLeft: '10px',
+    paddingRight: '10px',
+    paddingTop: '5px',
+    paddingBottom: '5px',
+    borderRadius: '8px',
+    border: '2px solid black',
+    textShadow: '0.5px 0.5px 0.5px lightgray',
+    boxShadow: '1px 1px 0.5px gray',
+    margin: '40px 0px 0px 31px',
+    fontSize: '30px',
+  },
 }));
 
 interface UserSignUpProps {
-  onSubmit: (form: { nickname: string; email: string; }) => void;
+  onSubmit: (form: { nickname: string; twofa: boolean }) => void;
   buttonName: string;
   username: string;
 }
@@ -71,14 +75,24 @@ function SignUpInputs({ onSubmit, buttonName, username } : UserSignUpProps) {
 
   const [form, setForm] = useState({
     nickname: '',
-    email: '',
+    twofa: false,
   });
+
+  const test = username;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm({
       ...form,
       [name]: value,
+    });
+  };
+
+  const checkTwofa = (e: React.ChangeEvent<any>, checked: boolean) => {
+    const { name } = e.target;
+    setForm({
+      ...form,
+      [name]: checked,
     });
   };
 
@@ -94,8 +108,25 @@ function SignUpInputs({ onSubmit, buttonName, username } : UserSignUpProps) {
           className={classes.nickName}
           type="text"
           name="nickname"
-          value={username}
+          placeholder={test}
           onChange={onChange}
+        />
+        <FormControlLabel
+          className={classes.twofaButton}
+          name="twofa"
+          onChange={checkTwofa}
+          control={<Checkbox color="primary" />}
+          label={(
+            <Box component="div" fontSize={22}>
+              Two Factor Authentication
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;
+            </Box>
+          )}
+          labelPlacement="start"
         />
         <Button type="submit" className={classes.signUpButton} variant="text">
           {buttonName}
