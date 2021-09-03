@@ -78,6 +78,10 @@ function SignUpPage() {
   const [image, setImage] = useState('https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg');
 
   const clickSignUpButton = async (form: { nickname: string; email: string; }) => {
+    if (form.nickname.length < 2 || form.nickname === 'me' || form.nickname.length >= 10) {
+      alert('닉네임은 2~10글자로 써야합니다.');
+      return;
+    }
     const signupForm = {
       nickname: form.nickname,
       email: form.email,
@@ -85,9 +89,14 @@ function SignUpPage() {
     };
     try {
       const data = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/signup`, signupForm);
+      setCookie('p_auth', String(data.data.jwt));
       history.push('/auth?type=success');
     } catch (error) {
-      alert('이미 사용중인 닉네임입니다');
+      if (error.response.data.message === 'Duplicated Nickname') {
+        alert('이미 사용중인 닉네임입니다');
+      } else if (error.response.data.message[0] === 'email must be an email') {
+        alert('이메일을 확인해주세요');
+      }
     }
   };
 
