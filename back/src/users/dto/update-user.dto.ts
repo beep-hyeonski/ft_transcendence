@@ -22,7 +22,7 @@ export class UpdateUserDto {
     required: false,
   })
   @IsOptional()
-  @IsDataURI()
+  @IsString()
   avatar: string;
 
   @ApiProperty({
