@@ -22,7 +22,7 @@ export class ChatService {
 		});
 	}
 
-	async getChat(chatIndex: number) {
+	async getChat(chatIndex: number): Promise<ChatRoom> {
 		return await this.chatRoomRepository.findOneOrFail({
 			relations: [
 				'ownerUser',
@@ -88,6 +88,56 @@ export class ChatService {
 			throw new UnauthorizedException('No Permission');
 		
 		return await this.chatRoomRepository.delete(chat);
+	}
+
+	async joinChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
+		const chat = await this.chatRoomRepository.findOneOrFail({
+			relations: ['joinUsers'],
+			where: { index: chatIndex },
+		});
+
+		const user = await this.userRepository.findOneOrFail({
+			where: { index: jwtPayloadDto.sub },
+		});
+
+		if (chat.joinUsers.find((joinUser) => {
+			if (joinUser.index === user.index) {
+				return true;
+			}
+		})) {
+			throw new BadRequestException('Already user joined');
+		}
+
+		chat.joinUsers.push(user);
+		await this.chatRoomRepository.save(chat);
+
+		return chat;
+	}
+
+	async leaveChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
+		const chat = await this.chatRoomRepository.findOneOrFail({
+			relations: ['joinUsers'],
+			where: { index: chatIndex },
+		});
+
+		const user = await this.userRepository.findOneOrFail({
+			where: { index: jwtPayloadDto.sub },
+		});
+
+		if (!chat.joinUsers.find((joinUser) => {
+			if (joinUser.index === user.index) {
+				return true;
+			}
+		})) {
+			throw new BadRequestException('User Not Entered this chat');
+		}
+
+		chat.joinUsers = chat.joinUsers.filter((joinUser) => {
+			joinUser.index !== user.index
+		});
+		await this.chatRoomRepository.save(chat);
+
+		return chat;
 	}
 
 	async registerAdmin(jwtPayloadDto: JwtPayloadDto, chatIndex: number, username: string) {

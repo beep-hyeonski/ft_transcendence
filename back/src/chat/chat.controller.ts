@@ -6,6 +6,7 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
 @ApiTags('Chat')
+@UseGuards(JwtAuthGuard)
 @Controller('chat')
 export class ChatController {
 	constructor(private readonly chatService: ChatService) {
@@ -16,7 +17,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Get()
 	getChats() {
 		return this.chatService.getChats();
@@ -26,7 +26,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Post()
 	async createChat(@Req() req: any, @Body() createChatDto: CreateChatDto) {
 		return await this.chatService.createChat(req.user, createChatDto);
@@ -36,7 +35,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Get(':chatIndex')
 	getChat(@Param('chatIndex') chatIndex: number) {
 		return this.chatService.getChat(chatIndex);
@@ -46,7 +44,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Patch(':chatIndex')
 	updateChat(
 		@Req() req: any,
@@ -60,7 +57,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Delete(':chatIndex')
 	deleteChat(
 		@Req() req: any,
@@ -69,11 +65,34 @@ export class ChatController {
 		return this.chatService.deleteChat(req.user, chatIndex);
 	}
 
+	@ApiOperation({ summary: '채팅방 입장' })
+	@ApiOkResponse({
+
+	})
+	@Post(':chatIndex/join')
+	joinChat(
+		@Req() req: any,
+		@Param('chatIndex') chatIndex: number,
+	) {
+		return this.chatService.joinChat(req.user, chatIndex);
+	}
+
+	@ApiOperation({ summary: '채팅방 퇴장' })
+	@ApiOkResponse({
+
+	})
+	@Post(':chatIndex/leave')
+	leaveChat(
+		@Req() req: any,
+		@Param('chatIndex') chatIndex: number,
+	) {
+		
+	}
+
 	@ApiOperation({ summary: 'Admin User 등록' })
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Post(':chatIndex/admin')
 	registerAdmin(
 		@Req() req: any,
@@ -87,7 +106,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Delete(':chatIndex/admin')
 	unRegisterAdmin(
 		@Req() req: any,
@@ -97,13 +115,10 @@ export class ChatController {
 		return this.chatService.unRegisterAdmin(req.user, chatIndex, username);
 	}
 
-	// join
-
 	@ApiOperation({ summary: 'Mute User 등록' })
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Post(':chatIndex/mute')
 	registerMuteUser(
 		@Req() req: any,
@@ -117,7 +132,6 @@ export class ChatController {
 	@ApiOkResponse({
 		
 	})
-	@UseGuards(JwtAuthGuard)
 	@Delete(':chatIndex/mute')
 	unRegisterMuteUser(
 		@Req() req: any,
@@ -131,7 +145,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Post(':chatIndex/ban')
 	registerBanUser(
 		@Req() req: any,
@@ -145,7 +158,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Delete(':chatIndex/ban')
 	unRegisterBanUser(
 		@Req() req: any,
@@ -159,7 +171,6 @@ export class ChatController {
 	@ApiOkResponse({
 
 	})
-	@UseGuards(JwtAuthGuard)
 	@Get(':chatIndex/messages')
 	getMessages(
 		@Param('chatIndex') chatIndex: number,

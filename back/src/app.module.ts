@@ -12,6 +12,7 @@ import { BlockModule } from './block/block.module';
 import { ChatModule } from './chat/chat.module';
 import { ChatRoom } from './chat/entities/chat-room.entity';
 import { Message } from './chat/entities/message.entity';
+import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { Message } from './chat/entities/message.entity';
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {
