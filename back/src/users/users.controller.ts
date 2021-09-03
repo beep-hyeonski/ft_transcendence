@@ -47,13 +47,13 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'username 검색',
-    description: 'username에 해당하는 user의 정보를 조회한다.',
+    summary: 'nickname 검색',
+    description: 'nickname에 해당하는 user의 정보를 조회한다.',
   })
   @ApiOkResponse({ type: User })
   @UseGuards(JwtAuthGuard)
-  @Get(':username')
-  getUser(@Param('username') username: string) {
-    return this.usersService.getUser(username);
+  @Get(':nickname')
+  getUser(@Param('nickname') nickname: string) {
+    return this.usersService.getUser(nickname);
   }
 }
