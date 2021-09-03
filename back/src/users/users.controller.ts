@@ -54,6 +54,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get(':nickname')
   getUser(@Param('nickname') nickname: string) {
-    return this.usersService.getUser(nickname);
+    return this.usersService.getUserByNickname(nickname);
   }
 }
