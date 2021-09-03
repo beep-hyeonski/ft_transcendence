@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useSelector } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
-import { RootState } from '../modules';
 import ViewBoxProfileTitle from './ViewBoxProfileTitle';
-import ViewBoxCreateTitle from './ViewBoxCreateTitle';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -28,14 +25,6 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-const user1 = {
-  username: 'joockim',
-  radderScore: '1001',
-  win: '5',
-  lose: '2',
-  profileImage: 'http://th4.tmon.kr/thumbs/image/3ac/0a7/c37/23b77bc09_700x700_95_FIT.jpg',
-};
-
 interface FuncProps {
   changeId : (id: string) => void
 }
@@ -45,7 +34,7 @@ function ViewBox({ changeId }: FuncProps) {
 
   return (
     <Paper className={classes.root}>
-      <ViewBoxProfileTitle userdata={user1} changeId={changeId} />
+      <ViewBoxProfileTitle changeId={changeId} />
     </Paper>
   );
 }

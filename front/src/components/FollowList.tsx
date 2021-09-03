@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -10,10 +12,6 @@ const useStyles = makeStyles(() => createStyles({
     marginLeft: '10px',
   },
 }));
-
-interface SideBarProps {
-  userdata: DrawAvatarProps;
-}
 
 interface StatusIconProps {
   status: string
@@ -35,19 +33,19 @@ function StatusIcon({ status }: StatusIconProps): JSX.Element {
   );
 }
 
-function FollowList({ userdata }: SideBarProps): JSX.Element {
+function FollowList({ user }: any): JSX.Element {
   const classes = useStyles();
 
   return (
-    <ListItem button key={userdata.username}>
+    <ListItem button key={user.nickname}>
       <DrawAvatar
-        type={userdata.type}
-        username={userdata.username}
-        src={userdata.src}
-        status={userdata.status}
+        type="sideBarImage"
+        username={user.nickname}
+        src={user.avatar}
+        status={user.status}
       />
-      <ListItemText primary={userdata.username} className={classes.usernameMargin} />
-      <StatusIcon status={userdata.status} />
+      <ListItemText primary={user.nickname} className={classes.usernameMargin} />
+      <StatusIcon status={user.status} />
     </ListItem>
   );
 }

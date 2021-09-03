@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/quotes */
 /* eslint-disable no-restricted-globals */
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeUser } from '../modules/profile';
+import { getCookie } from './AuthControl';
 import SearchBar from './SearchBar';
 import ViewBoxContentsBox from './ViewBoxContentsBox';
 import { RootState } from '../modules';
@@ -27,64 +29,84 @@ const useStyles = makeStyles(() => createStyles({
     boxShadow: '1px 1px 1px lightgray',
     borderRadius: '4px',
   },
+  notFoundMessage: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    fontSize: '40px',
+    color: 'white',
+    transform: 'translate(-50%, -50%)',
+  },
 }));
 
 interface UserDataProps {
-  userdata: {
-    username: string,
-    radderScore: string,
-    win: string,
-    lose: string,
-    profileImage: string,
-  }
   changeId : (id: string) => void
 }
 
-const user2 = {
-  username: 'change',
-  radderScore: '1111',
-  win: '0',
-  lose: '10',
-  profileImage: '',
-};
-
-function ViewBoxProfileTitle({ userdata, changeId } : UserDataProps) {
+function ViewBoxProfileTitle({ changeId } : UserDataProps) {
   const classes = useStyles();
+  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const dispatch = useDispatch();
 
-  const [data, setUserdata] = useState(userdata);
+  const [data, setUserdata] = useState(mydata);
 
-  const userid = useSelector((state: RootState) => state.userModule.id);
+  const userdata = useSelector((state: RootState) => state.profileModule);
 
-  const searchUser = (form: { input: string }) => {
-    changeId(form.input);
+  const searchUser = async (form: { input: string }) => {
+    axios.defaults.headers.common.Authorization = `Bearer ${getCookie('p_auth')}`;
+    try {
+      const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${form.input}`);
+      changeId(form.input);
+      dispatch(changeUser(response.data));
+    } catch (error) {
+      console.log(error.response.data);
+      if (error.response.data.message === 'User Not Found') {
+        changeId('usernotfound');
+      }
+    }
   };
 
-  // 내가 아닌 다른 사용자일 때
-  if (userid !== 'joockim') {
-    return (
-      <div>
-        <div className={classes.profileTitle}>
-          {userid}
-          &nbsp;Profile
+  switch (userdata.nickname) {
+    case 'usernotfound':
+      return (
+        <div>
+          <div className={classes.profileTitle}>
+            User Not Found
+          </div>
+          <div className={classes.searchBar}>
+            <SearchBar onSubmit={searchUser} />
+          </div>
+          <div className={classes.notFoundMessage}>
+            찾을 수 없는 유저에요 ㅜ0ㅜ
+          </div>
         </div>
-        <div className={classes.searchBar}>
-          <SearchBar onSubmit={searchUser} />
+      );
+    case mydata.nickname:
+      return (
+        <div>
+          <div className={classes.profileTitle}>
+            My Profile
+          </div>
+          <div className={classes.searchBar}>
+            <SearchBar onSubmit={searchUser} />
+          </div>
+          <ViewBoxContentsBox />
         </div>
-        <ViewBoxContentsBox userdata={data} />
-      </div>
-    );
+      );
+    default:
+      return (
+        <div>
+          <div className={classes.profileTitle}>
+            {userdata.nickname}
+            &nbsp;Profile
+          </div>
+          <div className={classes.searchBar}>
+            <SearchBar onSubmit={searchUser} />
+          </div>
+          <ViewBoxContentsBox />
+        </div>
+      );
   }
-  return (
-    <div>
-      <div className={classes.profileTitle}>
-        My Profile
-      </div>
-      <div className={classes.searchBar}>
-        <SearchBar onSubmit={searchUser} />
-      </div>
-      <ViewBoxContentsBox userdata={data} />
-    </div>
-  );
 }
 
 export default React.memo(ViewBoxProfileTitle);

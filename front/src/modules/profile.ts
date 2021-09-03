@@ -1,25 +1,74 @@
-const USER = 'profile/USER' as const;
+const CHANGE_USER = 'profile/CHANGE_USER' as const;
 
-export const changeUser = (userid: string) => ({
-  type: USER,
-  id: userid,
+interface DataProps {
+  index?: number,
+  username?: string,
+  nickname?: string,
+  email?: string,
+  avatar?: string,
+  followers?: string[],
+  followings?: string[],
+  blockers?: string[],
+  blockings?: string[],
+  score?: number,
+  victory?: number,
+  defeat?: number,
+  useTwoFA?: boolean,
+  twoFAToken?: string,
+  status?: string,
+  created_at?: string,
+}
+
+export const changeUser = (userdata: DataProps) => ({
+  type: CHANGE_USER,
+  payload: { userdata },
 });
 
 type UserAction =
   | ReturnType<typeof changeUser>;
 
-type UserState = {
-  id: string;
-};
+  type UserState = {
+    index: number,
+    username: string,
+    nickname: string,
+    email: string,
+    avatar: string,
+    followers: string[],
+    followings: string[],
+    blockers: string[],
+    blockings: string[],
+    score: number,
+    victory: number,
+    defeat: number,
+    useTwoFA: boolean,
+    twoFAToken: string,
+    status: string,
+    created_at: string,
+  };
 
 const initialState: UserState = {
-  id: '',
+  index: -1,
+  username: '',
+  nickname: '',
+  email: '',
+  avatar: '',
+  followers: [],
+  followings: [],
+  blockers: [],
+  blockings: [],
+  score: 0,
+  victory: 0,
+  defeat: 0,
+  useTwoFA: false,
+  twoFAToken: '',
+  status: '',
+  created_at: '',
 };
 
-export default function userModule(state: UserState = initialState, action: UserAction) {
+export default function profileModule(state: UserState = initialState, action: UserAction) {
   switch (action.type) {
-    case USER:
-      return { ...state, id: action.id };
+    case CHANGE_USER:
+      return { ...state, ...action.payload.userdata };
     default:
       return state;
   }

@@ -11,6 +11,9 @@ import {
 } from '@material-ui/icons';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../modules';
+import { changeUser } from '../modules/profile';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -31,6 +34,12 @@ const useStyles = makeStyles({
 
 const NavBar = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const mydata = useSelector((state: RootState) => state.usermeModule);
+
+  const onClickProfile = () => {
+    dispatch(changeUser({ avatar: mydata.avatar }));
+  };
 
   return (
     <Drawer
@@ -56,8 +65,8 @@ const NavBar = () => {
             </ListItemIcon>
           </ListItem>
         </Link>
-        <Link to="/profile/joockim">
-          <ListItem button>
+        <Link to={`/profile/${mydata.nickname}`}>
+          <ListItem button onClick={onClickProfile}>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >

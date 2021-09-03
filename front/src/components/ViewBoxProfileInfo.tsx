@@ -1,6 +1,8 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import MatchHistoryList from './MatchHistoryList';
+import { RootState } from '../modules';
 
 // TODO: CSS 설정하기
 const useStyles = makeStyles(() => createStyles({
@@ -82,40 +84,52 @@ const userHistory = [data1, data2, data3];
 
 interface UserDataProps {
   userdata: {
+    index: number,
     username: string,
-    radderScore: string,
-    win: string,
-    lose: string,
-    profileImage: string,
+    nickname: string,
+    email?: string,
+    avatar: string,
+    followers?: string[],
+    followings?: string[],
+    blockers?: string[],
+    blockings?: string[],
+    score?: number,
+    victory?: number,
+    defeat?: number,
+    useTwoFA: boolean,
+    twoFAToken?: string,
+    status?: string,
+    created_at?: string,
   }
 }
 
-function ViewBoxProfileInfo({ userdata } : UserDataProps) {
+function ViewBoxProfileInfo() {
   const classes = useStyles();
 
-  const userData = { userHistory };
+  const userdata = useSelector((state: RootState) => state.profileModule);
+  const userhistory = { userHistory };
 
   return (
     <div className={classes.root}>
       <div className={classes.radderBox}>
         Radder
         <br />
-        {userdata.radderScore}
+        {userdata.score}
       </div>
       <div className={classes.recordBox}>
         최근 전적
         <br />
-        {userdata.win}
+        {userdata.victory}
         승
         &nbsp;
-        {userdata.lose}
+        {userdata.defeat}
         패
       </div>
       <div className={classes.historyBox}>
         <div className={classes.historyBoxTitle}>
           Match history
         </div>
-        {userData.userHistory.map((data) => (
+        {userhistory.userHistory.map((data) => (
           <MatchHistoryList history={data} />
         ))}
       </div>
