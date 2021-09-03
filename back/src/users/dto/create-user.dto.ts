@@ -18,6 +18,6 @@ export class CreateUserDto {
     example: 'http://cdn.intra.42.fr/users/hyeonski.jpg',
     required: false,
   })
-  @IsUrl()
+  @IsString()
   avatar: string;
 }
