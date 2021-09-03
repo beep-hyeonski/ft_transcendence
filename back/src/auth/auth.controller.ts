@@ -64,7 +64,7 @@ export class AuthController {
   @ApiOperation({ summary: '회원 가입' })
   @ApiCreatedResponse({
     description:
-      '회원가입 성공, jwt는 cookie로 발급, app_url/auth?type=success으로 redirect',
+      '회원가입 성공, response로 jwt 발급',
   })
   @Permission(JwtPermission.SIGNUP)
   @UseGuards(JwtAuthGuard)
@@ -89,7 +89,7 @@ export class AuthController {
   })
   @ApiCreatedResponse({
     description:
-      '2단계 인증 성공, jwt는 cookie로 발급, app_url/auth?type=success으로 redirect',
+      '2단계 인증 성공, response로 jwt 발급',
   })
   @Permission(JwtPermission.TWOFA)
   @UseGuards(JwtAuthGuard)
@@ -113,7 +113,7 @@ export class AuthController {
     description: '유저의 status offline 처리',
   })
   @ApiNoContentResponse({
-    description: '로그아웃 성공, jwt 쿠키 삭제 필요',
+    description: '로그아웃 성공, jwt 삭제 필요',
   })
   @UseGuards(JwtAuthGuard)
   @Post('logout')
