@@ -7,10 +7,9 @@ import { Message } from './entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, ChatRoom, Message]),
-  ],
+  imports: [TypeOrmModule.forFeature([User, ChatRoom, Message])],
   controllers: [ChatController],
-  providers: [ChatService]
+  providers: [ChatService],
+  exports: [ChatService],
 })
 export class ChatModule {}

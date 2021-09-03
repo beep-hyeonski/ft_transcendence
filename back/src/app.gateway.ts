@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, UseFilters } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -12,9 +12,12 @@ import {
 import { Socket, Server } from 'socket.io';
 import { ChatService } from './chat/chat.service';
 import { UsersService } from './users/users.service';
-import { EntityNotFoundError } from 'typeorm';
 import { User } from './users/entities/user.entity';
+import { WebsocketExceptionFilter } from './filters/websocket-exception.filter';
+import { ChatRoom } from './chat/entities/chat-room.entity';
+import { EntityNotFoundError } from 'typeorm';
 
+@UseFilters(WebsocketExceptionFilter)
 @WebSocketGateway(8001)
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -23,9 +26,7 @@ export class AppGateway
     private jwtService: JwtService,
     private usersService: UsersService,
     private chatService: ChatService,
-  ) {
-
-  }
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -38,57 +39,77 @@ export class AppGateway
 
   handleConnection(client: Socket) {
     this.jwtService.verify(client.handshake.auth.token);
-
+    this.logger.log(`Client Connected...`);
   }
 
   handleDisconnect(client: Socket) {
-    console.log(client);
     this.logger.log('Chat Socket Gateway handleDisconnect');
   }
 
   @SubscribeMessage('join')
   async joinChatRoom(client: Socket, payload: { chatIndex: number }) {
-    // DB Chat validation
-    // 1. Chat 존재 여부
-    // 2. 이미 join ?
-    
-    try {
-      const user = await this.getUserByJwt(client.handshake.auth.token);
-      const chat = await this.chatService.getChat(payload.chatIndex);
-      if (!chat.joinUsers.find((joinUser) => {
-        if (joinUser.index === user.index) {
-          return true;
-        }
-      })) {
-        throw new WsException('User Not Joined in the Chat');
-      }
-      client.join(String(payload.chatIndex));
-      client.emit('joined', { status: "SUCCESS" })
-    } catch (e) {
-      if (e instanceof EntityNotFoundError)
-        throw new WsException('Not Found');
-      else
-        throw e;
-    }
+    await this.validateChatUser(client.handshake.auth.token, payload.chatIndex);
+    client.join(String(payload.chatIndex));
+    client.emit('joined', { status: 'SUCCESS' });
   }
 
   @SubscribeMessage('leave')
-  leaveChatRoom(client: Socket, payload: any) {
-    // chatIndex 받기
-    // client.leave(room)
-    // socket api -> url api
-    return 'leave Chat Room';
+  async leaveChatRoom(client: Socket, payload: { chatIndex: number }) {
+    await this.validateChatUser(client.handshake.auth.token, payload.chatIndex);
+    client.leave(String(payload.chatIndex));
+    client.emit('left', { status: 'SUCCESS' });
   }
 
   @SubscribeMessage('onMessage')
-  onMessage(client: Socket, payload: any) {
-    // chatIndex 받기
-    // this.server.to(room).emit(refresh)
-    return 'Hello world!';
+  async onMessage(
+    client: Socket,
+    payload: { chatIndex: number; message: string },
+  ) {
+    const roomName = String(payload.chatIndex);
+    const user = await this.validateChatUser(
+      client.handshake.auth.token,
+      payload.chatIndex,
+    );
+
+    const clients = this.server.sockets.adapter.rooms.get(roomName);
+    if (!clients || !clients.has(client.id))
+      throw new WsException('User Not Joined in the Chat Socket');
+    // DB에 챗 저장
+    client.to(roomName).emit('refresh');
   }
 
   getUserByJwt(jwtToken: string): Promise<User> {
     const jwtDecode = this.jwtService.verify(jwtToken);
     return this.usersService.getUser(jwtDecode.username);
+  }
+
+  async validateChatUser(token: string, chatIndex: number): Promise<User> {
+    let user: User;
+    let chat: ChatRoom;
+
+    try {
+      user = await this.getUserByJwt(token);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError)
+        throw new WsException('User Not Found');
+      else throw e;
+    }
+
+    try {
+      chat = await this.chatService.getChat(chatIndex);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError)
+        throw new WsException('Chat Not Found');
+      else throw e;
+    }
+
+    if (
+      !chat.joinUsers.find((joinUser) => {
+        if (joinUser.index === user.index) return true;
+      })
+    )
+      throw new WsException('User Not Joined in the Chat');
+
+    return user;
   }
 }
