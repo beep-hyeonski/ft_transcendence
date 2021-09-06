@@ -38,17 +38,16 @@ function AuthControl({ location }: AuthControlProps) {
       alert('인증 정보가 유효하지 않습니다');
       history.push('/');
     }
-  }, [history]);
 
-  const updateme = () => {
-    getMyInfo().then((res) => {
-      dispatch(updateData(res.data));
-    });
-  };
+    if (query.type === 'success') {
+      getMyInfo().then((res) => {
+        dispatch(updateData(res.data));
+      });
+    }
+  }, [history, query, dispatch]);
 
   switch (query.type) {
     case 'success':
-      updateme();
       return <Redirect to="/" />;
     case 'signup':
       return <Redirect to="/signup" />;
