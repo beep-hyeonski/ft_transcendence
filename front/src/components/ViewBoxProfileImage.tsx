@@ -73,8 +73,6 @@ function ViewBoxProfileImage() {
   const mydata = useSelector((state: RootState) => state.usermeModule);
   const userdata = useSelector((state: RootState) => state.profileModule);
 
-  console.log(userdata);
-
   const followCheck = (mydata.followings
     .find((value: any) => value.nickname === userdata.nickname) !== undefined);
 

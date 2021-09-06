@@ -42,6 +42,8 @@ function AuthControl({ location }: AuthControlProps) {
     if (query.type === 'success') {
       getMyInfo().then((res) => {
         dispatch(updateData(res.data));
+      }).catch((err) => {
+        console.log(err);
       });
     }
   }, [history, query, dispatch]);

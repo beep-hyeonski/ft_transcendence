@@ -41,13 +41,12 @@ const NavBar = () => {
   const mydata = useSelector((state: RootState) => state.usermeModule);
 
   const onClickProfile = () => {
-    dispatch(changeUser({ avatar: mydata.avatar }));
+    dispatch(changeUser(mydata));
   };
 
   const onClickLogout = async () => {
     localStorage.removeItem('p_auth');
     const res = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
-    console.log(res);
   };
 
   return (
