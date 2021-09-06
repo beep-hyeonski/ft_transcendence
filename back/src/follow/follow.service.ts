@@ -13,7 +13,7 @@ export class FollowService {
 
   async getFollowings(jwtPayloadDto: JwtPayloadDto): Promise<User[]> {
     const user = await this.userRepository.findOneOrFail({
-      relations: ['followings', 'followers'],
+      relations: ['followings'],
       where: { username: jwtPayloadDto.username },
     });
 
@@ -26,7 +26,7 @@ export class FollowService {
     }
 
     const follower = await this.userRepository.findOneOrFail({
-      relations: ['followings', 'followers'],
+      relations: ['followings'],
       where: { username: jwtPayloadDto.username },
     });
 
@@ -43,7 +43,7 @@ export class FollowService {
     followDto: FollowDto,
   ) {
     const follower = await this.userRepository.findOne({
-      relations: ['followings', 'followers'],
+      relations: ['followings'],
       where: { username: jwtPayloadDto.username },
     });
 
