@@ -82,27 +82,6 @@ const data3 = {
 
 const userHistory = [data1, data2, data3];
 
-interface UserDataProps {
-  userdata: {
-    index: number,
-    username: string,
-    nickname: string,
-    email?: string,
-    avatar: string,
-    followers?: string[],
-    followings?: string[],
-    blockers?: string[],
-    blockings?: string[],
-    score?: number,
-    victory?: number,
-    defeat?: number,
-    useTwoFA: boolean,
-    twoFAToken?: string,
-    status?: string,
-    created_at?: string,
-  }
-}
-
 function ViewBoxProfileInfo() {
   const classes = useStyles();
 
@@ -130,7 +109,7 @@ function ViewBoxProfileInfo() {
           Match history
         </div>
         {userhistory.userHistory.map((data) => (
-          <MatchHistoryList history={data} />
+          <MatchHistoryList key={data.index} history={data} />
         ))}
       </div>
     </div>

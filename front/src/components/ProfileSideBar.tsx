@@ -52,7 +52,7 @@ const useStyles = makeStyles(() => createStyles({
 function ProfileSideBar() {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.usermeModule);
-  const userdata = mydata.followings;
+  const myFollowings = mydata.followings;
 
   return (
     <Drawer
@@ -64,7 +64,7 @@ function ProfileSideBar() {
       anchor="right"
     >
       <List>
-        {userdata.map((user) => (
+        {myFollowings.map((user) => (
           <FollowList user={user} />
         ))}
       </List>

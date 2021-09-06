@@ -47,16 +47,19 @@ const useStyles = makeStyles(() => createStyles({
 }));
 
 const data1 = {
+  index: 0,
   type: 'private',
   title: 'hello world',
 };
 
 const data2 = {
+  index: 1,
   type: 'public',
   title: 'hi world',
 };
 
 const data3 = {
+  index: 2,
   type: 'private',
   title: 'bye world',
 };
@@ -77,7 +80,7 @@ function ChatSideBar() {
     >
       <List>
         {userdata.map((user) => (
-          <ChatRoomList roomdata={user} />
+          <ChatRoomList key={user.index} roomdata={user} />
         ))}
       </List>
     </Drawer>

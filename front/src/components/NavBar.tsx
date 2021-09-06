@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable no-restricted-globals */
 import React from 'react';
 import {
@@ -9,7 +10,9 @@ import {
 import {
   SportsEsports, Person, Chat,
 } from '@material-ui/icons';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SettingsIcon from '@material-ui/icons/Settings';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
@@ -41,6 +44,12 @@ const NavBar = () => {
     dispatch(changeUser({ avatar: mydata.avatar }));
   };
 
+  const onClickLogout = async () => {
+    localStorage.removeItem('p_auth');
+    const res = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
+    console.log(res);
+  };
+
   return (
     <Drawer
       variant="permanent"
@@ -53,7 +62,7 @@ const NavBar = () => {
         aria-label="navigation bar"
         className={classes.ListDownAlign}
       >
-        <Link to="/main">
+        <Link to="/">
           <ListItem
             button
             alignItems="center"
@@ -89,6 +98,16 @@ const NavBar = () => {
               className={classes.ListItemIconNoWidth}
             >
               <SettingsIcon className={classes.fontsizeManager} />
+            </ListItemIcon>
+          </ListItem>
+        </Link>
+        <Link to="/">
+          <ListItem button>
+            <ListItemIcon
+              className={classes.ListItemIconNoWidth}
+              onClick={onClickLogout}
+            >
+              <ExitToAppIcon className={classes.fontsizeManager} />
             </ListItemIcon>
           </ListItem>
         </Link>

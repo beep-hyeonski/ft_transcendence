@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import InputBase from '@material-ui/core/InputBase';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
 import qs from 'qs';
-import { setCookie } from './AuthControl';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   root: {
     position: 'absolute',
     left: '50%',
@@ -85,12 +84,11 @@ function EmailVerifyPage() {
     const twofaForm = {
       TwoFAToken: form.verifyCode,
     };
-    const coo = qs.parse(document.cookie, { ignoreQueryPrefix: true });
-    axios.defaults.headers.common.Authorization = `Bearer ${String(coo.p_auth)}`;
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     try {
       const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/twofa`, twofaForm);
-      setCookie('p_auth', String(ret.data.jwt));
-      history.push(`/auth?type=success&token=Bearer ${String(ret.data.jwt)}`);
+      localStorage.setItem('p_auth', String(ret.data.jwt));
+      history.push(`/ ${String(ret.data.jwt)}`);
     } catch (error) {
       alert('코드를 다시 확인해주세요.');
     }

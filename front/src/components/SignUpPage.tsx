@@ -4,11 +4,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import qs from 'qs';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import SignUpInputs from './SignUpInputs';
-import { setCookie } from './AuthControl';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -69,10 +67,7 @@ function SignUpPage() {
   const classes = useStyles();
   const history = useHistory();
 
-  const coo = qs.parse(document.cookie, { ignoreQueryPrefix: true });
-  setCookie('p_auth', String(coo.p_auth));
-
-  axios.defaults.headers.common.Authorization = `Bearer ${String(coo.p_auth)}`;
+  axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
 
   // https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg
   const [image, setImage] = useState('https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg');
@@ -89,9 +84,10 @@ function SignUpPage() {
     };
     try {
       const data = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/signup`, signupForm);
-      setCookie('p_auth', String(data.data.jwt));
-      history.push('/auth?type=success');
-    } catch (error) {
+      localStorage.setItem('p_auth', String(data.data.jwt));
+      history.push('/');
+    } catch (error: any) {
+      console.log(error.response);
       if (error.response.data.message === 'Duplicated Nickname') {
         alert('이미 사용중인 닉네임입니다');
       } else if (error.response.data.message[0] === 'email must be an email') {

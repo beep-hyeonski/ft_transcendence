@@ -11,8 +11,12 @@ import { RootState } from '../modules';
 
 function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
   const dispatch = useDispatch();
+  const userdata = useSelector((state: RootState) => state.profileModule);
+  const mydata = useSelector((state: RootState) => state.usermeModule);
 
-  dispatch(changeUser({ nickname: props.match.params.id }));
+  if (props.match.params.id !== userdata.nickname) {
+    dispatch(changeUser({ nickname: props.match.params.id }));
+  }
 
   const changeId = (id: string): void => {
     props.history.push(`/profile/${id}`);

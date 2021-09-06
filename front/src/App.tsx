@@ -13,17 +13,39 @@ import Setting from './components/Setting';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
+
+  // return (
+  //   <Switch>
+  //     <Route exact path="/" component={LoginPage} />
+  //     <Route exact path="/signup" component={SignUpPage} />
+  //     <Route exact path="/twofa" component={EmailVerifyPage} />
+  //     <Route exact path="/main" component={MainUI} />
+  //     <Route exact path="/chat" component={ChatUI} />
+  //     <Route exact path="/profile/:id" component={ProfileUI} />
+  //     <Route path="/auth" component={AuthControl} />
+  //     <Route path="/notfound" component={NotFoundPage} />
+  //     <Route path="/setting" component={Setting} />
+  //     <Route component={NotFoundPage} />
+  //   </Switch>
+  // );
   return (
     <Switch>
-      <Route exact path="/" component={LoginPage} />
       <Route exact path="/signup" component={SignUpPage} />
       <Route exact path="/twofa" component={EmailVerifyPage} />
-      <Route exact path="/main" component={MainUI} />
-      <Route exact path="/chat" component={ChatUI} />
-      <Route exact path="/profile/:id" component={ProfileUI} />
-      <Route path="/auth" component={AuthControl} />
-      <Route path="/notfound" component={NotFoundPage} />
-      <Route path="/setting" component={Setting} />
+      <Route exact path="/notfound" component={NotFoundPage} />
+      <Route exact path="/auth" component={AuthControl} />
+      <Route path="/">
+        { localStorage.getItem('p_auth') && localStorage.getItem('p_auth') !== 'undefined'
+          ? (
+            <>
+              <Route path="/" exact component={MainUI} />
+              <Route path="/chat" exact component={ChatUI} />
+              <Route path="/profile/:id" exact component={ProfileUI} />
+              <Route path="/setting" exact component={Setting} />
+            </>
+          )
+          : <LoginPage /> }
+      </Route>
       <Route component={NotFoundPage} />
     </Switch>
   );

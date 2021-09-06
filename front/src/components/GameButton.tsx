@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import GavelIcon from '@material-ui/icons/Gavel';
 import { makeStyles } from '@material-ui/core/styles';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -35,7 +35,7 @@ function GameButton(): JSX.Element {
         variant="contained"
         size="large"
         className={classes.button}
-        startIcon={<PowerSettingsNewIcon style={{ fontSize: '40' }} />}
+        startIcon={<GavelIcon style={{ fontSize: '40' }} />}
         onClick={clickGamestartButton}
       >
         GAME START

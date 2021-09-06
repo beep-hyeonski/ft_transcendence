@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-import React from 'react';
+import React, { useEffect } from 'react';
 import qs from 'qs';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { Cookies } from 'react-cookie';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
@@ -18,25 +18,27 @@ interface AuthControlProps {
   }
 }
 
-const cookies = new Cookies();
-
-export const setCookie = (key: string, value: string) => {
-  cookies.set(key, value, { path: '/' });
-};
-
-export function getCookie(key: string) {
-  return String(cookies.get(key));
-}
-
 const getMyInfo = async () => {
-  axios.defaults.headers.common.Authorization = getCookie('p_auth');
+  axios.defaults.headers.common.Authorization = localStorage.getItem('p_auth');
   const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/me`);
   return response;
 };
 
 function AuthControl({ location }: AuthControlProps) {
   const dispatch = useDispatch();
+  const history = useHistory();
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+
+  useEffect(() => {
+    const cookie = new Cookies();
+    localStorage.setItem('p_auth', String(cookie.get('p_auth')));
+    cookie.remove('p_auth');
+
+    if (!localStorage.getItem('p_auth')) {
+      alert('인증 정보가 유효하지 않습니다');
+      history.push('/');
+    }
+  }, [history]);
 
   const updateme = () => {
     getMyInfo().then((res) => {
@@ -44,15 +46,10 @@ function AuthControl({ location }: AuthControlProps) {
     });
   };
 
-  if (query.token) {
-    axios.defaults.headers.common.Authorization = query.token;
-    setCookie('p_auth', String(query.token));
-  }
-
   switch (query.type) {
     case 'success':
       updateme();
-      return <Redirect to="/main" />;
+      return <Redirect to="/" />;
     case 'signup':
       return <Redirect to="/signup" />;
     case 'twofa':
@@ -60,8 +57,6 @@ function AuthControl({ location }: AuthControlProps) {
     default:
       return <Redirect to="/notfound" />;
   }
-
-  return <div>test</div>;
 }
 
 export default React.memo(AuthControl);

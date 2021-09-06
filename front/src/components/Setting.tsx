@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import SideMenu from './SideMenu';
 import SettingInputs from './SettingInputs';
-import { getCookie } from './AuthControl';
 import { updateData } from '../modules/userme';
 
 const useStyles = makeStyles(() => createStyles({
@@ -82,7 +81,7 @@ function Setting() {
     if (file) {
       formData.set('image', file);
     }
-    axios.defaults.headers.common.Authorization = `Bearer ${getCookie('p_auth')}`;
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
     setImage(ret.data.image);
   };
@@ -97,12 +96,12 @@ function Setting() {
       avatar: image,
       useTwoFA: form.twofa,
     };
-    axios.defaults.headers.common.Authorization = `Bearer ${getCookie('p_auth')}`;
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     try {
       const ret = await axios.patch(`${String(process.env.REACT_APP_API_URL)}/users/me`, inputForm);
       dispatch(updateData(ret.data));
       alert('저장되었습니다.');
-    } catch (error) {
+    } catch (error: any) {
       if (error.response.data.message === 'Duplicated Nickname') {
         alert('이미 사용중인 닉네임입니다');
       }

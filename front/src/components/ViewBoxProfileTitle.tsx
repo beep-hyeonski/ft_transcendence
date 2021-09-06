@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/quotes */
 /* eslint-disable no-restricted-globals */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeUser } from '../modules/profile';
-import { getCookie } from './AuthControl';
 import SearchBar from './SearchBar';
 import ViewBoxContentsBox from './ViewBoxContentsBox';
 import { RootState } from '../modules';
@@ -48,17 +47,15 @@ function ViewBoxProfileTitle({ changeId } : UserDataProps) {
   const mydata = useSelector((state: RootState) => state.usermeModule);
   const dispatch = useDispatch();
 
-  const [data, setUserdata] = useState(mydata);
-
   const userdata = useSelector((state: RootState) => state.profileModule);
 
   const searchUser = async (form: { input: string }) => {
-    axios.defaults.headers.common.Authorization = `Bearer ${getCookie('p_auth')}`;
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     try {
       const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${form.input}`);
       changeId(form.input);
       dispatch(changeUser(response.data));
-    } catch (error) {
+    } catch (error: any) {
       console.log(error.response.data);
       if (error.response.data.message === 'User Not Found') {
         changeId('usernotfound');

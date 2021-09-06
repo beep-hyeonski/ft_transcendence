@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
 import { Button } from '@material-ui/core';
 import { RootState } from '../modules';
-import { getCookie } from './AuthControl';
 import { updateData } from '../modules/userme';
 
 const useStyles = makeStyles(() => createStyles({
@@ -68,33 +67,30 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-const following = false;
-
 function ViewBoxProfileImage() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [follow, setFollow] = useState(false);
-
   const mydata = useSelector((state: RootState) => state.usermeModule);
   const userdata = useSelector((state: RootState) => state.profileModule);
 
-  function followingCheck() {
-    if (userdata.username in mydata.followings) {
-      return true;
-    }
-    return false;
-  }
+  console.log(userdata);
+
+  const followCheck = (mydata.followings
+    .find((value: any) => value.nickname === userdata.nickname) !== undefined);
+
+  console.log(followCheck);
+  const [follow, setFollow] = useState(followCheck);
 
   const clickFollowButton = async () => {
     const followForm = {
       followedUser: userdata.username,
     };
     try {
-      axios.defaults.headers.common.Authorization = `Bearer ${getCookie('p_auth')}`;
+      axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
       const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm);
       dispatch(updateData(ret.data));
       setFollow(true);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error.response);
     }
   };
@@ -106,11 +102,11 @@ function ViewBoxProfileImage() {
       },
     };
     try {
-      axios.defaults.headers.common.Authorization = `Bearer ${getCookie('p_auth')}`;
+      axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
       const ret = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm);
       dispatch(updateData(ret.data));
       setFollow(false);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error.response);
     }
   };
