@@ -13,7 +13,7 @@ export class BlockService {
 
   async getBlockings(jwtPayloadDto: JwtPayloadDto): Promise<User[]> {
     const user = await this.userRepository.findOneOrFail({
-      relations: ['blockings', 'blockers'],
+      relations: ['blockings'],
       where: { username: jwtPayloadDto.username },
     });
 
@@ -26,7 +26,7 @@ export class BlockService {
     }
 
     const blocker = await this.userRepository.findOneOrFail({
-      relations: ['blockings', 'blockers'],
+      relations: ['blockings'],
       where: { username: jwtPayloadDto.username },
     });
 
@@ -40,7 +40,7 @@ export class BlockService {
 
   async unRegisterBlocking(jwtPayloadDto: JwtPayloadDto, blockDto: BlockDto) {
     const blocker = await this.userRepository.findOneOrFail({
-      relations: ['blockings', 'blockers'],
+      relations: ['blockings'],
       where: { username: jwtPayloadDto.username },
     });
 

@@ -21,13 +21,13 @@ export class UsersService {
 
   async getUsers() {
     return await this.userRepository.find({
-      relations: ['followings', 'followers', 'blockings', 'blockers'],
+      relations: ['followings', 'blockings'],
     });
   }
 
   async getUser(username: string) {
     const user = await this.userRepository.findOne({
-      relations: ['followings', 'followers', 'blockings', 'blockers'],
+      relations: ['followings', 'blockings'],
       where: { username: username },
     });
 
@@ -37,7 +37,7 @@ export class UsersService {
 
   async getUserByNickname(nickname: string) {
     const user = await this.userRepository.findOne({
-      relations: ['followings', 'followers', 'blockings', 'blockers'],
+      relations: ['followings', 'blockings'],
       where: { nickname: nickname },
     });
 
