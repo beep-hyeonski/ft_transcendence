@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable no-restricted-globals */
 import React from 'react';
 import {
@@ -9,8 +11,14 @@ import {
 import {
   SportsEsports, Person, Chat,
 } from '@material-ui/icons';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SettingsIcon from '@material-ui/icons/Settings';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../modules';
+import { changeUser } from '../modules/profile';
+import { deleteData } from '../modules/userme';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -31,6 +39,23 @@ const useStyles = makeStyles({
 
 const NavBar = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const mydata = useSelector((state: RootState) => state.usermeModule);
+
+  const onClickProfile = () => {
+    dispatch(changeUser(mydata));
+  };
+
+  const onClickLogout = async () => {
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
+    localStorage.removeItem('p_auth');
+    dispatch(deleteData());
+    try {
+      await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
+    } catch (error: any) {
+      console.log(error.response);
+    }
+  };
 
   return (
     <Drawer
@@ -44,7 +69,7 @@ const NavBar = () => {
         aria-label="navigation bar"
         className={classes.ListDownAlign}
       >
-        <Link to="/main">
+        <Link to="/">
           <ListItem
             button
             alignItems="center"
@@ -56,8 +81,8 @@ const NavBar = () => {
             </ListItemIcon>
           </ListItem>
         </Link>
-        <Link to="/profile/joockim">
-          <ListItem button>
+        <Link to={`/profile/${mydata.nickname}`}>
+          <ListItem button onClick={onClickProfile}>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >
@@ -80,6 +105,16 @@ const NavBar = () => {
               className={classes.ListItemIconNoWidth}
             >
               <SettingsIcon className={classes.fontsizeManager} />
+            </ListItemIcon>
+          </ListItem>
+        </Link>
+        <Link to="/">
+          <ListItem button>
+            <ListItemIcon
+              className={classes.ListItemIconNoWidth}
+              onClick={onClickLogout}
+            >
+              <ExitToAppIcon className={classes.fontsizeManager} />
             </ListItemIcon>
           </ListItem>
         </Link>

@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from 'react';
+import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ViewBoxProfileImage from './ViewBoxProfileImage';
 import ViewBoxProfileInfo from './ViewBoxProfileInfo';
@@ -15,23 +15,13 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-interface UserDataProps {
-  userdata: {
-    username: string,
-    radderScore: string,
-    win: string,
-    lose: string,
-    profileImage: string,
-  }
-}
-
-function ViewBoxContentsBox({ userdata } : UserDataProps) {
+function ViewBoxContentsBox() {
   const classes = useStyles();
 
   return (
     <div className={classes.box}>
-      <ViewBoxProfileImage imageLink={userdata.profileImage} username={userdata.username} />
-      <ViewBoxProfileInfo userdata={userdata} />
+      <ViewBoxProfileImage />
+      <ViewBoxProfileInfo />
     </div>
   );
 }

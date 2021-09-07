@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
 import { Button } from '@material-ui/core';
+import { RootState } from '../modules';
+import { updateData } from '../modules/userme';
 
 const useStyles = makeStyles(() => createStyles({
   profileImage: {
@@ -62,50 +67,61 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-interface ProfileImageProps {
-  imageLink: string;
-  username: string;
-}
-
-const following = false;
-
-function ViewBoxProfileImage({ imageLink, username } : ProfileImageProps) {
+function ViewBoxProfileImage() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const userdata = useSelector((state: RootState) => state.profileModule);
 
-  // BACK 에서 following 상태인지 아닌지 판별해서 넣어주기
-  const [stat, setStat] = useState(
-    { followStat: following },
-  );
+  const [follow, setFollow] = useState(false);
 
-  const clickChangeImage = () => {
-    console.log('click Change Image');
-  };
+  useEffect(() => {
+    const isFollow = (mydata.followings
+      .find((value: any) => value.nickname === userdata.nickname) !== undefined);
+    setFollow(isFollow);
+  }, [mydata.followings, userdata.nickname]);
 
-  const clickFollowButton = () => {
-    console.log('test');
-    setStat({
-      ...stat,
-      followStat: !stat.followStat,
+  axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
+  function clickFollowButton() {
+    const followForm = {
+      followedUser: userdata.username,
+    };
+    setFollow(true);
+    axios.post(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm).then((res) => {
+      dispatch(updateData(res.data));
+    }, (err) => {
+      console.log(err.response);
+      setFollow(false);
     });
-  };
+  }
+
+  function clickUnfollowButton() {
+    const followForm = {
+      data: {
+        followedUser: userdata.username,
+      },
+    };
+    setFollow(false);
+    axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm).then((res) => {
+      dispatch(updateData(res.data));
+    }, (err) => {
+      console.log(err.response);
+      setFollow(true);
+    });
+  }
 
   return (
     <>
       <Avatar
         className={classes.profileImage}
-        src={imageLink}
+        src={userdata.avatar}
       />
-      {username === 'joockim' && (
-      <Button className={classes.changeImageButton} variant="contained" onClick={clickChangeImage}>
-        change image
-      </Button>
-      )}
-      {username !== 'joockim' && !stat.followStat && (
-      <Button className={classes.unfollowButton} variant="contained" onClick={clickFollowButton}>
+      {userdata.nickname !== mydata.nickname && follow && (
+      <Button className={classes.unfollowButton} variant="contained" onClick={clickUnfollowButton}>
         Unfollow
       </Button>
       )}
-      {username !== 'joockim' && stat.followStat && (
+      {userdata.nickname !== mydata.nickname && !follow && (
       <Button className={classes.followButton} variant="contained" onClick={clickFollowButton}>
         Follow
       </Button>

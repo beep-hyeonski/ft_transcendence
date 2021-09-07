@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import React, { useEffect, useState } from 'react';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import InputBase from '@material-ui/core/InputBase';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   root: {
     position: 'absolute',
     left: '50%',
@@ -56,13 +59,17 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-const clickSubmitButton = (form: { verifyCode: string; }) => {
-  console.log('clickSubmitButton');
-  console.log(form.verifyCode);
-};
-
 function EmailVerifyPage() {
   const classes = useStyles();
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!localStorage.getItem('p_auth')) {
+      history.push('/');
+    }
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
+    localStorage.removeItem('p_auth');
+  }, [history]);
 
   const [form, setForm] = useState({
     verifyCode: '',
@@ -77,9 +84,19 @@ function EmailVerifyPage() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    clickSubmitButton(form);
+
+    const twofaForm = {
+      TwoFAToken: form.verifyCode,
+    };
+    try {
+      const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/twofa`, twofaForm);
+      localStorage.setItem('p_auth', String(ret.data.jwt));
+      history.push('/');
+    } catch (error) {
+      alert('코드를 다시 확인해주세요.');
+    }
   };
 
   return (

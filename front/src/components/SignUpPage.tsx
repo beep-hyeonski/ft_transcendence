@@ -1,9 +1,14 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable react/no-unknown-property */
+import React, { useState } from 'react';
 import axios from 'axios';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
 import SignUpInputs from './SignUpInputs';
+import { RootState } from '../modules';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -34,7 +39,7 @@ const useStyles = makeStyles(() => createStyles({
     height: '275px',
     boxShadow: '1px 1px 1.5px lightgray',
   },
-  changeButton: {
+  changeLabel: {
     position: 'absolute',
     left: '20%',
     top: '75%',
@@ -49,6 +54,10 @@ const useStyles = makeStyles(() => createStyles({
     '&:hover': {
       backgroundColor: '#e3e0ff',
     },
+    textAlign: 'center',
+    lineHeight: '48px',
+    borderRadius: '4px',
+    fontSize: '15px',
   },
 }));
 
@@ -58,20 +67,74 @@ interface UserSignUpProps {
 
 function SignUpPage() {
   const classes = useStyles();
+  const history = useHistory();
+  const mydata = useSelector((state: RootState) => state.usermeModule);
 
-  const clickSignUpButton = (form: { nickname: string; email: string; }) => {
+  if (!localStorage.getItem('p_auth')) {
+    history.push('/');
+  }
+
+  // https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg
+  const [image, setImage] = useState('https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg');
+
+  const clickSignUpButton = async (form: { nickname: string; email: string; }) => {
+    const token = localStorage.getItem('p_auth');
+    if (!token) {
+      alert('인증 정보가 유효하지 않습니다.');
+      return;
+    }
+
+    axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
+    if (form.nickname.length < 2 || form.nickname.length >= 10) {
+      alert('닉네임은 2~10글자로 써야합니다.');
+      return;
+    } if (form.nickname === 'me') {
+      alert('사용할 수 없는 닉네임입니다.');
+      return;
+    }
+
     const signupForm = {
-      nickname: 'skiZzang',
-      email: 'hyeonski@student.42seoul.kr',
-      avatar: 'http://cdn.intra.42.fr/users/hyeonski.jpg',
+      nickname: form.nickname,
+      email: form.email,
+      avatar: image,
     };
-    const data = axios.post('http://api.pongski.com/auth/signup', signupForm);
-    console.log(data);
+    try {
+      const data = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/signup`, signupForm);
+      localStorage.setItem('p_auth', String(data.data.jwt));
+      history.push('/');
+    } catch (error: any) {
+      console.log(error.response);
+      if (error.response.data.message === 'Duplicated Nickname') {
+        alert('이미 사용중인 닉네임입니다');
+      } else if (error.response.data.message[0] === 'email must be an email') {
+        alert('이메일을 확인해주세요');
+      } else {
+        alert('오류가 발생했습니다, 다시 시도해주세요');
+      }
+    }
   };
 
-  const clickChangeImageButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('clickChangeButton');
+  const changeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const token = localStorage.getItem('p_auth');
+    if (!token) {
+      alert('인증 정보가 유효하지 않습니다.');
+      return;
+    }
+
+    const file = event.target?.files?.[0];
+    const formData = new FormData();
+
+    if (file) {
+      formData.set('image', file);
+    }
+    axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
+    const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
+    setImage(ret.data.image);
   };
+
+  // style={{ display: 'none' }}
+  // jpg, jpeg, png, gif
 
   return (
     <div className={classes.divStyle}>
@@ -80,12 +143,12 @@ function SignUpPage() {
       </div>
       <Avatar
         className={classes.profileImage}
-        alt="Remy Sharp"
-        src="https://i.pinimg.com/736x/8d/47/d2/8d47d2a8b2220c562508b7bda34bb2fb.jpg"
+        src={image}
       />
-      <Button className={classes.changeButton} variant="text" onClick={clickChangeImageButton}>
+      <label className={classes.changeLabel} htmlFor="file">
         Change Image
-      </Button>
+      </label>
+      <input style={{ display: 'none' }} id="file" type="file" name="profileImage" onChange={changeImage} accept=".jpg, .jpeg, .png, .gif" />
       <SignUpInputs onSubmit={clickSignUpButton} buttonName="Sign Up" />
     </div>
   );

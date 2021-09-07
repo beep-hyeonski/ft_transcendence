@@ -1,8 +1,16 @@
-import React from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Avatar, Button } from '@material-ui/core';
+import { Avatar } from '@material-ui/core';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../modules';
 import SideMenu from './SideMenu';
-import SignUpInputs from './SignUpInputs';
+import SettingInputs from './SettingInputs';
+import { updateData } from '../modules/userme';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -33,7 +41,7 @@ const useStyles = makeStyles(() => createStyles({
     height: '275px',
     boxShadow: '1px 1px 1.5px lightgray',
   },
-  changeButton: {
+  changeLabel: {
     position: 'absolute',
     left: '20%',
     top: '75%',
@@ -48,18 +56,56 @@ const useStyles = makeStyles(() => createStyles({
     '&:hover': {
       backgroundColor: '#e3e0ff',
     },
+    textAlign: 'center',
+    lineHeight: '48px',
+    borderRadius: '4px',
+    fontSize: '15px',
   },
 }));
 
 function Setting() {
   const classes = useStyles();
+  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const [image, setImage] = useState(mydata.avatar);
+  const dispatch = useDispatch();
 
-  const clickChangeImageButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('clickChangeButton');
+  useEffect(() => {
+    setImage(mydata.avatar);
+  }, [mydata]);
+
+  const changeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const file = event.target?.files?.[0];
+    const formData = new FormData();
+
+    if (file) {
+      formData.set('image', file);
+    }
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
+    const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
+    setImage(ret.data.image);
   };
 
-  const clickSaveButton = (form: { nickname: string; email: string; }) => {
-    console.log(form);
+  const clickSaveButton = async (form: { nickname: string; twofa: boolean }) => {
+    if (form.nickname !== '' && (form.nickname.length < 2 || form.nickname === 'me' || form.nickname.length >= 10)) {
+      alert('닉네임은 2~10글자로 써야합니다.');
+      return;
+    }
+    const inputForm = {
+      nickname: form.nickname === '' ? mydata.nickname : form.nickname,
+      avatar: image,
+      useTwoFA: form.twofa,
+    };
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
+    try {
+      const ret = await axios.patch(`${String(process.env.REACT_APP_API_URL)}/users/me`, inputForm);
+      dispatch(updateData(ret.data));
+      alert('저장되었습니다.');
+    } catch (error: any) {
+      if (error.response.data.message === 'Duplicated Nickname') {
+        alert('이미 사용중인 닉네임입니다');
+      }
+    }
   };
 
   return (
@@ -70,13 +116,13 @@ function Setting() {
         </div>
         <Avatar
           className={classes.profileImage}
-          alt="Remy Sharp"
-          src="https://i.pinimg.com/736x/8d/47/d2/8d47d2a8b2220c562508b7bda34bb2fb.jpg"
+          src={image}
         />
-        <Button className={classes.changeButton} variant="text" onClick={clickChangeImageButton}>
+        <label className={classes.changeLabel} htmlFor="file">
           Change Image
-        </Button>
-        <SignUpInputs onSubmit={clickSaveButton} buttonName="Save" />
+        </label>
+        <input style={{ display: 'none' }} id="file" type="file" name="profileImage" onChange={changeImage} accept=".jpg, .jpeg, .png, .gif" />
+        <SettingInputs onSubmit={clickSaveButton} buttonName="Save" username={mydata.nickname} isTwofa={mydata.useTwoFA} />
       </div>
       <SideMenu type="PROFILE" />
     </>

@@ -36,7 +36,6 @@ function SearchBar({ onSubmit } : SearchProps) {
   const classes = useStyles();
 
   const [form, setForm] = useState({ input: '' });
-  const { input } = form;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
