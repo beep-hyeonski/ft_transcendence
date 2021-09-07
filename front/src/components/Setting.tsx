@@ -122,7 +122,7 @@ function Setting() {
           Change Image
         </label>
         <input style={{ display: 'none' }} id="file" type="file" name="profileImage" onChange={changeImage} accept=".jpg, .jpeg, .png, .gif" />
-        <SettingInputs onSubmit={clickSaveButton} buttonName="Save" username={mydata.nickname} />
+        <SettingInputs onSubmit={clickSaveButton} buttonName="Save" username={mydata.nickname} isTwofa={mydata.useTwoFA} />
       </div>
       <SideMenu type="PROFILE" />
     </>
