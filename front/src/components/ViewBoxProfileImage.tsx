@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -73,41 +73,42 @@ function ViewBoxProfileImage() {
   const mydata = useSelector((state: RootState) => state.usermeModule);
   const userdata = useSelector((state: RootState) => state.profileModule);
 
-  const followCheck = (mydata.followings
-    .find((value: any) => value.nickname === userdata.nickname) !== undefined);
+  const [follow, setFollow] = useState(false);
 
-  console.log(followCheck);
-  const [follow, setFollow] = useState(followCheck);
+  useEffect(() => {
+    const isFollow = (mydata.followings
+      .find((value: any) => value.nickname === userdata.nickname) !== undefined);
+    setFollow(isFollow);
+  }, [mydata.followings, userdata.nickname]);
 
-  const clickFollowButton = async () => {
+  axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
+  function clickFollowButton() {
     const followForm = {
       followedUser: userdata.username,
     };
-    try {
-      axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
-      const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm);
-      dispatch(updateData(ret.data));
-      setFollow(true);
-    } catch (error: any) {
-      console.log(error.response);
-    }
-  };
+    setFollow(true);
+    axios.post(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm).then((res) => {
+      dispatch(updateData(res.data));
+    }, (err) => {
+      console.log(err.response);
+      setFollow(false);
+    });
+  }
 
-  const clickUnfollowButton = async () => {
+  function clickUnfollowButton() {
     const followForm = {
       data: {
         followedUser: userdata.username,
       },
     };
-    try {
-      axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
-      const ret = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm);
-      dispatch(updateData(ret.data));
-      setFollow(false);
-    } catch (error: any) {
-      console.log(error.response);
-    }
-  };
+    setFollow(false);
+    axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm).then((res) => {
+      dispatch(updateData(res.data));
+    }, (err) => {
+      console.log(err.response);
+      setFollow(true);
+    });
+  }
 
   return (
     <>

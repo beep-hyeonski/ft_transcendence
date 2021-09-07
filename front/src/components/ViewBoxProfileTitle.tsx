@@ -50,6 +50,12 @@ function ViewBoxProfileTitle({ changeId } : UserDataProps) {
   const userdata = useSelector((state: RootState) => state.profileModule);
 
   const searchUser = async (form: { input: string }) => {
+    if (form.input === 'me') {
+      changeId(mydata.nickname);
+      dispatch(changeUser(mydata));
+      return;
+    }
+
     axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     try {
       const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${form.input}`);
