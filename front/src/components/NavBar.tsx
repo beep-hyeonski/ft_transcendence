@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable no-restricted-globals */
 import React from 'react';
@@ -18,7 +17,6 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { changeUser } from '../modules/profile';
-import { deleteData } from '../modules/userme';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -47,14 +45,8 @@ const NavBar = () => {
   };
 
   const onClickLogout = async () => {
-    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     localStorage.removeItem('p_auth');
-    dispatch(deleteData());
-    try {
-      await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
-    } catch (error: any) {
-      console.log(error.response);
-    }
+    const res = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
   };
 
   return (

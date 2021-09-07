@@ -68,18 +68,17 @@ interface UserSignUpProps {
   onSubmit: (form: { nickname: string; twofa: boolean }) => void;
   buttonName: string;
   username: string;
-  isTwofa: boolean;
 }
 
-function SignUpInputs({
-  onSubmit, buttonName, username, isTwofa,
-} : UserSignUpProps) {
+function SignUpInputs({ onSubmit, buttonName, username } : UserSignUpProps) {
   const classes = useStyles();
 
   const [form, setForm] = useState({
     nickname: '',
-    twofa: isTwofa,
+    twofa: false,
   });
+
+  const test = username;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -109,14 +108,14 @@ function SignUpInputs({
           className={classes.nickName}
           type="text"
           name="nickname"
-          placeholder={username}
+          placeholder={test}
           onChange={onChange}
         />
         <FormControlLabel
           className={classes.twofaButton}
           name="twofa"
           onChange={checkTwofa}
-          control={<Checkbox color="primary" checked={form.twofa} />}
+          control={<Checkbox color="primary" />}
           label={(
             <Box component="div" fontSize={22}>
               Two Factor Authentication

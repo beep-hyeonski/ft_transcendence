@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useImperativeHandle } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ViewBoxProfileImage from './ViewBoxProfileImage';
 import ViewBoxProfileInfo from './ViewBoxProfileInfo';
