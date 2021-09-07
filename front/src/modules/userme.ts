@@ -1,4 +1,5 @@
 const UPDATE = 'userme/UPDATE' as const;
+const DELETE = 'userme/DELETE' as const;
 
 interface DataProps {
   index: number,
@@ -22,6 +23,11 @@ interface DataProps {
 export const updateData = (data: DataProps) => ({
   type: UPDATE,
   payload: { data },
+});
+
+export const deleteData = () => ({
+  type: DELETE,
+  payload: { index: -1, username: '', nickname: '' },
 });
 
 type UserAction =

@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import InputBase from '@material-ui/core/InputBase';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
-import qs from 'qs';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -64,6 +63,14 @@ function EmailVerifyPage() {
   const classes = useStyles();
   const history = useHistory();
 
+  useEffect(() => {
+    if (!localStorage.getItem('p_auth')) {
+      history.push('/');
+    }
+    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
+    localStorage.removeItem('p_auth');
+  }, [history]);
+
   const [form, setForm] = useState({
     verifyCode: '',
   });
@@ -79,16 +86,14 @@ function EmailVerifyPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(form.verifyCode);
 
     const twofaForm = {
       TwoFAToken: form.verifyCode,
     };
-    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     try {
       const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/twofa`, twofaForm);
       localStorage.setItem('p_auth', String(ret.data.jwt));
-      history.push(`/ ${String(ret.data.jwt)}`);
+      history.push('/');
     } catch (error) {
       alert('코드를 다시 확인해주세요.');
     }

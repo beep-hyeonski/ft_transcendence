@@ -14,8 +14,6 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
   const userdata = useSelector((state: RootState) => state.profileModule);
   const mydata = useSelector((state: RootState) => state.usermeModule);
 
-  console.log('test----');
-  console.log(props.match.params.id, userdata.nickname);
   if (props.match.params.id !== userdata.nickname) {
     dispatch(changeUser({ nickname: props.match.params.id }));
   }
