@@ -9,6 +9,10 @@ import { User } from './users/entities/user.entity';
 import { AppLoggerMiddleware } from './app-logger.middleware';
 import { FollowModule } from './follow/follow.module';
 import { BlockModule } from './block/block.module';
+import { ChatModule } from './chat/chat.module';
+import { ChatRoom } from './chat/entities/chat-room.entity';
+import { Message } from './chat/entities/message.entity';
+import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -22,16 +26,17 @@ import { BlockModule } from './block/block.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
-      entities: [User],
+      entities: [User, ChatRoom, Message],
       synchronize: true,
     }),
     UsersModule,
     AuthModule,
     FollowModule,
     BlockModule,
+    ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {

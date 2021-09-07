@@ -25,6 +25,8 @@ export class FollowService {
       throw new BadRequestException('You cannot follow yourself');
     }
 
+    const PG_UNIQUE_CONSTRAINT_VIOLATION = '23505';
+
     const follower = await this.userRepository.findOneOrFail({
       relations: ['followings'],
       where: { username: jwtPayloadDto.username },
@@ -34,8 +36,20 @@ export class FollowService {
       where: { username: followDto.followedUser },
     });
 
-    follower.followings.push(followed);
-    return await this.userRepository.save(follower);
+    if (
+      !follower.followings ||
+      follower.followings.find((user) => user.index === followed.index) ===
+        undefined
+    )
+      follower.followings.push(followed);
+
+    try {
+      return await this.userRepository.save(follower);
+    } catch (e) {
+      if (e.code === PG_UNIQUE_CONSTRAINT_VIOLATION) {
+        throw new BadRequestException('You are already following this user');
+      } else throw e;
+    }
   }
 
   async unRegisterFollowing(
