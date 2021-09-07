@@ -25,6 +25,8 @@ export class BlockService {
       throw new BadRequestException('You cannot block yourself');
     }
 
+    const PG_UNIQUE_CONSTRAINT_VIOLATION = '23505';
+
     const blocker = await this.userRepository.findOneOrFail({
       relations: ['blockings'],
       where: { username: jwtPayloadDto.username },
@@ -35,7 +37,21 @@ export class BlockService {
     });
 
     blocker.blockings.push(blocked);
-    return await this.userRepository.save(blocker);
+
+    if (
+      !blocker.blockings ||
+      blocker.blockings.find((user) => user.index === blocked.index) ===
+        undefined
+    )
+      blocker.blockings.push(blocked);
+
+    try {
+      return await this.userRepository.save(blocker);
+    } catch (e) {
+      if (e.code === PG_UNIQUE_CONSTRAINT_VIOLATION) {
+        throw new BadRequestException('You are already blocking this user');
+      } else throw e;
+    }
   }
 
   async unRegisterBlocking(jwtPayloadDto: JwtPayloadDto, blockDto: BlockDto) {
