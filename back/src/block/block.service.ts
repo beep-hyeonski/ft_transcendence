@@ -40,8 +40,7 @@ export class BlockService {
 
     if (
       !blocker.blockings ||
-      blocker.blockings.find((user) => user.index === blocked.index) ===
-        undefined
+      !blocker.blockings.find((user) => user.index === blocked.index)
     )
       blocker.blockings.push(blocked);
 

@@ -9,11 +9,18 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/strategy/jwt-auth.guard';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { Chat } from './entities/chat.entity';
+import { Message } from './entities/message.entity';
 
 @ApiTags('Chat')
 @UseGuards(JwtAuthGuard)
@@ -22,126 +29,169 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @ApiOperation({ summary: '전체 채팅 조회' })
-  @ApiOkResponse({})
+  @ApiOkResponse({
+    description: '전체 채팅 배열',
+    type: Chat,
+    isArray: true,
+  })
   @Get()
-  getChats() {
-    return this.chatService.getChats();
+  async getChats() {
+    return await this.chatService.getChats();
   }
 
   @ApiOperation({ summary: '채팅방 개설' })
-  @ApiOkResponse({})
+  @ApiCreatedResponse({
+    description: '개설된 채팅 정보',
+    type: Chat,
+  })
   @Post()
   async createChat(@Req() req: any, @Body() createChatDto: CreateChatDto) {
     return await this.chatService.createChat(req.user, createChatDto);
   }
 
   @ApiOperation({ summary: '특정 채팅방 정보 조회' })
-  @ApiOkResponse({})
+  @ApiOkResponse({ type: Chat })
   @Get(':chatIndex')
-  getChat(@Param('chatIndex') chatIndex: number) {
-    return this.chatService.getChat(chatIndex);
+  async getChat(@Param('chatIndex') chatIndex: number) {
+    return await this.chatService.getChat(chatIndex);
   }
 
-  @ApiOperation({ summary: '채팅방 정보 변경' })
-  @ApiOkResponse({})
+  @ApiOperation({ summary: '채팅방 정보 변경(제목, 상태, 비밀번호)' })
+  @ApiOkResponse({
+    description: '변경된 채팅 정보',
+    type: Chat,
+  })
   @Patch(':chatIndex')
-  updateChat(
+  async updateChat(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
     @Body() updateChatDto: UpdateChatDto,
   ) {
-    return this.chatService.updateChat(req.user, chatIndex, updateChatDto);
+    return await this.chatService.updateChat(
+      req.user,
+      chatIndex,
+      updateChatDto,
+    );
   }
 
   @ApiOperation({ summary: '채팅방 삭제' })
-  @ApiOkResponse({})
   @Delete(':chatIndex')
-  deleteChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
-    return this.chatService.deleteChat(req.user, chatIndex);
+  async deleteChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
+    return await this.chatService.deleteChat(req.user, chatIndex);
   }
 
   @ApiOperation({ summary: '채팅방 입장' })
-  @ApiOkResponse({})
+  @ApiCreatedResponse({ type: Chat })
   @Post(':chatIndex/join')
-  joinChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
-    return this.chatService.joinChat(req.user, chatIndex);
+  async joinChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
+    return await this.chatService.joinChat(req.user, chatIndex);
   }
 
   @ApiOperation({ summary: '채팅방 퇴장' })
-  @ApiOkResponse({})
   @Post(':chatIndex/leave')
-  leaveChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {}
+  async leaveChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
+    return await this.chatService.leaveChat(req.user, chatIndex);
+  }
 
   @ApiOperation({ summary: 'Admin User 등록' })
-  @ApiOkResponse({})
+  @ApiCreatedResponse({
+    description: 'Admin이 등록된 채팅 정보',
+    type: Chat,
+  })
   @Post(':chatIndex/admin')
-  registerAdmin(
+  async registerAdmin(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
     @Body('username') username: string,
   ) {
-    return this.chatService.registerAdmin(req.user, chatIndex, username);
+    return await this.chatService.registerAdmin(req.user, chatIndex, username);
   }
 
   @ApiOperation({ summary: 'Admin User 제거' })
-  @ApiOkResponse({})
   @Delete(':chatIndex/admin')
-  unRegisterAdmin(
+  async unRegisterAdmin(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
     @Body('username') username: string,
   ) {
-    return this.chatService.unRegisterAdmin(req.user, chatIndex, username);
+    return await this.chatService.unRegisterAdmin(
+      req.user,
+      chatIndex,
+      username,
+    );
   }
 
   @ApiOperation({ summary: 'Mute User 등록' })
-  @ApiOkResponse({})
+  @ApiCreatedResponse({
+    description: 'User를 mute한 채팅 정보',
+    type: Chat,
+  })
   @Post(':chatIndex/mute')
-  registerMuteUser(
+  async registerMuteUser(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
     @Body('username') username: string,
   ) {
-    return this.chatService.registerMuteUser(req.user, chatIndex, username);
+    return await this.chatService.registerMuteUser(
+      req.user,
+      chatIndex,
+      username,
+    );
   }
 
   @ApiOperation({ summary: 'Mute User 제거' })
-  @ApiOkResponse({})
   @Delete(':chatIndex/mute')
-  unRegisterMuteUser(
+  async unRegisterMuteUser(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
     @Body('username') username: string,
   ) {
-    return this.chatService.unRegisterMuteUser(req.user, chatIndex, username);
+    return await this.chatService.unRegisterMuteUser(
+      req.user,
+      chatIndex,
+      username,
+    );
   }
 
   @ApiOperation({ summary: 'Ban User 등록' })
-  @ApiOkResponse({})
+  @ApiCreatedResponse({
+    description: 'User를 ban한 채팅 정보',
+    type: Chat,
+  })
   @Post(':chatIndex/ban')
-  registerBanUser(
+  async registerBanUser(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
     @Body('username') username: string,
   ) {
-    return this.chatService.registerBanUser(req.user, chatIndex, username);
+    return await this.chatService.registerBanUser(
+      req.user,
+      chatIndex,
+      username,
+    );
   }
 
   @ApiOperation({ summary: 'Ban User 해제' })
-  @ApiOkResponse({})
   @Delete(':chatIndex/ban')
-  unRegisterBanUser(
+  async unRegisterBanUser(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
     @Body('username') username: string,
   ) {
-    return this.chatService.unRegisterBanUser(req.user, chatIndex, username);
+    return await this.chatService.unRegisterBanUser(
+      req.user,
+      chatIndex,
+      username,
+    );
   }
 
   @ApiOperation({ summary: '채팅방에 전송 된 메시지 리스트' })
-  @ApiOkResponse({})
+  @ApiOkResponse({
+    type: Message,
+    isArray: true,
+  })
   @Get(':chatIndex/messages')
-  getMessages(@Param('chatIndex') chatIndex: number) {
-    return this.chatService.getMessages(chatIndex);
+  async getMessages(@Param('chatIndex') chatIndex: number) {
+    return await this.chatService.getMessages(chatIndex);
   }
 }
