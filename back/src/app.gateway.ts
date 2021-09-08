@@ -14,7 +14,7 @@ import { ChatService } from './chat/chat.service';
 import { UsersService } from './users/users.service';
 import { User } from './users/entities/user.entity';
 import { WebsocketExceptionFilter } from './filters/websocket-exception.filter';
-import { ChatRoom } from './chat/entities/chat-room.entity';
+import { Chat } from './chat/entities/chat.entity';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { Message } from './chat/entities/message.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -51,7 +51,7 @@ export class AppGateway
   }
 
   @SubscribeMessage('join')
-  async joinChatRoom(client: Socket, payload: { chatIndex: number }) {
+  async joinChat(client: Socket, payload: { chatIndex: number }) {
     const user = await this.validateChatUser(
       client.handshake.auth.token,
       payload.chatIndex,
@@ -64,7 +64,7 @@ export class AppGateway
   }
 
   @SubscribeMessage('leave')
-  async leaveChatRoom(client: Socket, payload: { chatIndex: number }) {
+  async leaveChat(client: Socket, payload: { chatIndex: number }) {
     const user = await this.validateChatUser(
       client.handshake.auth.token,
       payload.chatIndex,
@@ -90,7 +90,7 @@ export class AppGateway
       throw new WsException('User Not Joined in the Chat Socket');
 
     const message = new Message();
-    message.chatRoom = await this.chatService.getChat(payload.chatIndex);
+    message.chat = await this.chatService.getChat(payload.chatIndex);
     message.sendUser = user;
     message.messageContent = payload.message;
     this.messageRepository.save(message);
@@ -105,7 +105,7 @@ export class AppGateway
 
   async validateChatUser(token: string, chatIndex: number): Promise<User> {
     let user: User;
-    let chat: ChatRoom;
+    let chat: Chat;
 
     try {
       user = await this.getUserByJwt(token);

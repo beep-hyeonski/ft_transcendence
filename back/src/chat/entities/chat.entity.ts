@@ -14,16 +14,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
 import { Message } from './message.entity';
 
-export enum ChatRoomStatus {
+export enum ChatStatus {
   PUBLIC = 'public',
   PROTECTED = 'protected',
 }
 
 @Entity()
-export class ChatRoom extends BaseEntity {
+export class Chat extends BaseEntity {
   @ApiProperty({
     example: '1',
-    description: 'ChatRoom 을 특정하는 Index',
+    description: 'Chat을 특정하는 Index',
   })
   @PrimaryGeneratedColumn()
   index: number;
@@ -32,9 +32,7 @@ export class ChatRoom extends BaseEntity {
     example: 'Go Chatting!',
     description: '채팅방 제목',
   })
-  @Column({
-    type: 'text',
-  })
+  @Column({ type: 'text' })
   title: string;
 
   @ApiProperty({
@@ -121,7 +119,7 @@ export class ChatRoom extends BaseEntity {
   bannedUsers: User[];
 
   @ApiProperty()
-  @OneToMany(() => Message, (message) => message.chatRoom)
+  @OneToMany(() => Message, (message) => message.chat)
   messages: Message[];
 
   @ApiProperty({
@@ -131,10 +129,10 @@ export class ChatRoom extends BaseEntity {
   @Column({
     type: 'enum',
     name: 'status',
-    enum: ChatRoomStatus,
-    default: ChatRoomStatus.PUBLIC,
+    enum: ChatStatus,
+    default: ChatStatus.PUBLIC,
   })
-  chatRoomStatus: ChatRoomStatus;
+  chatStatus: ChatStatus;
 
   @ApiProperty({
     example: '1234',
@@ -149,7 +147,7 @@ export class ChatRoom extends BaseEntity {
 
   @ApiProperty({
     example: '2021-08-31 22:56:23',
-    description: 'Chat Room 생성 시간',
+    description: 'Chat 생성 시간',
   })
   @CreateDateColumn({
     type: 'timestamp',
