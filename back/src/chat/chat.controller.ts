@@ -19,8 +19,6 @@ import { JwtAuthGuard } from 'src/auth/strategy/jwt-auth.guard';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
-import { Chat } from './entities/chat.entity';
-import { Message } from './entities/message.entity';
 
 @ApiTags('Chat')
 @UseGuards(JwtAuthGuard)

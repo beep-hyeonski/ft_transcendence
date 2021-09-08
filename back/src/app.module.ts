@@ -13,6 +13,8 @@ import { ChatModule } from './chat/chat.module';
 import { Chat } from './chat/entities/chat.entity';
 import { Message } from './chat/entities/message.entity';
 import { AppGateway } from './app.gateway';
+import { Match } from './match/entities/match.entity';
+import { MatchModule } from './match/match.module';
 
 @Module({
   imports: [
@@ -26,7 +28,7 @@ import { AppGateway } from './app.gateway';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
-      entities: [User, Chat, Message],
+      entities: [User, Chat, Message, Match],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([Message]),
@@ -35,6 +37,7 @@ import { AppGateway } from './app.gateway';
     FollowModule,
     BlockModule,
     ChatModule,
+    MatchModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],
