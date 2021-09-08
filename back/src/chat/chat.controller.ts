@@ -29,38 +29,27 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @ApiOperation({ summary: '전체 채팅 조회' })
-  @ApiOkResponse({
-    description: '전체 채팅 배열',
-    type: Chat,
-    isArray: true,
-  })
+  @ApiOkResponse({ description: '전체 채팅 배열' })
   @Get()
   async getChats() {
     return await this.chatService.getChats();
   }
 
   @ApiOperation({ summary: '채팅방 개설' })
-  @ApiCreatedResponse({
-    description: '개설된 채팅 정보',
-    type: Chat,
-  })
+  @ApiCreatedResponse({ description: '개설된 채팅 정보' })
   @Post()
   async createChat(@Req() req: any, @Body() createChatDto: CreateChatDto) {
     return await this.chatService.createChat(req.user, createChatDto);
   }
 
   @ApiOperation({ summary: '특정 채팅방 정보 조회' })
-  @ApiOkResponse({ type: Chat })
   @Get(':chatIndex')
   async getChat(@Param('chatIndex') chatIndex: number) {
     return await this.chatService.getChat(chatIndex);
   }
 
   @ApiOperation({ summary: '채팅방 정보 변경(제목, 상태, 비밀번호)' })
-  @ApiOkResponse({
-    description: '변경된 채팅 정보',
-    type: Chat,
-  })
+  @ApiOkResponse({ description: '변경된 채팅 정보' })
   @Patch(':chatIndex')
   async updateChat(
     @Req() req: any,
@@ -81,7 +70,6 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '채팅방 입장' })
-  @ApiCreatedResponse({ type: Chat })
   @Post(':chatIndex/join')
   async joinChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
     return await this.chatService.joinChat(req.user, chatIndex);
@@ -94,10 +82,7 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: 'Admin User 등록' })
-  @ApiCreatedResponse({
-    description: 'Admin이 등록된 채팅 정보',
-    type: Chat,
-  })
+  @ApiCreatedResponse({ description: 'Admin이 등록된 채팅 정보' })
   @Post(':chatIndex/admin')
   async registerAdmin(
     @Req() req: any,
@@ -122,10 +107,7 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: 'Mute User 등록' })
-  @ApiCreatedResponse({
-    description: 'User를 mute한 채팅 정보',
-    type: Chat,
-  })
+  @ApiCreatedResponse({ description: 'User를 mute한 채팅 정보' })
   @Post(':chatIndex/mute')
   async registerMuteUser(
     @Req() req: any,
@@ -156,7 +138,6 @@ export class ChatController {
   @ApiOperation({ summary: 'Ban User 등록' })
   @ApiCreatedResponse({
     description: 'User를 ban한 채팅 정보',
-    type: Chat,
   })
   @Post(':chatIndex/ban')
   async registerBanUser(
@@ -186,10 +167,6 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '채팅방에 전송 된 메시지 리스트' })
-  @ApiOkResponse({
-    type: Message,
-    isArray: true,
-  })
   @Get(':chatIndex/messages')
   async getMessages(@Param('chatIndex') chatIndex: number) {
     return await this.chatService.getMessages(chatIndex);
