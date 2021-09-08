@@ -132,7 +132,7 @@ export class Chat extends BaseEntity {
     enum: ChatStatus,
     default: ChatStatus.PUBLIC,
   })
-  chatStatus: ChatStatus;
+  status: ChatStatus;
 
   @ApiProperty({
     example: '1234',

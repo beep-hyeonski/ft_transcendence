@@ -3,10 +3,6 @@ import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 import { ChatStatus } from '../entities/chat.entity';
 
 export class CreateChatDto {
-  @ApiProperty({ description: 'Owner Username', example: 'juyang' })
-  @IsString()
-  owner: string;
-
   @ApiProperty({
     description: 'Chat Title',
     example: 'Come in without Hyeonski!',
