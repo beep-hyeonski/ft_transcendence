@@ -5,7 +5,7 @@ import {
 } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
-import ChatRoomList from './ChatRoomList';
+import ChatJoinedList from './ChatJoinedList';
 
 const drawerWidth = 250;
 
@@ -67,7 +67,9 @@ const data3 = {
 function ChatSideBar() {
   const classes = useStyles();
 
-  const userdata = [data1, data2, data3];
+  const userdata = [data1, data2, data3, data3, data3, data3, data3,
+    data1, data2, data3, data3, data3, data3, data3, data3, data3, data3,
+    data3, data3, data3, data3, data3, data3, data3, data3, data3, data3];
 
   return (
     <Drawer
@@ -80,7 +82,7 @@ function ChatSideBar() {
     >
       <List>
         {userdata.map((user) => (
-          <ChatRoomList key={user.index} roomdata={user} />
+          <ChatJoinedList key={user.index} roomdata={user} />
         ))}
       </List>
     </Drawer>

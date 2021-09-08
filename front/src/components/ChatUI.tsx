@@ -3,16 +3,16 @@ import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import SideMenu from './SideMenu';
+import ChatBanner from './ChatBanner';
+import ChatTable from './ChatTable';
 
 const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
     color: '#F4F3FF',
     position: 'absolute',
-    left: '38%',
-    top: '48%',
     fontSize: '25px',
-    transform: 'translate(-50%, -50%)',
+    right: '20%',
     backgroundColor: '#282E4E',
     '&:hover': {
       backgroundColor: '#1C244F',
@@ -26,21 +26,10 @@ const useStyles = makeStyles((theme) => ({
 function ChatUI(): JSX.Element {
   const classes = useStyles();
 
-  const clickCreateButton = () => {
-    console.log('create');
-  };
-
   return (
     <>
-      <Button
-        variant="contained"
-        size="large"
-        className={classes.button}
-        startIcon={<ControlPointIcon style={{ fontSize: '40' }} />}
-        onClick={clickCreateButton}
-      >
-        CREATE CHANNEL
-      </Button>
+      <ChatBanner />
+      <ChatTable />
       <SideMenu type="CHAT" />
     </>
   );

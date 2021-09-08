@@ -6,7 +6,6 @@ import {
 import Drawer from '@material-ui/core/Drawer';
 import { useSelector } from 'react-redux';
 import List from '@material-ui/core/List';
-import ChatRoomList from './ChatRoomList';
 import FollowList from './FollowList';
 import { RootState } from '../modules';
 

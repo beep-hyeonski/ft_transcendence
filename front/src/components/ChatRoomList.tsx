@@ -1,47 +1,65 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { LockRounded, LockOpenRounded, ChatBubbleOutlineRounded } from '@material-ui/icons';
+import { LockRounded, LockOpenRounded } from '@material-ui/icons';
+import { ListItem } from '@material-ui/core';
 
 const useStyles = makeStyles(() => createStyles({
-  usernameMargin: {
-    marginLeft: '10px',
+  root: {
+    marginTop: '10px',
+    height: '8rem',
+    width: '97%',
+    marginLeft: '1.5%',
+    borderRadius: '10px',
+    border: '1px solid lightgray',
+    boxShadow: '1px 1px 1px gray',
+  },
+  title: {
+    paddingLeft: '1rem',
+    fontSize: '4.5rem',
+    textShadow: '1.5px 1.5px 2.5px dimgrey',
+  },
+  statusIcon: {
+    fontSize: '4.5rem',
+    position: 'absolute',
+    left: '94.5%',
   },
 }));
 
-interface ChatRoomProps{
-  type: string;
-  title: string;
-}
-
-interface SideBarProps {
-  roomdata: ChatRoomProps;
-}
-
 interface StatusIconProps {
+  classname: string
   status: string
 }
 
-function StatusIcon({ status }: StatusIconProps): JSX.Element {
+function StatusIcon({ classname, status }: StatusIconProps): JSX.Element {
   if (status === 'private') {
     return (
-      <LockRounded style={{ color: '#666666' }} />
+      <LockRounded className={classname} />
     );
   }
   return (
-    <LockOpenRounded style={{ color: '#FFFFFF' }} />
+    <LockOpenRounded className={classname} />
   );
 }
 
-function ChatRoomList({ roomdata }: SideBarProps): JSX.Element {
+interface RoomdataProps {
+  index: number
+  type: string
+  title: string
+}
+
+interface Roomdata {
+  roomdata: RoomdataProps
+}
+
+function ChatRoomList({ roomdata } : Roomdata) {
   const classes = useStyles();
 
   return (
-    <ListItem button key={roomdata.title}>
-      <ChatBubbleOutlineRounded style={{ fontSize: 40 }} />
-      <ListItemText primary={roomdata.title} className={classes.usernameMargin} />
-      <StatusIcon status={roomdata.type} />
+    <ListItem button key={roomdata.title} className={classes.root}>
+      <div className={classes.title}>
+        {roomdata.title}
+      </div>
+      <StatusIcon classname={classes.statusIcon} status={roomdata.type} />
     </ListItem>
   );
 }
