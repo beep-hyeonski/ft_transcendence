@@ -2,7 +2,7 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { LockRounded, LockOpenRounded, ChatBubbleOutlineRounded } from '@material-ui/icons';
+import { ChatBubbleOutlineRounded } from '@material-ui/icons';
 
 const useStyles = makeStyles(() => createStyles({
   usernameMargin: {

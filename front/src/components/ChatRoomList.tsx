@@ -54,8 +54,13 @@ interface Roomdata {
 function ChatRoomList({ roomdata } : Roomdata) {
   const classes = useStyles();
 
+  const onClick = () => {
+    console.log('clicked');
+    console.log(roomdata);
+  };
+
   return (
-    <ListItem button key={roomdata.title} className={classes.root}>
+    <ListItem button key={roomdata.title} className={classes.root} onClick={onClick}>
       <div className={classes.title}>
         {roomdata.title}
       </div>

@@ -1,10 +1,11 @@
 import React from 'react';
 import List from '@material-ui/core/List';
 import { Drawer } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChatRoomList from './ChatRoomList';
+import ChatPublicModal from './ChatPublicModal';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   root: {
     position: 'absolute',
     top: '54%',
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     backgroundColor: 'white',
     width: '100%',
     height: '100%',
-    borderRadius: '12px',
+    borderRadius: '3px',
     boxShadow: '3.5px 3.5px 3px gray',
     display: 'flex',
   },
@@ -48,17 +49,20 @@ function ChatTable() {
     roomdata1, roomdata2, roomdata3, roomdata1, roomdata2, roomdata3];
 
   return (
-    <Drawer
-      className={classes.root}
-      variant="permanent"
-      classes={{ paper: classes.drawerPaper }}
-    >
-      <List>
-        {userdata.map((roomdata) => (
-          <ChatRoomList key={roomdata.index} roomdata={roomdata} />
-        ))}
-      </List>
-    </Drawer>
+    <>
+      <Drawer
+        className={classes.root}
+        variant="permanent"
+        classes={{ paper: classes.drawerPaper }}
+      >
+        <List>
+          {userdata.map((roomdata) => (
+            <ChatRoomList key={roomdata.index} roomdata={roomdata} />
+          ))}
+        </List>
+      </Drawer>
+      <ChatPublicModal />
+    </>
   );
 }
 

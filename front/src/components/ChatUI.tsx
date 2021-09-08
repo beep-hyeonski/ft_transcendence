@@ -5,6 +5,7 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import SideMenu from './SideMenu';
 import ChatBanner from './ChatBanner';
 import ChatTable from './ChatTable';
+import ChatPublicModal from './ChatPublicModal';
 
 const useStyles = makeStyles((theme) => ({
   button: {
