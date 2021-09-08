@@ -31,7 +31,8 @@ export const deleteData = () => ({
 });
 
 type UserAction =
-  | ReturnType<typeof updateData>;
+  | ReturnType<typeof updateData>
+  | ReturnType<typeof deleteData>;
 
 type UserState = {
   index: number,
@@ -74,8 +75,9 @@ const initialState: UserState = {
 export default function usermeModule(state: UserState = initialState, action: UserAction) {
   switch (action.type) {
     case UPDATE:
-      console.log(action.payload.data);
       return { ...state, ...action.payload.data };
+    case DELETE:
+      return { ...initialState };
     default:
       return state;
   }
