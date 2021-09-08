@@ -29,6 +29,7 @@ import { AppGateway } from './app.gateway';
       entities: [User, ChatRoom, Message],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([Message]),
     UsersModule,
     AuthModule,
     FollowModule,
