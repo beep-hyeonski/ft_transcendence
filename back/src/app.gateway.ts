@@ -56,6 +56,10 @@ export class AppGateway
       client.handshake.auth.token,
       payload.chatIndex,
     );
+
+    if (user.bannedChannels.find((chat) => chat.index === payload.chatIndex))
+      throw new WsException('User has been banned from the chat');
+
     client.join(String(payload.chatIndex));
     client.emit('joined', { status: 'SUCCESS' });
     this.logger.log(
@@ -89,13 +93,17 @@ export class AppGateway
     if (!clients || !clients.has(client.id))
       throw new WsException('User Not Joined in the Chat Socket');
 
-    const message = new Message();
-    message.chat = await this.chatService.getChat(payload.chatIndex);
-    message.sendUser = user;
-    message.messageContent = payload.message;
-    this.messageRepository.save(message);
+    if (!user.mutedChannels.find((chat) => chat.index !== payload.chatIndex)) {
+      const message = new Message();
+      message.chat = await this.chatService.getChat(payload.chatIndex);
+      message.sendUser = user;
+      message.messageContent = payload.message;
+      this.messageRepository.save(message);
 
-    client.to(roomName).emit('onMessage', payload.message);
+      client.to(roomName).emit('onMessage', payload.message);
+    } else {
+      throw new WsException('User has been muted from this chat');
+    }
   }
 
   getUserByJwt(jwtToken: string): Promise<User> {
@@ -123,11 +131,7 @@ export class AppGateway
       else throw e;
     }
 
-    if (
-      !chat.joinUsers.find((joinUser) => {
-        if (joinUser.index === user.index) return true;
-      })
-    )
+    if (!chat.joinUsers.find((joinUser) => joinUser.index === user.index))
       throw new WsException('User Not Joined in the Chat');
 
     return user;
