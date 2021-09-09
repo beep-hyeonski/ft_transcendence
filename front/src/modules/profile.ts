@@ -1,4 +1,5 @@
 const CHANGE_USER = 'profile/CHANGE_USER' as const;
+const DELETE_USER = 'profile/DELETE_USER' as const;
 
 interface DataProps {
   index?: number,
@@ -24,27 +25,33 @@ export const changeUser = (userdata: DataProps) => ({
   payload: { userdata },
 });
 
-type UserAction =
-  | ReturnType<typeof changeUser>;
+export const deleteUser = () => ({
+  type: DELETE_USER,
+  payload: {},
+});
 
-  type UserState = {
-    index: number,
-    username: string,
-    nickname: string,
-    email: string,
-    avatar: string,
-    followers: string[],
-    followings: string[],
-    blockers: string[],
-    blockings: string[],
-    score: number,
-    victory: number,
-    defeat: number,
-    useTwoFA: boolean,
-    twoFAToken: string,
-    status: string,
-    created_at: string,
-  };
+type UserAction =
+  | ReturnType<typeof changeUser>
+  | ReturnType<typeof deleteUser>;
+
+type UserState = {
+  index: number,
+  username: string,
+  nickname: string,
+  email: string,
+  avatar: string,
+  followers: string[],
+  followings: string[],
+  blockers: string[],
+  blockings: string[],
+  score: number,
+  victory: number,
+  defeat: number,
+  useTwoFA: boolean,
+  twoFAToken: string,
+  status: string,
+  created_at: string,
+};
 
 const initialState: UserState = {
   index: -1,
@@ -69,6 +76,8 @@ export default function profileModule(state: UserState = initialState, action: U
   switch (action.type) {
     case CHANGE_USER:
       return { ...state, ...action.payload.userdata };
+    case DELETE_USER:
+      return { ...initialState };
     default:
       return state;
   }

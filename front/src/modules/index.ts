@@ -8,6 +8,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import profileModule from './profile';
 import usermeModule from './userme';
+import sidebarModule from './sidebar';
 
 const persistConfig = {
   key: 'root',
@@ -17,6 +18,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   profileModule,
   usermeModule,
+  sidebarModule,
 });
 
 const enhancedReducer = persistReducer(persistConfig, rootReducer);

@@ -38,8 +38,7 @@ export class FollowService {
 
     if (
       !follower.followings ||
-      follower.followings.find((user) => user.index === followed.index) ===
-        undefined
+      !follower.followings.find((user) => user.index === followed.index)
     )
       follower.followings.push(followed);
 

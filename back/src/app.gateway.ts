@@ -14,8 +14,10 @@ import { ChatService } from './chat/chat.service';
 import { UsersService } from './users/users.service';
 import { User } from './users/entities/user.entity';
 import { WebsocketExceptionFilter } from './filters/websocket-exception.filter';
-import { ChatRoom } from './chat/entities/chat-room.entity';
-import { EntityNotFoundError } from 'typeorm';
+import { Chat } from './chat/entities/chat.entity';
+import { EntityNotFoundError, Repository } from 'typeorm';
+import { Message } from './chat/entities/message.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @UseFilters(WebsocketExceptionFilter)
 @WebSocketGateway(8001)
@@ -26,6 +28,7 @@ export class AppGateway
     private jwtService: JwtService,
     private usersService: UsersService,
     private chatService: ChatService,
+    @InjectRepository(Message) private messageRepository: Repository<Message>,
   ) {}
 
   @WebSocketServer()
@@ -33,31 +36,46 @@ export class AppGateway
 
   private logger: Logger = new Logger('AppGateway');
 
-  afterInit(server: Server) {
-    this.logger.log(`Socket Server Connected...`);
+  afterInit() {
+    this.logger.log(`Socket Server Initialized`);
   }
 
   handleConnection(client: Socket) {
-    this.jwtService.verify(client.handshake.auth.token);
-    this.logger.log(`Client Connected...`);
+    const jwtDecoded = this.jwtService.verify(client.handshake.auth.token);
+    this.logger.log(`Client ${jwtDecoded.username} Connected`);
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log('Chat Socket Gateway handleDisconnect');
+    const jwtDecoded = this.jwtService.verify(client.handshake.auth.token);
+    this.logger.log(`Client ${jwtDecoded.username} Disconnected`);
   }
 
   @SubscribeMessage('join')
-  async joinChatRoom(client: Socket, payload: { chatIndex: number }) {
-    await this.validateChatUser(client.handshake.auth.token, payload.chatIndex);
+  async joinChat(client: Socket, payload: { chatIndex: number }) {
+    const user = await this.validateChatUser(
+      client.handshake.auth.token,
+      payload.chatIndex,
+    );
+
+    if (user.bannedChannels.find((chat) => chat.index === payload.chatIndex))
+      throw new WsException('User has been banned from the chat');
+
     client.join(String(payload.chatIndex));
     client.emit('joined', { status: 'SUCCESS' });
+    this.logger.log(
+      `Client ${user.username} joined to chat ${payload.chatIndex}`,
+    );
   }
 
   @SubscribeMessage('leave')
-  async leaveChatRoom(client: Socket, payload: { chatIndex: number }) {
-    await this.validateChatUser(client.handshake.auth.token, payload.chatIndex);
+  async leaveChat(client: Socket, payload: { chatIndex: number }) {
+    const user = await this.validateChatUser(
+      client.handshake.auth.token,
+      payload.chatIndex,
+    );
     client.leave(String(payload.chatIndex));
     client.emit('left', { status: 'SUCCESS' });
+    this.logger.log(`Client ${user.username} left chat ${payload.chatIndex}`);
   }
 
   @SubscribeMessage('onMessage')
@@ -74,8 +92,18 @@ export class AppGateway
     const clients = this.server.sockets.adapter.rooms.get(roomName);
     if (!clients || !clients.has(client.id))
       throw new WsException('User Not Joined in the Chat Socket');
-    // DB에 챗 저장
-    client.to(roomName).emit('refresh');
+
+    if (!user.mutedChannels.find((chat) => chat.index !== payload.chatIndex)) {
+      const message = new Message();
+      message.chat = await this.chatService.getChat(payload.chatIndex);
+      message.sendUser = user;
+      message.messageContent = payload.message;
+      this.messageRepository.save(message);
+
+      client.to(roomName).emit('onMessage', payload.message);
+    } else {
+      throw new WsException('User has been muted from this chat');
+    }
   }
 
   getUserByJwt(jwtToken: string): Promise<User> {
@@ -85,7 +113,7 @@ export class AppGateway
 
   async validateChatUser(token: string, chatIndex: number): Promise<User> {
     let user: User;
-    let chat: ChatRoom;
+    let chat: Chat;
 
     try {
       user = await this.getUserByJwt(token);
@@ -103,11 +131,7 @@ export class AppGateway
       else throw e;
     }
 
-    if (
-      !chat.joinUsers.find((joinUser) => {
-        if (joinUser.index === user.index) return true;
-      })
-    )
+    if (!chat.joinUsers.find((joinUser) => joinUser.index === user.index))
       throw new WsException('User Not Joined in the Chat');
 
     return user;
