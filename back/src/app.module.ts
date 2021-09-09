@@ -15,6 +15,7 @@ import { Message } from './chat/entities/message.entity';
 import { AppGateway } from './app.gateway';
 import { Match } from './match/entities/match.entity';
 import { MatchModule } from './match/match.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MatchModule } from './match/match.module';
     BlockModule,
     ChatModule,
     MatchModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],
