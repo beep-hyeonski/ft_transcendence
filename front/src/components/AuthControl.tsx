@@ -7,7 +7,6 @@ import { Redirect, useHistory } from 'react-router-dom';
 import { Cookies } from 'react-cookie';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { updateData } from '../modules/userme';
 
 interface AuthControlProps {
   location: {
@@ -18,7 +17,7 @@ interface AuthControlProps {
   }
 }
 
-const getMyInfo = async () => {
+export const getMyInfo = async () => {
   axios.defaults.headers.common.Authorization = localStorage.getItem('p_auth');
   const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/me`);
   return response;
@@ -37,14 +36,6 @@ function AuthControl({ location }: AuthControlProps) {
     if (!localStorage.getItem('p_auth')) {
       alert('인증 정보가 유효하지 않습니다');
       history.push('/');
-    }
-
-    if (query.type === 'success') {
-      getMyInfo().then((res) => {
-        dispatch(updateData(res.data));
-      }).catch((err) => {
-        console.log(err);
-      });
     }
   }, [history, query, dispatch]);
 

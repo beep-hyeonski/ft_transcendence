@@ -31,7 +31,6 @@ function ChatUI(): JSX.Element {
     <>
       <ChatBanner />
       <ChatTable />
-      <SideMenu type="CHAT" />
     </>
   );
 }

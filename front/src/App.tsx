@@ -10,6 +10,7 @@ import ChatUI from './components/ChatUI';
 import NotFoundPage from './components/NotFoundPage';
 import AuthControl from './components/AuthControl';
 import Setting from './components/Setting';
+import SideMenu from './components/SideMenu';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
@@ -24,6 +25,7 @@ function App(): JSX.Element {
         { localStorage.getItem('p_auth') && localStorage.getItem('p_auth') !== 'undefined'
           ? (
             <>
+              <Route path="/" component={SideMenu} />
               <Route path="/" exact component={MainUI} />
               <Route path="/chat" exact component={ChatUI} />
               <Route path="/profile/:id" exact component={ProfileUI} />

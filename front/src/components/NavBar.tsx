@@ -19,6 +19,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { changeUser } from '../modules/profile';
 import { deleteData } from '../modules/userme';
+import {
+  changeStatus, deleteSideData, CHAT, FOLLOW,
+  MAIN,
+} from '../modules/sidebar';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -42,14 +46,28 @@ const NavBar = () => {
   const dispatch = useDispatch();
   const mydata = useSelector((state: RootState) => state.usermeModule);
 
+  const onClickMain = () => {
+    dispatch(changeStatus({ type: MAIN }));
+  };
+
   const onClickProfile = () => {
     dispatch(changeUser(mydata));
+    dispatch(changeStatus({ type: FOLLOW }));
+  };
+
+  const onClickChat = () => {
+    dispatch(changeStatus({ type: CHAT }));
+  };
+
+  const onClickSetting = () => {
+    dispatch(changeStatus({ type: FOLLOW }));
   };
 
   const onClickLogout = async () => {
     axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     localStorage.removeItem('p_auth');
     dispatch(deleteData());
+    dispatch(deleteSideData());
     try {
       await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
     } catch (error: any) {
@@ -73,6 +91,7 @@ const NavBar = () => {
           <ListItem
             button
             alignItems="center"
+            onClick={onClickMain}
           >
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
@@ -91,7 +110,7 @@ const NavBar = () => {
           </ListItem>
         </Link>
         <Link to="/chat">
-          <ListItem button>
+          <ListItem button onClick={onClickChat}>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >
@@ -100,7 +119,7 @@ const NavBar = () => {
           </ListItem>
         </Link>
         <Link to="/setting">
-          <ListItem button>
+          <ListItem button onClick={onClickSetting}>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >

@@ -5,7 +5,6 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { changeUser } from '../modules/profile';
-import SideMenu from './SideMenu';
 import ViewBox from './ViewBox';
 import { RootState } from '../modules';
 
@@ -24,7 +23,6 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
   return (
     <>
       <ViewBox changeId={changeId} />
-      <SideMenu type="PROFILE" />
     </>
   );
 }

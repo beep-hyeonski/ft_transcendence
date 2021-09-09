@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   createStyles,
   makeStyles,
 } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import { useSelector } from 'react-redux';
-import List from '@material-ui/core/List';
-import FollowList from './FollowList';
-import { RootState } from '../modules';
+import { useDispatch } from 'react-redux';
+import { getMyInfo } from './AuthControl';
+import { updateData } from '../modules/userme';
 
 const drawerWidth = 250;
 
@@ -50,8 +49,17 @@ const useStyles = makeStyles(() => createStyles({
 
 function ProfileSideBar() {
   const classes = useStyles();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
-  const myFollowings = mydata.followings;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    getMyInfo().then((res) => {
+      console.log('test');
+      console.log(res.data);
+      dispatch(updateData(res.data));
+    }).catch((err) => {
+      console.log(err);
+    });
+  }, [dispatch]);
 
   return (
     <Drawer
@@ -62,11 +70,11 @@ function ProfileSideBar() {
       }}
       anchor="right"
     >
-      <List>
+      {/* <List>
         {myFollowings.map((user) => (
           <FollowList user={user} />
         ))}
-      </List>
+      </List> */}
     </Drawer>
   );
 }
