@@ -11,6 +11,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chat/entities/chat.entity';
 import { Message } from 'src/chat/entities/message.entity';
+import { Match } from 'src/match/entities/match.entity';
 
 export enum UserStatus {
   ONLINE = 'online',
@@ -188,6 +189,22 @@ export class User extends BaseEntity {
   })
   @OneToMany(() => Message, (sendMessages) => sendMessages.sendUser)
   sendMessages: Message[];
+
+  // @ApiProperty({
+  //   example: '[1, 2, 3]',
+  //   description: 'User 가 참가한 Match 리스트',
+  // })
+  // @OneToMany(() => Match, (myMatches) => {
+  //   return {
+  //     "winMatches": myMatches.winner,
+  //     "loseMatches": myMatches.loser,
+  //   }
+  // })
+  // // @OneToMany(() => Match, (myMatches) => myMatches.winner)
+  // myMatches: {
+  //   "winMatches": Match[],
+  //   "loseMatches": Match[],
+  // };
 
   @ApiProperty({
     example: 'true',
