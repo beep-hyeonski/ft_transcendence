@@ -20,19 +20,19 @@ interface DataProps {
   created_at?: string,
 }
 
-export const updateData = (data: DataProps) => ({
+export const updateMyData = (data: DataProps) => ({
   type: UPDATE,
   payload: { data },
 });
 
-export const deleteData = () => ({
+export const deleteMyData = () => ({
   type: DELETE,
   payload: { index: -1, username: '', nickname: '' },
 });
 
 type UserAction =
-  | ReturnType<typeof updateData>
-  | ReturnType<typeof deleteData>;
+  | ReturnType<typeof updateMyData>
+  | ReturnType<typeof deleteMyData>;
 
 type UserState = {
   index: number,

@@ -1,11 +1,7 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 import React, { useEffect } from 'react';
 import qs from 'qs';
 import { Redirect, useHistory } from 'react-router-dom';
 import { Cookies } from 'react-cookie';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
 
 interface AuthControlProps {
@@ -16,12 +12,6 @@ interface AuthControlProps {
     state: string;
   }
 }
-
-export const getMyInfo = async () => {
-  axios.defaults.headers.common.Authorization = localStorage.getItem('p_auth');
-  const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/me`);
-  return response;
-};
 
 function AuthControl({ location }: AuthControlProps) {
   const dispatch = useDispatch();

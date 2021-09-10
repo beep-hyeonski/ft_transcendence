@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -14,21 +11,28 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-function LobyUserList({ userdata } : any): JSX.Element {
+interface UserdataProps {
+  user : {
+    nickname: string,
+    avatar: string,
+    status: string,
+  }
+}
+
+function LobyUserList({ user } : UserdataProps): JSX.Element {
   const classes = useStyles();
 
-  // eslint-disable-next-line prefer-template
-  // const userdata = axios.get('/user/' + username);
+  if (user.status === 'offline') return <></>;
 
   return (
-    <ListItem button key={userdata.username}>
+    <ListItem button key={user.nickname}>
       <DrawAvatar
-        type={userdata.type}
-        username={userdata.username}
-        src={userdata.src}
-        status=""
+        type="sideBarImage"
+        username={user.nickname}
+        src={user.avatar}
+        status={user.status}
       />
-      <ListItemText primary={userdata.username} className={classes.usernameMargin} />
+      <ListItemText primary={user.nickname} className={classes.usernameMargin} />
       <WbSunnyRounded style={{ color: '#FFFA66' }} />
     </ListItem>
   );

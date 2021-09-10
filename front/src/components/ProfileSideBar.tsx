@@ -3,10 +3,14 @@ import {
   createStyles,
   makeStyles,
 } from '@material-ui/core/styles';
+import { List } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
-import { useDispatch } from 'react-redux';
-import { getMyInfo } from './AuthControl';
-import { updateData } from '../modules/userme';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { getUserme } from '../RequestFunc';
+import { updateMyData } from '../modules/userme';
+import { RootState } from '../modules';
+import FollowList from './FollowList';
 
 const drawerWidth = 250;
 
@@ -50,16 +54,20 @@ const useStyles = makeStyles(() => createStyles({
 function ProfileSideBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
-    getMyInfo().then((res) => {
-      console.log('test');
-      console.log(res.data);
-      dispatch(updateData(res.data));
+    getUserme().then((res) => {
+      dispatch(updateMyData(res.data));
     }).catch((err) => {
       console.log(err);
+      localStorage.removeItem('p_auth');
+      alert('인증 정보가 유효하지 않습니다');
+      history.push('/');
     });
-  }, [dispatch]);
+  }, [dispatch, history]);
+
+  const mydata = useSelector((state: RootState) => state.usermeModule);
 
   return (
     <Drawer
@@ -70,11 +78,11 @@ function ProfileSideBar() {
       }}
       anchor="right"
     >
-      {/* <List>
-        {myFollowings.map((user) => (
+      <List>
+        {mydata.followings.map((user) => (
           <FollowList user={user} />
         ))}
-      </List> */}
+      </List>
     </Drawer>
   );
 }

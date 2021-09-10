@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { MAIN, FOLLOW, CHAT } from '../modules/sidebar';

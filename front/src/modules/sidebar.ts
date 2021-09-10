@@ -9,7 +9,7 @@ interface SidebarDataProps {
   type: string;
 }
 
-export const changeStatus = (data: SidebarDataProps) => ({
+export const changeSideBar = (data: SidebarDataProps) => ({
   type: CHANGE_STATUS,
   payload: { data },
 });
@@ -23,10 +23,10 @@ type SidebarState = {
 };
 
 type SidebarAction =
-| ReturnType<typeof changeStatus>
+| ReturnType<typeof changeSideBar>
 | ReturnType<typeof deleteSideData>;
 
-// data는 아직 임시이기에 any로 넣어두고 아무 props나 받을 수 있도록 잡아둠
+// TODO: 초기 값 설정 해주는 방식 생각하기
 const initialState: SidebarState = {
   data: {
     type: MAIN,

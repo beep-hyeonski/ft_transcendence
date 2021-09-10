@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
 import { Button } from '@material-ui/core';
 import { RootState } from '../modules';
-import { updateData } from '../modules/userme';
+import { updateMyData } from '../modules/userme';
 
 const useStyles = makeStyles(() => createStyles({
   profileImage: {
@@ -88,7 +88,7 @@ function ViewBoxProfileImage() {
     };
     setFollow(true);
     axios.post(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm).then((res) => {
-      dispatch(updateData(res.data));
+      dispatch(updateMyData(res.data));
     }, (err) => {
       console.log(err.response);
       setFollow(false);
@@ -103,7 +103,7 @@ function ViewBoxProfileImage() {
     };
     setFollow(false);
     axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm).then((res) => {
-      dispatch(updateData(res.data));
+      dispatch(updateMyData(res.data));
     }, (err) => {
       console.log(err.response);
       setFollow(true);

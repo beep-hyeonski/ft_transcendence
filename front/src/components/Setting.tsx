@@ -1,16 +1,13 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
-import SideMenu from './SideMenu';
 import SettingInputs from './SettingInputs';
-import { updateData } from '../modules/userme';
+import { updateMyData } from '../modules/userme';
+import { getUserme } from '../RequestFunc';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -65,13 +62,22 @@ const useStyles = makeStyles(() => createStyles({
 
 function Setting() {
   const classes = useStyles();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
-  const [image, setImage] = useState(mydata.avatar);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
-    setImage(mydata.avatar);
-  }, [mydata]);
+    getUserme().then((res) => {
+      dispatch(updateMyData(res.data));
+    }).catch((err) => {
+      console.log(err);
+      localStorage.removeItem('p_auth');
+      alert('인증 정보가 유효하지 않습니다');
+      history.push('/');
+    });
+  }, [history, dispatch]);
+
+  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const [image, setImage] = useState(mydata.avatar);
 
   const changeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -81,9 +87,16 @@ function Setting() {
     if (file) {
       formData.set('image', file);
     }
-    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
-    const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
-    setImage(ret.data.image);
+    try {
+      axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
+      const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
+      setImage(ret.data.image);
+    } catch (error) {
+      console.log(error);
+      localStorage.removeItem('p_auth');
+      alert('인증 정보가 유효하지 않습니다');
+      history.push('/');
+    }
   };
 
   const clickSaveButton = async (form: { nickname: string; twofa: boolean }) => {
@@ -99,11 +112,15 @@ function Setting() {
     axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     try {
       const ret = await axios.patch(`${String(process.env.REACT_APP_API_URL)}/users/me`, inputForm);
-      dispatch(updateData(ret.data));
+      dispatch(updateMyData(ret.data));
       alert('저장되었습니다.');
     } catch (error: any) {
       if (error.response.data.message === 'Duplicated Nickname') {
         alert('이미 사용중인 닉네임입니다');
+      } else {
+        localStorage.removeItem('p_auth');
+        alert('인증 정보가 유효하지 않습니다');
+        history.push('/');
       }
     }
   };

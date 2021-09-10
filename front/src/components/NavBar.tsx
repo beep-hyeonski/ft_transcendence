@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable no-restricted-globals */
 import React from 'react';
 import {
   makeStyles,
@@ -17,10 +14,9 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
-import { changeUser } from '../modules/profile';
-import { deleteData } from '../modules/userme';
+import { deleteMyData } from '../modules/userme';
 import {
-  changeStatus, deleteSideData, CHAT, FOLLOW,
+  changeSideBar, deleteSideData, CHAT, FOLLOW,
   MAIN,
 } from '../modules/sidebar';
 
@@ -47,26 +43,25 @@ const NavBar = () => {
   const mydata = useSelector((state: RootState) => state.usermeModule);
 
   const onClickMain = () => {
-    dispatch(changeStatus({ type: MAIN }));
+    dispatch(changeSideBar({ type: MAIN }));
   };
 
   const onClickProfile = () => {
-    dispatch(changeUser(mydata));
-    dispatch(changeStatus({ type: FOLLOW }));
+    dispatch(changeSideBar({ type: FOLLOW }));
   };
 
   const onClickChat = () => {
-    dispatch(changeStatus({ type: CHAT }));
+    dispatch(changeSideBar({ type: CHAT }));
   };
 
   const onClickSetting = () => {
-    dispatch(changeStatus({ type: FOLLOW }));
+    dispatch(changeSideBar({ type: FOLLOW }));
   };
 
   const onClickLogout = async () => {
     axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     localStorage.removeItem('p_auth');
-    dispatch(deleteData());
+    dispatch(deleteMyData());
     dispatch(deleteSideData());
     try {
       await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);

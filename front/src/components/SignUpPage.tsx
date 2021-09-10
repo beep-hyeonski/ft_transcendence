@@ -6,9 +6,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { useSelector } from 'react-redux';
 import SignUpInputs from './SignUpInputs';
-import { RootState } from '../modules';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -68,7 +66,6 @@ interface UserSignUpProps {
 function SignUpPage() {
   const classes = useStyles();
   const history = useHistory();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
 
   if (!localStorage.getItem('p_auth')) {
     history.push('/');
