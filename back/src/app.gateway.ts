@@ -21,6 +21,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMatchDto } from './match/dto/create-match.dto';
 import { MatchService } from './match/match.service';
 import { v1 } from 'uuid';
+import { GameService, BallSpeed, Game, KeyState } from './game/game.service';
+import { Interval } from '@nestjs/schedule';
 
 @UseFilters(WebsocketExceptionFilter)
 @WebSocketGateway(8001)
@@ -32,6 +34,7 @@ export class AppGateway
     private usersService: UsersService,
     private chatService: ChatService,
     private matchService: MatchService,
+    private gameService: GameService,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
   ) {}
 
@@ -42,11 +45,10 @@ export class AppGateway
 
   gameQueue: Array<Socket> = [];
 
-  gameNumber = BigInt(0);
-
   private logger: Logger = new Logger('AppGateway');
 
   afterInit() {
+    this.gameService.attachServer(this.server);
     this.logger.log(`Socket Server Initialized`);
   }
 
@@ -148,12 +150,21 @@ export class AppGateway
       this.gameQueue[1].join(gameName);
       this.gameQueue = this.gameQueue.slice(2);
 
+      const game: Game = this.gameService.gameSet(
+        gameName,
+        player1,
+        player2,
+        BallSpeed.NORMAL,
+      );
+
       this.server.to(gameName).emit('matchComplete', {
         status: 'GAME_START',
         gameName: gameName,
-        player1: player1.username,
-        player2: player2.username,
-        ballSpeed: 'NORMAL',
+        frameInfo: game.frameInfo,
+        gameInfo: game.gameInfo,
+        player1Info: game.playerInfo[0],
+        player2Info: game.playerInfo[1],
+        ballInfo: game.ballInfo,
       });
     }
   }
@@ -161,10 +172,13 @@ export class AppGateway
   @SubscribeMessage('sendKeyEvent')
   onKeyEvent(
     client: Socket,
-    payload: { sender: string; gameName: string; event: any},
+    payload: { sender: string; gameName: string; keyState: KeyState },
   ) {
-    this.server.to(payload.gameName).emit('receiveKeyEvent', payload);
-    // client.to(payload.gameName).emit('receiveKeyEvent', payload);
+    this.gameService.applyEvent(
+      payload.gameName,
+      payload.sender,
+      payload.keyState,
+    );
   }
 
   @SubscribeMessage('matchResult')
@@ -223,12 +237,22 @@ export class AppGateway
           client.handshake.headers.authorization,
         );
         client.join(payload.gameName);
+
+        const game: Game = this.gameService.gameSet(
+          payload.gameName,
+          player1,
+          player2,
+          BallSpeed.NORMAL,
+        );
+  
         this.server.to(payload.gameName).emit('matchComplete', {
           status: 'GAME_START',
           gameName: payload.gameName,
-          player1: player1.username,
-          player2: player2.username,
-          ballSpeed: payload.ballSpeed,
+          frameInfo: game.frameInfo,
+          gameInfo: game.gameInfo,
+          player1Info: game.playerInfo[0],
+          player2Info: game.playerInfo[1],
+          ballInfo: game.ballInfo,
         });
         break;
       case 'REJECT':

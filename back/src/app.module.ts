@@ -16,6 +16,7 @@ import { AppGateway } from './app.gateway';
 import { Match } from './match/entities/match.entity';
 import { MatchModule } from './match/match.module';
 import { GameModule } from './game/game.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { GameModule } from './game/game.module';
     ChatModule,
     MatchModule,
     GameModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],
