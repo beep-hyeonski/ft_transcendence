@@ -127,7 +127,10 @@ export class AppGateway
       message.messageContent = payload.message;
       this.messageRepository.save(message);
 
-      client.to(roomName).emit('onMessage', payload.message);
+      client.to(roomName).emit('onMessage', {
+        sender: user.username,
+        message: payload.message,
+      });
     } else {
       throw new WsException('User has been muted from this chat');
     }
