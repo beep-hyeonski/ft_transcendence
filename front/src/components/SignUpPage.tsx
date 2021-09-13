@@ -59,10 +59,6 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-interface UserSignUpProps {
-  clickSignUpButton: (form: { nickname: string; email: string; }) => void
-}
-
 function SignUpPage() {
   const classes = useStyles();
   const history = useHistory();
@@ -80,8 +76,6 @@ function SignUpPage() {
       alert('인증 정보가 유효하지 않습니다.');
       return;
     }
-
-    axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
     if (form.nickname.length < 2 || form.nickname.length >= 10) {
       alert('닉네임은 2~10글자로 써야합니다.');
       return;
@@ -96,6 +90,7 @@ function SignUpPage() {
       avatar: image,
     };
     try {
+      axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
       const data = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/signup`, signupForm);
       localStorage.setItem('p_auth', String(data.data.jwt));
       history.push('/');

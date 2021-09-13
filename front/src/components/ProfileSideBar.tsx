@@ -56,16 +56,16 @@ function ProfileSideBar() {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  useEffect(() => {
-    getUserme().then((res) => {
-      dispatch(updateMyData(res.data));
-    }).catch((err) => {
-      console.log(err);
-      localStorage.removeItem('p_auth');
-      alert('인증 정보가 유효하지 않습니다');
-      history.push('/');
-    });
-  }, [dispatch, history]);
+  // useEffect(() => {
+  //   getUserme().then((res) => {
+  //     dispatch(updateMyData(res.data));
+  //   }).catch((err) => {
+  //     console.log(err);
+  //     localStorage.removeItem('p_auth');
+  //     alert('인증 정보가 유효하지 않습니다');
+  //     history.push('/');
+  //   });
+  // }, [dispatch, history]);
 
   const mydata = useSelector((state: RootState) => state.usermeModule);
 

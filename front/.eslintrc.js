@@ -21,6 +21,7 @@ module.exports = {
     'jsx-a11y/label-has-associated-control': 'off',
     'import/prefer-default-export': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
-    '@typescript-eslint/no-unsafe-assignment', 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    'no-restricted-globals': 'off',
   },
 };

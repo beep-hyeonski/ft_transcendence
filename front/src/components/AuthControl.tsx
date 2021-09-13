@@ -3,25 +3,18 @@ import qs from 'qs';
 import { Redirect, useHistory } from 'react-router-dom';
 import { Cookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
+import { updateLogin } from '../modules/login';
 
-interface AuthControlProps {
-  location: {
-    hash: string;
-    pathname: string;
-    search: string;
-    state: string;
-  }
-}
-
-function AuthControl({ location }: AuthControlProps) {
-  const dispatch = useDispatch();
+function AuthControl() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
   useEffect(() => {
     const cookie = new Cookies();
     localStorage.setItem('p_auth', String(cookie.get('p_auth')));
     cookie.remove('p_auth');
+    dispatch(updateLogin(true));
 
     if (!localStorage.getItem('p_auth')) {
       alert('인증 정보가 유효하지 않습니다');

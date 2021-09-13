@@ -52,18 +52,17 @@ function ViewBoxProfileTitle({ changeId } : UserDataProps) {
       dispatch(changeUser(mydata));
       return;
     }
-
     axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
-    try {
-      const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${form.input}`);
+
+    await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${form.input}`).then((res) => {
       changeId(form.input);
-      dispatch(changeUser(response.data));
-    } catch (error: any) {
-      console.log(error.response.data);
-      if (error.response.data.message === 'User Not Found') {
+      dispatch(changeUser(res.data));
+    }).catch((err) => {
+      console.log(err.response);
+      if (err.response.data.message === 'User Not Found') {
         changeId('usernotfound');
       }
-    }
+    });
   };
 
   switch (userdata.nickname) {

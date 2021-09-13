@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import { useSelector } from 'react-redux';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ProfileUI from './components/ProfileUI';
 import LoginPage from './components/LoginPage';
@@ -11,9 +12,18 @@ import NotFoundPage from './components/NotFoundPage';
 import AuthControl from './components/AuthControl';
 import Setting from './components/Setting';
 import SideMenu from './components/SideMenu';
+import CheckToken from './CheckToken';
+import { RootState } from './modules';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
+  const isLoggedIn = useSelector((state: RootState) => state.loginModule.isLoggedIn);
+
+  if (location.pathname !== '/auth' && location.pathname !== '/signup'
+    && location.pathname !== '/twofa' && location.pathname !== '/notfound'
+    && isLoggedIn) {
+    CheckToken();
+  }
 
   return (
     <Switch>
