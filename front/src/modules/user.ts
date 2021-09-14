@@ -1,5 +1,6 @@
-const UPDATE = 'userme/UPDATE' as const;
-const DELETE = 'userme/DELETE' as const;
+const UPDATE = 'user/UPDATE' as const;
+const DELETE = 'user/DELETE' as const;
+const LOGIN = 'user/LOGIN' as const;
 
 interface DataProps {
   index: number,
@@ -18,21 +19,21 @@ interface DataProps {
   twoFAToken?: string,
   status?: string,
   created_at?: string,
+  isLoggedIn?: boolean,
 }
 
-export const updateMyData = (data: DataProps) => ({
+export const updateUser = (data: DataProps) => ({
   type: UPDATE,
   payload: { data },
 });
 
-export const deleteMyData = () => ({
-  type: DELETE,
-  payload: { index: -1, username: '', nickname: '' },
-});
+export const deleteUser = () => ({ type: DELETE });
+export const loginUser = () => ({ type: LOGIN });
 
 type UserAction =
-  | ReturnType<typeof updateMyData>
-  | ReturnType<typeof deleteMyData>;
+  | ReturnType<typeof updateUser>
+  | ReturnType<typeof deleteUser>
+  | ReturnType<typeof loginUser>;
 
 type UserState = {
   index: number,
@@ -51,6 +52,7 @@ type UserState = {
   twoFAToken: string,
   status: string,
   created_at: string,
+  isLoggedIn: boolean,
 };
 
 const initialState: UserState = {
@@ -70,14 +72,17 @@ const initialState: UserState = {
   twoFAToken: '',
   status: '',
   created_at: '',
+  isLoggedIn: false,
 };
 
-export default function usermeModule(state: UserState = initialState, action: UserAction) {
+export default function userModule(state: UserState = initialState, action: UserAction) {
   switch (action.type) {
     case UPDATE:
       return { ...state, ...action.payload.data };
     case DELETE:
       return { ...initialState };
+    case LOGIN:
+      return { ...state, isLoggedIn: true };
     default:
       return state;
   }

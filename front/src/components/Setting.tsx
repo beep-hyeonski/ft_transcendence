@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
 import axios from 'axios';
@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import SettingInputs from './SettingInputs';
-import { updateMyData } from '../modules/userme';
-import { getUserme } from '../RequestFunc';
+import { updateUser } from '../modules/user';
+import { getUserme } from '../utils/Requests';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -65,18 +65,18 @@ function Setting() {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  // useEffect(() => {
-  //   getUserme().then((res) => {
-  //     dispatch(updateMyData(res.data));
-  //   }).catch((err) => {
-  //     console.log(err);
-  //     localStorage.removeItem('p_auth');
-  //     alert('인증 정보가 유효하지 않습니다');
-  //     history.push('/');
-  //   });
-  // }, [history, dispatch]);
+  useEffect(() => {
+    getUserme().then((res) => {
+      dispatch(updateUser(res.data));
+    }).catch((err) => {
+      console.log(err);
+      localStorage.removeItem('p_auth');
+      alert('인증 정보가 유효하지 않습니다');
+      history.push('/');
+    });
+  }, [history, dispatch]);
 
-  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
   const [image, setImage] = useState(mydata.avatar);
 
   const changeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +88,6 @@ function Setting() {
       formData.set('image', file);
     }
     try {
-      axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
       const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
       setImage(ret.data.image);
     } catch (error) {
@@ -109,10 +108,9 @@ function Setting() {
       avatar: image,
       useTwoFA: form.twofa,
     };
-    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
     try {
       const ret = await axios.patch(`${String(process.env.REACT_APP_API_URL)}/users/me`, inputForm);
-      dispatch(updateMyData(ret.data));
+      dispatch(updateUser(ret.data));
       alert('저장되었습니다.');
     } catch (error: any) {
       if (error.response.data.message === 'Duplicated Nickname') {

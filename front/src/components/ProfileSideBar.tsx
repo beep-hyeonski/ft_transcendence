@@ -7,8 +7,8 @@ import { List } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { getUserme } from '../RequestFunc';
-import { updateMyData } from '../modules/userme';
+import { getUserme } from '../utils/Requests';
+import { updateUser } from '../modules/user';
 import { RootState } from '../modules';
 import FollowList from './FollowList';
 
@@ -67,7 +67,7 @@ function ProfileSideBar() {
   //   });
   // }, [dispatch, history]);
 
-  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
 
   return (
     <Drawer

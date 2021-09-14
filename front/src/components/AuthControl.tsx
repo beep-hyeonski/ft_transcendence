@@ -1,26 +1,21 @@
 import React, { useEffect } from 'react';
 import qs from 'qs';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Cookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
-import { updateLogin } from '../modules/login';
+import checkToken from '../utils/checkToken';
 
 function AuthControl() {
-  const history = useHistory();
   const dispatch = useDispatch();
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
   useEffect(() => {
     const cookie = new Cookies();
-    localStorage.setItem('p_auth', String(cookie.get('p_auth')));
+    const token = cookie.get('p_auth');
+    localStorage.setItem('p_auth', String(token));
     cookie.remove('p_auth');
-    dispatch(updateLogin(true));
-
-    if (!localStorage.getItem('p_auth')) {
-      alert('인증 정보가 유효하지 않습니다');
-      history.push('/');
-    }
-  }, [history, query, dispatch]);
+    checkToken(dispatch).then(() => {});
+  }, [query, dispatch]);
 
   switch (query.type) {
     case 'success':

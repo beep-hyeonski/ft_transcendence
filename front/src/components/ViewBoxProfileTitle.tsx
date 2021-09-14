@@ -41,7 +41,7 @@ interface UserDataProps {
 
 function ViewBoxProfileTitle({ changeId } : UserDataProps) {
   const classes = useStyles();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
 
   const userdata = useSelector((state: RootState) => state.profileModule);
@@ -52,7 +52,6 @@ function ViewBoxProfileTitle({ changeId } : UserDataProps) {
       dispatch(changeUser(mydata));
       return;
     }
-    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
 
     await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${form.input}`).then((res) => {
       changeId(form.input);

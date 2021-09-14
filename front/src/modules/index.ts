@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { combineReducers } from 'redux';
 import profileModule from './profile';
-import usermeModule from './userme';
+import userModule from './user';
 import sidebarModule from './sidebar';
-import loginModule from './login';
+import authModule from './auth';
 
 const rootReducer = combineReducers({
   profileModule,
-  usermeModule,
+  userModule,
   sidebarModule,
-  loginModule,
+  authModule,
 });
 
 export default rootReducer;

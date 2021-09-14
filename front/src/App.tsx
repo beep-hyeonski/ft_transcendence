@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ProfileUI from './components/ProfileUI';
 import LoginPage from './components/LoginPage';
@@ -12,37 +12,42 @@ import NotFoundPage from './components/NotFoundPage';
 import AuthControl from './components/AuthControl';
 import Setting from './components/Setting';
 import SideMenu from './components/SideMenu';
-import CheckToken from './CheckToken';
 import { RootState } from './modules';
+import checkToken from './utils/checkToken';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
-  const isLoggedIn = useSelector((state: RootState) => state.loginModule.isLoggedIn);
+  const { isLoginChecked } = useSelector(
+    (state: RootState) => state.authModule,
+  );
+  const { isLoggedIn } = useSelector((state: RootState) => state.userModule);
+  const dispatch = useDispatch();
 
-  if (location.pathname !== '/auth' && location.pathname !== '/signup'
-    && location.pathname !== '/twofa' && location.pathname !== '/notfound'
-    && isLoggedIn) {
-    CheckToken();
-  }
+  useEffect(() => {
+    checkToken(dispatch).then(() => {});
+  }, [isLoggedIn, dispatch]);
 
   return (
     <Switch>
+      {!isLoginChecked && (
+        <Route path="/" render={() => <div>loading...</div>} />
+      )}
       <Route exact path="/signup" component={SignUpPage} />
       <Route exact path="/twofa" component={EmailVerifyPage} />
       <Route exact path="/notfound" component={NotFoundPage} />
       <Route exact path="/auth" component={AuthControl} />
       <Route path="/">
-        { localStorage.getItem('p_auth') && localStorage.getItem('p_auth') !== 'undefined'
-          ? (
-            <>
-              <Route path="/" component={SideMenu} />
-              <Route path="/" exact component={MainUI} />
-              <Route path="/chat" exact component={ChatUI} />
-              <Route path="/profile/:id" exact component={ProfileUI} />
-              <Route path="/setting" exact component={Setting} />
-            </>
-          )
-          : <LoginPage /> }
+        {isLoggedIn ? (
+          <>
+            <Route path="/" component={SideMenu} />
+            <Route path="/" exact component={MainUI} />
+            <Route path="/chat" exact component={ChatUI} />
+            <Route path="/profile/:id" exact component={ProfileUI} />
+            <Route path="/setting" exact component={Setting} />
+          </>
+        ) : (
+          <LoginPage />
+        )}
       </Route>
       <Route component={NotFoundPage} />
     </Switch>

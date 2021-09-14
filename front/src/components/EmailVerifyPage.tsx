@@ -6,6 +6,9 @@ import InputBase from '@material-ui/core/InputBase';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../modules';
+import checkToken from '../utils/checkToken';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -62,14 +65,14 @@ const useStyles = makeStyles(() => createStyles({
 function EmailVerifyPage() {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useDispatch();
+  const { isLoggedIn } = useSelector((state: RootState) => state.userModule);
 
   useEffect(() => {
-    if (!localStorage.getItem('p_auth')) {
+    if (isLoggedIn || !localStorage.getItem('p_auth')) {
       history.push('/');
     }
-    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
-    localStorage.removeItem('p_auth');
-  }, [history]);
+  }, [isLoggedIn, history]);
 
   const [form, setForm] = useState({
     verifyCode: '',
@@ -93,6 +96,7 @@ function EmailVerifyPage() {
     try {
       const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/twofa`, twofaForm);
       localStorage.setItem('p_auth', String(ret.data.jwt));
+      checkToken(dispatch);
       history.push('/');
     } catch (error) {
       alert('코드를 다시 확인해주세요.');

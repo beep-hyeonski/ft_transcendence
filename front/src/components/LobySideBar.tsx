@@ -4,10 +4,12 @@ import {
   makeStyles,
 } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import LobyUserList from './LobyUserList';
-import { getUsers } from '../RequestFunc';
+import { getUsers } from '../utils/Requests';
+import checkToken from '../utils/checkToken';
 
 const drawerWidth = 250;
 
@@ -51,19 +53,20 @@ const useStyles = makeStyles(() => createStyles({
 function LobySideBar() {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
 
   // TODO: 에러 분기 나눠주기
-  // useEffect(() => {
-  //   getUsers().then((res) => {
-  //     setUsers(res);
-  //   }).catch((err) => {
-  //     console.log(err);
-  //     localStorage.removeItem('p_auth');
-  //     alert('인증 정보가 유효하지 않습니다');
-  //     history.push('/');
-  //   });
-  // }, [history]);
+  useEffect(() => {
+    getUsers().then((res) => {
+      setUsers(res);
+    }).catch((err) => {
+      console.log(err);
+      checkToken(dispatch);
+      alert('인증 정보가 유효하지 않습니다');
+      history.push('/');
+    });
+  }, [history, dispatch]);
 
   return (
     <Drawer
@@ -75,10 +78,8 @@ function LobySideBar() {
       anchor="right"
     >
       <List>
-        {users.map((user) => (
-          <LobyUserList
-            user={user}
-          />
+        {users.map((user: any) => (
+          <LobyUserList key={user.index} user={user} />
         ))}
       </List>
     </Drawer>

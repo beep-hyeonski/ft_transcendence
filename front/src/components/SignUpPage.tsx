@@ -90,7 +90,6 @@ function SignUpPage() {
       avatar: image,
     };
     try {
-      axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
       const data = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/signup`, signupForm);
       localStorage.setItem('p_auth', String(data.data.jwt));
       history.push('/');
@@ -120,7 +119,6 @@ function SignUpPage() {
     if (file) {
       formData.set('image', file);
     }
-    axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
     const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
     setImage(ret.data.image);
   };
