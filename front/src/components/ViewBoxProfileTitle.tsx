@@ -37,74 +37,64 @@ const useStyles = makeStyles(() => createStyles({
 
 interface UserDataProps {
   changeId : (id: string) => void
+  isValid: boolean,
 }
 
-function ViewBoxProfileTitle({ changeId } : UserDataProps) {
+function ViewBoxProfileTitle({ changeId, isValid } : UserDataProps) {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
-
   const userdata = useSelector((state: RootState) => state.profileModule);
 
-  const searchUser = async (form: { input: string }) => {
+  const searchUser = (form: { input: string }) => {
     if (form.input === 'me') {
       changeId(mydata.nickname);
       dispatch(changeUser(mydata));
       return;
     }
-
-    await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${form.input}`).then((res) => {
-      changeId(form.input);
-      dispatch(changeUser(res.data));
-    }).catch((err) => {
-      console.log(err.response);
-      if (err.response.data.message === 'User Not Found') {
-        changeId('usernotfound');
-      }
-    });
+    changeId(form.input);
   };
 
-  switch (userdata.nickname) {
-    case 'usernotfound':
-      return (
-        <div>
-          <div className={classes.profileTitle}>
-            User Not Found
-          </div>
-          <div className={classes.searchBar}>
-            <SearchBar onSubmit={searchUser} />
-          </div>
-          <div className={classes.notFoundMessage}>
-            찾을 수 없는 유저에요 ㅜ0ㅜ
-          </div>
+  if (!isValid) {
+    return (
+      <div>
+        <div className={classes.profileTitle}>
+          User Not Found
         </div>
-      );
-    case mydata.nickname:
-      return (
-        <div>
-          <div className={classes.profileTitle}>
-            My Profile
-          </div>
-          <div className={classes.searchBar}>
-            <SearchBar onSubmit={searchUser} />
-          </div>
-          <ViewBoxContentsBox />
+        <div className={classes.searchBar}>
+          <SearchBar onSubmit={searchUser} />
         </div>
-      );
-    default:
-      return (
-        <div>
-          <div className={classes.profileTitle}>
-            {userdata.nickname}
-            &nbsp;Profile
-          </div>
-          <div className={classes.searchBar}>
-            <SearchBar onSubmit={searchUser} />
-          </div>
-          <ViewBoxContentsBox />
+        <div className={classes.notFoundMessage}>
+          찾을 수 없는 유저에요 ㅜ0ㅜ
         </div>
-      );
+      </div>
+    );
   }
+  if (userdata.nickname === mydata.nickname) {
+    return (
+      <div>
+        <div className={classes.profileTitle}>
+          My Profile
+        </div>
+        <div className={classes.searchBar}>
+          <SearchBar onSubmit={searchUser} />
+        </div>
+        <ViewBoxContentsBox />
+      </div>
+    );
+  }
+  return (
+    <div>
+      <div className={classes.profileTitle}>
+        {userdata.nickname}
+        &nbsp;Profile
+      </div>
+      <div className={classes.searchBar}>
+        <SearchBar onSubmit={searchUser} />
+      </div>
+      <ViewBoxContentsBox />
+    </div>
+  );
 }
 
 export default React.memo(ViewBoxProfileTitle);

@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  Redirect,
+  withRouter,
+} from 'react-router-dom';
 import ProfileUI from './components/ProfileUI';
 import LoginPage from './components/LoginPage';
 import SignUpPage from './components/SignUpPage';
@@ -20,12 +25,12 @@ function App(): JSX.Element {
   const { isLoginChecked } = useSelector(
     (state: RootState) => state.authModule,
   );
-  const { isLoggedIn } = useSelector((state: RootState) => state.userModule);
+  const userState = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
 
   useEffect(() => {
     checkToken(dispatch).then(() => {});
-  }, [isLoggedIn, dispatch]);
+  }, [userState.isLoggedIn, dispatch]);
 
   return (
     <Switch>
@@ -37,11 +42,14 @@ function App(): JSX.Element {
       <Route exact path="/notfound" component={NotFoundPage} />
       <Route exact path="/auth" component={AuthControl} />
       <Route path="/">
-        {isLoggedIn ? (
+        {userState.isLoggedIn ? (
           <>
             <Route path="/" component={SideMenu} />
             <Route path="/" exact component={MainUI} />
             <Route path="/chat" exact component={ChatUI} />
+            <Route path="/profile" exact>
+              <Redirect to={`/profile/${userState.nickname}`} />
+            </Route>
             <Route path="/profile/:id" exact component={ProfileUI} />
             <Route path="/setting" exact component={Setting} />
           </>

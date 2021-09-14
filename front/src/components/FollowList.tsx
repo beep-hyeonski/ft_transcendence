@@ -5,7 +5,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { WbSunnyRounded, NightsStayRounded, AdbRounded } from '@material-ui/icons';
-import DrawAvatar, { DrawAvatarProps } from './Avatar';
+import DrawAvatar from './Avatar';
 
 const useStyles = makeStyles(() => createStyles({
   usernameMargin: {

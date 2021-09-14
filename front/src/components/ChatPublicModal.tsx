@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
-  Button, Modal, Drawer, List, GridList,
+  Button, Modal, Drawer, GridList,
 } from '@material-ui/core';
 import ChatJoinedUser from './ChatJoinedUser';
 
