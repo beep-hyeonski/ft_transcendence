@@ -4,24 +4,16 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
+import AppBar from '@material-ui/core/AppBar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import SendIcon from '@material-ui/icons/Send';
 import ChattingList from './ChattingList';
+import SideMenu from './SideMenu';
 
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
-  },
-  title: {
-    position: 'absolute',
-    width: '100%',
-    height: '7rem',
-    backgroundColor: '#3f446e',
-    border: '0px',
-    display: 'inline-flex',
-    fontSize: '40px',
-    color: '#F4F3FF',
-    letterSpacing: '0.2rem',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   test: {
     height: '95vh',
@@ -47,10 +39,26 @@ const useStyles = makeStyles(() => ({
     marginLeft: '20px',
     paddingLeft: '10px',
     backgroundColor: 'white',
-    width: '90%',
+    width: '80%',
+    height: '33px',
     fontSize: '20px',
     letterSpacing: '1px',
     boxShadow: '1px 1px 1px gray',
+  },
+  title: {
+    flexGrow: 1,
+    width: '100%',
+    height: '5rem',
+    color: '#F4F3FF',
+    alignItems: 'center',
+    display: 'flex',
+    marginLeft: '15px',
+  },
+  titlebar: {
+    backgroundColor: '#3f446e',
+  },
+  sendIcon: {
+    marginLeft: '10px',
   },
 }));
 
@@ -103,9 +111,24 @@ export default function ChatRoom() {
     }
   };
 
+  const sendClick = () => {
+    const data = {
+      id: 5,
+      sender: 'jayun',
+      src: 'https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg',
+      message: inputs,
+    };
+    setMsg(messagesExample.concat(data));
+    setInputs('');
+  };
+
   return (
     <>
-      <div className={classes.title}>현스키가 주킴 혼내는 방</div>
+      <AppBar position="fixed" className={classes.titlebar}>
+        <Typography variant="h4" className={classes.title}>
+          채팅방 이름을 여기에 입력해주세요
+        </Typography>
+      </AppBar>
       <div className={classes.test}>
         <List>
           {messagesExample.map((data) => (
@@ -121,6 +144,16 @@ export default function ChatRoom() {
         onKeyPress={handleKeyPress}
         value={inputs}
       />
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.sendIcon}
+        onClick={sendClick}
+        endIcon={<SendIcon />}
+      >
+        Send
+      </Button>
+      <SideMenu type="CHAT" />
     </>
   );
 }
