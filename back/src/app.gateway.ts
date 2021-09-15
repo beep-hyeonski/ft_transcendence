@@ -25,7 +25,7 @@ import { GameService, BallSpeed, Game, KeyState } from './game/game.service';
 import { Interval } from '@nestjs/schedule';
 
 @UseFilters(WebsocketExceptionFilter)
-@WebSocketGateway(8001)
+@WebSocketGateway(8001, { cors: true })
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -247,7 +247,7 @@ export class AppGateway
           player2,
           BallSpeed.NORMAL,
         );
-  
+
         this.server.to(payload.gameName).emit('matchComplete', {
           status: 'GAME_START',
           gameName: payload.gameName,

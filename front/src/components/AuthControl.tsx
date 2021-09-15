@@ -11,7 +11,7 @@ import { initSocket } from '../modules/socket';
 function AuthControl() {
   const dispatch = useDispatch();
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
-  const userState = useSelector((state: RootState) => state.userModule);
+  const { isLoggedIn } = useSelector((state: RootState) => state.authModule);
 
   useEffect(() => {
     const cookie = new Cookies();
@@ -19,11 +19,11 @@ function AuthControl() {
     localStorage.setItem('p_auth', String(token));
     cookie.remove('p_auth');
     checkToken(dispatch).then(() => {});
-    if (userState.isLoggedIn) {
+    if (isLoggedIn) {
       const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`);
       dispatch(initSocket(socket));
     }
-  }, [query, userState, dispatch]);
+  }, [query, isLoggedIn, dispatch]);
 
   switch (query.type) {
     case 'success':

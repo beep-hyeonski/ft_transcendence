@@ -153,7 +153,6 @@ export default function ChatRoom() {
       >
         Send
       </Button>
-      <SideMenu type="CHAT" />
     </>
   );
 }

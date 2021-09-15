@@ -68,7 +68,7 @@ function EmailVerifyPage() {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
-  const { isLoggedIn } = useSelector((state: RootState) => state.userModule);
+  const { isLoggedIn } = useSelector((state: RootState) => state.authModule);
 
   useEffect(() => {
     if (isLoggedIn || !localStorage.getItem('p_auth')) {
