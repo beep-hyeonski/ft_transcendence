@@ -4,11 +4,13 @@ import profileModule from './profile';
 import userModule from './user';
 import sidebarModule from './sidebar';
 import authModule from './auth';
+import socketModule from './socket';
 
 const rootReducer = combineReducers({
   profileModule,
   userModule,
   sidebarModule,
+  socketModule,
   authModule,
 });
 

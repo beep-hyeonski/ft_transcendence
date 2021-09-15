@@ -21,6 +21,7 @@ import SideMenu from './components/SideMenu';
 import { RootState } from './modules';
 import checkToken from './utils/checkToken';
 import { initSocket } from './modules/socket';
+import GameQueuing from './components/GameQueuing';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
@@ -60,6 +61,7 @@ function App(): JSX.Element {
             </Route>
             <Route path="/profile/:id" exact component={ProfileUI} />
             <Route path="/setting" exact component={Setting} />
+            <Route path="/game" exact component={GameQueuing} />
           </>
         ) : (
           <LoginPage />
