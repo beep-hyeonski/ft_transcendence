@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import List from '@material-ui/core/List';
 import { Drawer } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChatRoomList from './ChatRoomList';
 import ChatPublicModal from './ChatPublicModal';
+import ChatPrivateModal from './ChatPrivateModal';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -44,6 +45,10 @@ const roomdata3 = {
 
 function ChatTable() {
   const classes = useStyles();
+  const [modal, setModal] = useState({
+    open: false,
+    type: '',
+  });
 
   const userdata = [roomdata1, roomdata2, roomdata3, roomdata1, roomdata2, roomdata3,
     roomdata1, roomdata2, roomdata3, roomdata1, roomdata2, roomdata3];
@@ -61,7 +66,8 @@ function ChatTable() {
           ))}
         </List>
       </Drawer>
-      <ChatPublicModal />
+      {/* <ChatPublicModal /> */}
+      <ChatPrivateModal />
     </>
   );
 }

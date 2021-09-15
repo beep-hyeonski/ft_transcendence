@@ -2,7 +2,10 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   Button, Modal, Drawer, GridList,
+  IconButton,
 } from '@material-ui/core';
+import CancelIcon from '@material-ui/icons/Cancel';
+import { red } from '@material-ui/core/colors';
 import ChatJoinedUser from './ChatJoinedUser';
 
 const useStyles = makeStyles(() => createStyles({
@@ -55,27 +58,39 @@ const useStyles = makeStyles(() => createStyles({
     borderRadius: '3px',
     boxShadow: '1.5px 1.5px 2px black',
   },
+  closeButtonLocation: {
+    position: 'absolute',
+    top: '0.5rem',
+    right: '0.5rem',
+  },
+  closeButton: {
+    color: '#f35353',
+    fontSize: '35px',
+    '&:hover': {
+      color: '#DA3A3A',
+    },
+  },
 }));
 
 const user1 = {
   index: 0,
   nickname: 'user1',
-  avatar: 'https://i.pravatar.cc/300',
+  avatar: 'https://i.pinimg.com/originals/dd/f2/25/ddf225e9914406d5e72aaa241ca5123c.gif',
 };
 
 const user2 = {
   index: 1,
   nickname: 'user2',
-  avatar: 'https://i.pravatar.cc/300',
+  avatar: 'https://thumbs.gfycat.com/MerryRichAuklet-max-1mb.gif',
 };
 
 const user3 = {
   index: 2,
   nickname: 'user3',
-  avatar: 'https://i.pravatar.cc/300',
+  avatar: 'https://blog.kakaocdn.net/dn/zoXNw/btq1aQQGLZE/FO4BFoXgYhIR404hhzB8G0/img.gif',
 };
 
-function ChatPublicModal() {
+function ChatPublicModal({ setModal } : any) {
   const classes = useStyles();
 
   const users = [user1, user2, user3, user1, user2, user3, user1, user2, user3,
@@ -88,6 +103,9 @@ function ChatPublicModal() {
         open={test}
       >
         <div className={classes.root}>
+          <IconButton className={classes.closeButtonLocation}>
+            <CancelIcon className={classes.closeButton} />
+          </IconButton>
           <div className={classes.title}>
             title
           </div>

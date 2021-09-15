@@ -25,8 +25,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ChatUI(): JSX.Element {
-  const classes = useStyles();
-
   return (
     <>
       <ChatBanner />
