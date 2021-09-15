@@ -6,9 +6,11 @@ import InputBase from '@material-ui/core/InputBase';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
+import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import checkToken from '../utils/checkToken';
+import { initSocket } from '../modules/socket';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -97,6 +99,10 @@ function EmailVerifyPage() {
       const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/twofa`, twofaForm);
       localStorage.setItem('p_auth', String(ret.data.jwt));
       checkToken(dispatch);
+      if (isLoggedIn) {
+        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`);
+        dispatch(initSocket(socket));
+      }
       history.push('/');
     } catch (error) {
       alert('코드를 다시 확인해주세요.');

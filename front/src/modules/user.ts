@@ -19,7 +19,6 @@ interface DataProps {
   twoFAToken?: string,
   status?: string,
   created_at?: string,
-  isLoggedIn?: boolean,
 }
 
 export const updateUser = (data: DataProps) => ({
@@ -28,12 +27,10 @@ export const updateUser = (data: DataProps) => ({
 });
 
 export const deleteUser = () => ({ type: DELETE });
-export const loginUser = () => ({ type: LOGIN });
 
 type UserAction =
   | ReturnType<typeof updateUser>
-  | ReturnType<typeof deleteUser>
-  | ReturnType<typeof loginUser>;
+  | ReturnType<typeof deleteUser>;
 
 type UserState = {
   index: number,
@@ -52,7 +49,6 @@ type UserState = {
   twoFAToken: string,
   status: string,
   created_at: string,
-  isLoggedIn: boolean,
 };
 
 const initialState: UserState = {
@@ -72,7 +68,6 @@ const initialState: UserState = {
   twoFAToken: '',
   status: '',
   created_at: '',
-  isLoggedIn: false,
 };
 
 export default function userModule(state: UserState = initialState, action: UserAction) {
@@ -81,8 +76,6 @@ export default function userModule(state: UserState = initialState, action: User
       return { ...state, ...action.payload.data };
     case DELETE:
       return { ...initialState };
-    case LOGIN:
-      return { ...state, isLoggedIn: true };
     default:
       return state;
   }

@@ -1,8 +1,8 @@
 import { Dispatch } from 'redux';
 import axios from 'axios';
-import { loginUser, updateUser } from '../modules/user';
+import { updateUser } from '../modules/user';
 import { getUserme } from './Requests';
-import { loginCheck } from '../modules/auth';
+import { loginCheck, loginSuccess } from '../modules/auth';
 import { deleteUser } from '../modules/profile';
 
 async function checkToken(dispatch: Dispatch): Promise<void> {
@@ -16,12 +16,14 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
   try {
     axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
     const response = await getUserme();
-    dispatch(loginUser());
+    dispatch(loginSuccess(token));
     dispatch(updateUser(response.data));
+
     dispatch(loginCheck());
   } catch (e) {
     dispatch(deleteUser());
     localStorage.removeItem('p_auth');
+
     dispatch(loginCheck());
   }
 }

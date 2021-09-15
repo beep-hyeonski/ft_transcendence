@@ -31,7 +31,7 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
         setIsValid(false);
       }
     });
-  }, [dispatch, props, id]);
+  }, [dispatch, id]);
 
   return (
     <>
