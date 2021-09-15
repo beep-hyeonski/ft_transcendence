@@ -69,6 +69,7 @@ function EmailVerifyPage() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state: RootState) => state.authModule);
+  const authState = useSelector((state: RootState) => state.authModule);
 
   useEffect(() => {
     if (isLoggedIn || !localStorage.getItem('p_auth')) {
@@ -100,7 +101,11 @@ function EmailVerifyPage() {
       localStorage.setItem('p_auth', String(ret.data.jwt));
       checkToken(dispatch);
       if (isLoggedIn) {
-        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`);
+        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
+          extraHeaders: {
+            Authorization: `${String(authState.token)}`,
+          },
+        });
         dispatch(initSocket(socket));
       }
       history.push('/');

@@ -32,7 +32,9 @@ function App(): JSX.Element {
     checkToken(dispatch).then(() => {});
     if (authState.isLoggedIn) {
       const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
-        auth: { token: authState.token },
+        extraHeaders: {
+          Authorization: `${String(authState.token)}`,
+        },
       });
       dispatch(initSocket(socket));
     }

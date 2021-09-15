@@ -20,7 +20,12 @@ function AuthControl() {
     cookie.remove('p_auth');
     checkToken(dispatch).then(() => {});
     if (isLoggedIn) {
-      const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`);
+      console.log(token);
+      const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
+        extraHeaders: {
+          Authorization: `${String(token)}`,
+        },
+      });
       dispatch(initSocket(socket));
     }
   }, [query, isLoggedIn, dispatch]);
