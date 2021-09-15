@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
 import { Button } from '@material-ui/core';
 import { RootState } from '../modules';
-import { updateData } from '../modules/userme';
+import { updateUser } from '../modules/user';
 
 const useStyles = makeStyles(() => createStyles({
   profileImage: {
@@ -70,7 +70,7 @@ const useStyles = makeStyles(() => createStyles({
 function ViewBoxProfileImage() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
   const userdata = useSelector((state: RootState) => state.profileModule);
 
   const [follow, setFollow] = useState(false);
@@ -81,14 +81,13 @@ function ViewBoxProfileImage() {
     setFollow(isFollow);
   }, [mydata.followings, userdata.nickname]);
 
-  axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
   function clickFollowButton() {
     const followForm = {
       followedUser: userdata.username,
     };
     setFollow(true);
     axios.post(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm).then((res) => {
-      dispatch(updateData(res.data));
+      dispatch(updateUser(res.data));
     }, (err) => {
       console.log(err.response);
       setFollow(false);
@@ -103,7 +102,7 @@ function ViewBoxProfileImage() {
     };
     setFollow(false);
     axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm).then((res) => {
-      dispatch(updateData(res.data));
+      dispatch(updateUser(res.data));
     }, (err) => {
       console.log(err.response);
       setFollow(true);

@@ -1,39 +1,42 @@
-const CHAT_LIST = 'sidebar/CHAT_LIST' as const;
-const FOLLOW_LIST = 'sidebar/FOLLOW_LIST' as const;
+const CHANGE_STATUS = 'sidebar/CHANGE_STATUS' as const;
 const DELETE = 'sidebar/DELETE' as const;
 
-export const change2Chat = () => ({
-  type: CHAT_LIST,
+export const CHAT = 'CHAT';
+export const FOLLOW = 'FOLLOW';
+export const MAIN = 'MAIN';
+
+interface SidebarDataProps {
+  type: string;
+}
+
+export const changeSideBar = (data: SidebarDataProps) => ({
+  type: CHANGE_STATUS,
+  payload: { data },
 });
 
-export const change2Follow = () => ({
-  type: FOLLOW_LIST,
-});
-
-export const deleteData = () => ({
+export const deleteSideData = () => ({
   type: DELETE,
 });
 
 type SidebarState = {
-  data: any,
+  data: SidebarDataProps,
 };
 
 type SidebarAction =
-| ReturnType<typeof change2Chat>
-| ReturnType<typeof change2Follow>
-| ReturnType<typeof deleteData>;
+| ReturnType<typeof changeSideBar>
+| ReturnType<typeof deleteSideData>;
 
-// data는 아직 임시이기에 any로 넣어두고 아무 props나 받을 수 있도록 잡아둠
+// TODO: 초기 값 설정 해주는 방식 생각하기
 const initialState: SidebarState = {
-  data: {},
+  data: {
+    type: MAIN,
+  },
 };
 
 export default function sidebarModule(state: SidebarState = initialState, action: SidebarAction) {
   switch (action.type) {
-    case CHAT_LIST:
-      return { ...state };
-    case FOLLOW_LIST:
-      return { ...state };
+    case CHANGE_STATUS:
+      return { ...state, data: action.payload.data };
     case DELETE:
       return { ...initialState };
     default:

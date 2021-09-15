@@ -27,14 +27,15 @@ const useStyles = makeStyles(() => createStyles({
 
 interface FuncProps {
   changeId : (id: string) => void
+  isValid: boolean,
 }
 
-function ViewBox({ changeId }: FuncProps) {
+function ViewBox({ changeId, isValid }: FuncProps) {
   const classes = useStyles();
 
   return (
     <Paper className={classes.root}>
-      <ViewBoxProfileTitle changeId={changeId} />
+      <ViewBoxProfileTitle changeId={changeId} isValid={isValid} />
     </Paper>
   );
 }

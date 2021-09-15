@@ -87,7 +87,7 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-function ViewBoxCreateTitle() {
+function CreateChannel() {
   const classes = useStyles();
 
   const [form, setForm] = useState({
@@ -176,4 +176,4 @@ function ViewBoxCreateTitle() {
   );
 }
 
-export default React.memo(ViewBoxCreateTitle);
+export default React.memo(CreateChannel);

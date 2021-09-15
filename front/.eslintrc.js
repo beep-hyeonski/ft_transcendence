@@ -16,4 +16,13 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: './tsconfig.json',
   },
+  rules: {
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    'jsx-a11y/label-has-associated-control': 'off',
+    'import/prefer-default-export': 'off',
+    '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    'no-restricted-globals': 'off',
+    '@typescript-eslint/no-floating-promises': 'off',
+  },
 };

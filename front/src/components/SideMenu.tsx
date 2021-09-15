@@ -1,19 +1,19 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { MAIN, FOLLOW, CHAT } from '../modules/sidebar';
+import { RootState } from '../modules';
 import ChatSideBar from './ChatSideBar';
 import LobySideBar from './LobySideBar';
 import NavBar from './NavBar';
 import ProfileSideBar from './ProfileSideBar';
 
-interface SideMenuProps {
-  type: string;
-}
-
-function SideMenu({ type } : SideMenuProps): JSX.Element {
+function SideMenu(): JSX.Element {
+  const sidebarStatus = useSelector((state: RootState) => state.sidebarModule);
   return (
     <>
-      {type === 'LOBY' && <LobySideBar /> }
-      {type === 'CHAT' && <ChatSideBar />}
-      {type === 'PROFILE' && <ProfileSideBar />}
+      {sidebarStatus.data.type === MAIN && <LobySideBar />}
+      {sidebarStatus.data.type === CHAT && <ChatSideBar />}
+      {sidebarStatus.data.type === FOLLOW && <ProfileSideBar />}
       <NavBar />
     </>
   );

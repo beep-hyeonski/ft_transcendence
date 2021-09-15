@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable no-restricted-globals */
 import React from 'react';
 import {
   makeStyles,
@@ -17,8 +14,11 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
-import { changeUser } from '../modules/profile';
-import { deleteData } from '../modules/userme';
+import { deleteUser } from '../modules/user';
+import {
+  changeSideBar, deleteSideData, CHAT, FOLLOW,
+  MAIN,
+} from '../modules/sidebar';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -40,18 +40,30 @@ const useStyles = makeStyles({
 const NavBar = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
+
+  const onClickMain = () => {
+    dispatch(changeSideBar({ type: MAIN }));
+  };
 
   const onClickProfile = () => {
-    dispatch(changeUser(mydata));
+    dispatch(changeSideBar({ type: FOLLOW }));
+  };
+
+  const onClickChat = () => {
+    dispatch(changeSideBar({ type: CHAT }));
+  };
+
+  const onClickSetting = () => {
+    dispatch(changeSideBar({ type: FOLLOW }));
   };
 
   const onClickLogout = async () => {
-    axios.defaults.headers.common.Authorization = `Bearer ${String(localStorage.getItem('p_auth'))}`;
-    localStorage.removeItem('p_auth');
-    dispatch(deleteData());
     try {
       await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
+      localStorage.removeItem('p_auth');
+      dispatch(deleteUser());
+      dispatch(deleteSideData());
     } catch (error: any) {
       console.log(error.response);
     }
@@ -73,6 +85,7 @@ const NavBar = () => {
           <ListItem
             button
             alignItems="center"
+            onClick={onClickMain}
           >
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
@@ -91,7 +104,7 @@ const NavBar = () => {
           </ListItem>
         </Link>
         <Link to="/chat">
-          <ListItem button>
+          <ListItem button onClick={onClickChat}>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >
@@ -100,7 +113,7 @@ const NavBar = () => {
           </ListItem>
         </Link>
         <Link to="/setting">
-          <ListItem button>
+          <ListItem button onClick={onClickSetting}>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >

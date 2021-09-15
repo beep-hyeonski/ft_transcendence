@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   createStyles,
   makeStyles,
 } from '@material-ui/core/styles';
+import { List } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
-import { useSelector } from 'react-redux';
-import List from '@material-ui/core/List';
-import FollowList from './FollowList';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { getUserme } from '../utils/Requests';
+import { updateUser } from '../modules/user';
 import { RootState } from '../modules';
+import FollowList from './FollowList';
 
 const drawerWidth = 250;
 
@@ -50,8 +53,21 @@ const useStyles = makeStyles(() => createStyles({
 
 function ProfileSideBar() {
   const classes = useStyles();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
-  const myFollowings = mydata.followings;
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  // useEffect(() => {
+  //   getUserme().then((res) => {
+  //     dispatch(updateMyData(res.data));
+  //   }).catch((err) => {
+  //     console.log(err);
+  //     localStorage.removeItem('p_auth');
+  //     alert('인증 정보가 유효하지 않습니다');
+  //     history.push('/');
+  //   });
+  // }, [dispatch, history]);
+
+  const mydata = useSelector((state: RootState) => state.userModule);
 
   return (
     <Drawer
@@ -63,7 +79,7 @@ function ProfileSideBar() {
       anchor="right"
     >
       <List>
-        {myFollowings.map((user) => (
+        {mydata.followings.map((user) => (
           <FollowList user={user} />
         ))}
       </List>

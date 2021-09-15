@@ -1,52 +1,29 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 import React, { useEffect } from 'react';
 import qs from 'qs';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Cookies } from 'react-cookie';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { updateData } from '../modules/userme';
+import { io } from 'socket.io-client';
+import { useDispatch, useSelector } from 'react-redux';
+import checkToken from '../utils/checkToken';
+import { RootState } from '../modules';
+import { initSocket } from '../modules/socket';
 
-interface AuthControlProps {
-  location: {
-    hash: string;
-    pathname: string;
-    search: string;
-    state: string;
-  }
-}
-
-const getMyInfo = async () => {
-  axios.defaults.headers.common.Authorization = localStorage.getItem('p_auth');
-  const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/me`);
-  return response;
-};
-
-function AuthControl({ location }: AuthControlProps) {
+function AuthControl() {
   const dispatch = useDispatch();
-  const history = useHistory();
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const userState = useSelector((state: RootState) => state.userModule);
 
   useEffect(() => {
     const cookie = new Cookies();
-    localStorage.setItem('p_auth', String(cookie.get('p_auth')));
+    const token = cookie.get('p_auth');
+    localStorage.setItem('p_auth', String(token));
     cookie.remove('p_auth');
-
-    if (!localStorage.getItem('p_auth')) {
-      alert('인증 정보가 유효하지 않습니다');
-      history.push('/');
+    checkToken(dispatch).then(() => {});
+    if (userState.isLoggedIn) {
+      const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`);
+      dispatch(initSocket(socket));
     }
-
-    if (query.type === 'success') {
-      getMyInfo().then((res) => {
-        dispatch(updateData(res.data));
-      }).catch((err) => {
-        console.log(err);
-      });
-    }
-  }, [history, query, dispatch]);
+  }, [query, userState, dispatch]);
 
   switch (query.type) {
     case 'success':

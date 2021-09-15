@@ -1,5 +1,6 @@
-const UPDATE = 'userme/UPDATE' as const;
-const DELETE = 'userme/DELETE' as const;
+const UPDATE = 'user/UPDATE' as const;
+const DELETE = 'user/DELETE' as const;
+const LOGIN = 'user/LOGIN' as const;
 
 interface DataProps {
   index: number,
@@ -20,19 +21,16 @@ interface DataProps {
   created_at?: string,
 }
 
-export const updateData = (data: DataProps) => ({
+export const updateUser = (data: DataProps) => ({
   type: UPDATE,
   payload: { data },
 });
 
-export const deleteData = () => ({
-  type: DELETE,
-  payload: { index: -1, username: '', nickname: '' },
-});
+export const deleteUser = () => ({ type: DELETE });
 
 type UserAction =
-  | ReturnType<typeof updateData>
-  | ReturnType<typeof deleteData>;
+  | ReturnType<typeof updateUser>
+  | ReturnType<typeof deleteUser>;
 
 type UserState = {
   index: number,
@@ -72,7 +70,7 @@ const initialState: UserState = {
   created_at: '',
 };
 
-export default function usermeModule(state: UserState = initialState, action: UserAction) {
+export default function userModule(state: UserState = initialState, action: UserAction) {
   switch (action.type) {
     case UPDATE:
       return { ...state, ...action.payload.data };

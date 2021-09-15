@@ -6,9 +6,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { useSelector } from 'react-redux';
 import SignUpInputs from './SignUpInputs';
-import { RootState } from '../modules';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -61,14 +59,9 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-interface UserSignUpProps {
-  clickSignUpButton: (form: { nickname: string; email: string; }) => void
-}
-
 function SignUpPage() {
   const classes = useStyles();
   const history = useHistory();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
 
   if (!localStorage.getItem('p_auth')) {
     history.push('/');
@@ -83,8 +76,6 @@ function SignUpPage() {
       alert('인증 정보가 유효하지 않습니다.');
       return;
     }
-
-    axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
     if (form.nickname.length < 2 || form.nickname.length >= 10) {
       alert('닉네임은 2~10글자로 써야합니다.');
       return;
@@ -128,7 +119,6 @@ function SignUpPage() {
     if (file) {
       formData.set('image', file);
     }
-    axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
     const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
     setImage(ret.data.image);
   };

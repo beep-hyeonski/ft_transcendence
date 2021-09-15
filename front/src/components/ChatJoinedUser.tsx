@@ -40,8 +40,6 @@ interface UserData {
 const ChatJoinedUser = ({ user } : UserData) => {
   const classes = useStyles();
 
-  console.log(user);
-
   return (
     <div className={classes.root}>
       <Avatar className={classes.image} src={user.avatar} />

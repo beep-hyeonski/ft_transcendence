@@ -1,32 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import {
-  combineReducers,
-  createStore,
-  Store,
-} from 'redux';
-import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { combineReducers } from 'redux';
 import profileModule from './profile';
-import usermeModule from './userme';
+import userModule from './user';
 import sidebarModule from './sidebar';
-
-const persistConfig = {
-  key: 'root',
-  storage,
-};
+import authModule from './auth';
 
 const rootReducer = combineReducers({
   profileModule,
-  usermeModule,
+  userModule,
   sidebarModule,
+  authModule,
 });
 
-const enhancedReducer = persistReducer(persistConfig, rootReducer);
-
-export default function configureStore() {
-  const store: Store = createStore(enhancedReducer);
-  const persistor = persistStore(store);
-  return { store, persistor };
-}
+export default rootReducer;
 
 export type RootState = ReturnType<typeof rootReducer>;
