@@ -4,7 +4,6 @@ import {
   Button, InputBase, Modal, IconButton,
 } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
-import { red } from '@material-ui/core/colors';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -64,14 +63,22 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-function ChatPrivateModal({ setModal } : any) {
+interface ModalProps {
+  open: boolean;
+  setModal: React.Dispatch<React.SetStateAction<{
+    open: boolean;
+    type: string;
+  }>>;
+}
+
+function ChatPrivateModal({ open, setModal } : ModalProps) {
   const classes = useStyles();
 
   const test = true;
   return (
     <form>
       <Modal
-        open={test}
+        open={open}
       >
         <div className={classes.root}>
           <IconButton className={classes.closeButtonLocation}>
@@ -84,7 +91,7 @@ function ChatPrivateModal({ setModal } : any) {
             className={classes.input}
             placeholder="Password"
             inputProps={{ 'aria-label': 'search user' }}
-            type="text"
+            type="password"
             name="input"
           />
           <Button

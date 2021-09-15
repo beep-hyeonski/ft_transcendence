@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import List from '@material-ui/core/List';
 import { Drawer } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -43,6 +44,11 @@ const roomdata3 = {
   title: 'anjnjsjka',
 };
 
+async function getChats() {
+  const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat`);
+  return response.data;
+}
+
 function ChatTable() {
   const classes = useStyles();
   const [modal, setModal] = useState({
@@ -52,6 +58,14 @@ function ChatTable() {
 
   const userdata = [roomdata1, roomdata2, roomdata3, roomdata1, roomdata2, roomdata3,
     roomdata1, roomdata2, roomdata3, roomdata1, roomdata2, roomdata3];
+
+  useEffect(() => {
+    getChats().then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      console.log(err);
+    });
+  });
 
   return (
     <>
@@ -66,8 +80,9 @@ function ChatTable() {
           ))}
         </List>
       </Drawer>
-      {/* <ChatPublicModal /> */}
-      <ChatPrivateModal />
+      { modal.open && (
+        modal.type === 'public' ? <ChatPublicModal open={modal.open} setModal={setModal} /> : <ChatPrivateModal open={modal.open} setModal={setModal} />
+      )}
     </>
   );
 }

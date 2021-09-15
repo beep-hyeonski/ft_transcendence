@@ -90,17 +90,24 @@ const user3 = {
   avatar: 'https://blog.kakaocdn.net/dn/zoXNw/btq1aQQGLZE/FO4BFoXgYhIR404hhzB8G0/img.gif',
 };
 
-function ChatPublicModal({ setModal } : any) {
+interface ModalProps {
+  open: boolean;
+  setModal: React.Dispatch<React.SetStateAction<{
+    open: boolean;
+    type: string;
+  }>>;
+}
+
+function ChatPublicModal({ open, setModal } : ModalProps) {
   const classes = useStyles();
 
   const users = [user1, user2, user3, user1, user2, user3, user1, user2, user3,
     user1, user2, user3, user1, user2, user3, user1, user2, user3];
 
-  const test = true;
   return (
     <div>
       <Modal
-        open={test}
+        open={open}
       >
         <div className={classes.root}>
           <IconButton className={classes.closeButtonLocation}>
