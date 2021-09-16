@@ -19,6 +19,7 @@ import {
   changeSideBar, deleteSideData, CHAT, FOLLOW,
   MAIN,
 } from '../modules/sidebar';
+import { logout } from '../modules/auth';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -63,6 +64,7 @@ const NavBar = () => {
       await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
       localStorage.removeItem('p_auth');
       dispatch(deleteUser());
+      dispatch(logout());
       dispatch(deleteSideData());
     } catch (error: any) {
       console.log(error.response);
