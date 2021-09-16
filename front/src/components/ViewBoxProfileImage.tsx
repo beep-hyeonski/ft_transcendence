@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import { Button } from '@material-ui/core';
 import { RootState } from '../modules';
@@ -65,6 +66,22 @@ const useStyles = makeStyles(() => createStyles({
       backgroundColor: '#cc6b80',
     },
   },
+  pvpButton: {
+    position: 'absolute',
+    top: '85%',
+    left: '18%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#3F446E',
+    color: '#F4F3FF',
+    width: 230,
+    height: 50,
+    textTransform: 'none',
+    textShadow: '1px 1px 0.5px gray',
+    boxShadow: '1px 1px 1px gray',
+    '&:hover': {
+      backgroundColor: '#1c244f',
+    },
+  },
 }));
 
 function ViewBoxProfileImage() {
@@ -72,6 +89,8 @@ function ViewBoxProfileImage() {
   const dispatch = useDispatch();
   const mydata = useSelector((state: RootState) => state.userModule);
   const userdata = useSelector((state: RootState) => state.profileModule);
+  const socket = useSelector((state: RootState) => state.socketModule);
+  const history = useHistory();
 
   const [follow, setFollow] = useState(false);
 
@@ -109,6 +128,15 @@ function ViewBoxProfileImage() {
     });
   }
 
+  function clickPVPButton() {
+    console.log('pvp button click');
+    socket?.socket?.emit('matchRequest', {
+      receiveUserIndex: userdata.index,
+      ballSpeed: 'NORMAL',
+    });
+    history.push('/game');
+  }
+
   return (
     <>
       <Avatar
@@ -123,6 +151,11 @@ function ViewBoxProfileImage() {
       {userdata.nickname !== mydata.nickname && !follow && (
       <Button className={classes.followButton} variant="contained" onClick={clickFollowButton}>
         Follow
+      </Button>
+      )}
+      {userdata.nickname !== mydata.nickname && (
+      <Button className={classes.pvpButton} variant="contained" onClick={clickPVPButton}>
+        PVP 신청
       </Button>
       )}
     </>

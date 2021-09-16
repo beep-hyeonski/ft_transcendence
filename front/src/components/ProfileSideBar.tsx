@@ -79,7 +79,7 @@ function ProfileSideBar() {
       anchor="right"
     >
       <List>
-        {mydata.followings.map((user) => (
+        {mydata.followings.map((user: any) => (
           <FollowList user={user} />
         ))}
       </List>
