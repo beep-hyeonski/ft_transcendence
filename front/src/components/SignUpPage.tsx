@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/no-unknown-property */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { io } from 'socket.io-client';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import SignUpInputs from './SignUpInputs';
+import { RootState } from '../modules';
+import checkToken from '../utils/checkToken';
+import { initSocket } from '../modules/socket';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -62,10 +67,17 @@ const useStyles = makeStyles(() => createStyles({
 function SignUpPage() {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useDispatch();
+  const { isLoggedIn } = useSelector((state: RootState) => state.authModule);
+  const authState = useSelector((state: RootState) => state.authModule);
 
-  if (!localStorage.getItem('p_auth')) {
-    history.push('/');
-  }
+  useEffect(() => {
+    if (!localStorage.getItem('p_auth') || isLoggedIn) {
+      history.push('/');
+    }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history]);
 
   // https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg
   const [image, setImage] = useState('https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg');
@@ -92,6 +104,15 @@ function SignUpPage() {
     try {
       const data = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/signup`, signupForm);
       localStorage.setItem('p_auth', String(data.data.jwt));
+      checkToken(dispatch);
+      if (isLoggedIn) {
+        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
+          extraHeaders: {
+            Authorization: `${String(authState.token)}`,
+          },
+        });
+        dispatch(initSocket(socket));
+      }
       history.push('/');
     } catch (error: any) {
       console.log(error.response);

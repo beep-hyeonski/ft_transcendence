@@ -75,7 +75,8 @@ function EmailVerifyPage() {
     if (isLoggedIn || !localStorage.getItem('p_auth')) {
       history.push('/');
     }
-  }, [isLoggedIn, history]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history]);
 
   const [form, setForm] = useState({
     verifyCode: '',
