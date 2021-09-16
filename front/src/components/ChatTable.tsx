@@ -5,7 +5,7 @@ import { Drawer } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChatRoomList from './ChatRoomList';
 import ChatPublicModal from './ChatPublicModal';
-import ChatPrivateModal from './ChatPrivateModal';
+import ChatProtectedModal from './ChatProtectedModal';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -76,13 +76,11 @@ function ChatTable() {
       >
         <List>
           {userdata.map((roomdata) => (
-            <ChatRoomList key={roomdata.index} roomdata={roomdata} />
+            <ChatRoomList key={roomdata.index} roomdata={roomdata} setModal={setModal} />
           ))}
         </List>
       </Drawer>
-      { modal.open && (
-        modal.type === 'public' ? <ChatPublicModal open={modal.open} setModal={setModal} /> : <ChatPrivateModal open={modal.open} setModal={setModal} />
-      )}
+      { modal.type === 'public' ? <ChatPublicModal open={modal.open} setModal={setModal} /> : <ChatProtectedModal open={modal.open} setModal={setModal} /> }
     </>
   );
 }

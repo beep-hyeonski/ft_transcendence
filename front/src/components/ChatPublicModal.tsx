@@ -5,7 +5,6 @@ import {
   IconButton,
 } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
-import { red } from '@material-ui/core/colors';
 import ChatJoinedUser from './ChatJoinedUser';
 
 const useStyles = makeStyles(() => createStyles({
@@ -104,13 +103,23 @@ function ChatPublicModal({ open, setModal } : ModalProps) {
   const users = [user1, user2, user3, user1, user2, user3, user1, user2, user3,
     user1, user2, user3, user1, user2, user3, user1, user2, user3];
 
+  const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setModal({ open: false, type: '' });
+  };
+
+  const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setModal({ open: false, type: '' });
+  };
+
   return (
     <div>
       <Modal
         open={open}
       >
         <div className={classes.root}>
-          <IconButton className={classes.closeButtonLocation}>
+          <IconButton className={classes.closeButtonLocation} onClick={onClickCloseButton}>
             <CancelIcon className={classes.closeButton} />
           </IconButton>
           <div className={classes.title}>
@@ -131,6 +140,7 @@ function ChatPublicModal({ open, setModal } : ModalProps) {
             variant="contained"
             size="large"
             className={classes.button}
+            onClick={onClickJoinButton}
           >
             Join this channel
           </Button>

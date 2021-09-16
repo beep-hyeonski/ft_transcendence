@@ -48,15 +48,21 @@ interface RoomdataProps {
 }
 
 interface Roomdata {
-  roomdata: RoomdataProps
+  roomdata: RoomdataProps;
+  setModal: React.Dispatch<React.SetStateAction<{
+    open: boolean;
+    type: string;
+  }>>;
 }
 
-function ChatRoomList({ roomdata } : Roomdata) {
+function ChatRoomList({ roomdata, setModal } : Roomdata) {
   const classes = useStyles();
 
-  const onClick = () => {
+  const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
     console.log('clicked');
     console.log(roomdata);
+    setModal({ open: true, type: roomdata.type });
   };
 
   return (

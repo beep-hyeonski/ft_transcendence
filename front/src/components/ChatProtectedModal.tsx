@@ -71,17 +71,26 @@ interface ModalProps {
   }>>;
 }
 
-function ChatPrivateModal({ open, setModal } : ModalProps) {
+function ChatProtectedModal({ open, setModal } : ModalProps) {
   const classes = useStyles();
 
-  const test = true;
+  const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setModal({ open: false, type: '' });
+  };
+
+  const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setModal({ open: false, type: '' });
+  };
+
   return (
     <form>
       <Modal
         open={open}
       >
         <div className={classes.root}>
-          <IconButton className={classes.closeButtonLocation}>
+          <IconButton className={classes.closeButtonLocation} onClick={onClickCloseButton}>
             <CancelIcon className={classes.closeButton} />
           </IconButton>
           <div className={classes.title}>
@@ -98,6 +107,7 @@ function ChatPrivateModal({ open, setModal } : ModalProps) {
             variant="contained"
             size="large"
             className={classes.button}
+            onClick={onClickJoinButton}
           >
             Join this channel
           </Button>
@@ -107,4 +117,4 @@ function ChatPrivateModal({ open, setModal } : ModalProps) {
   );
 }
 
-export default React.memo(ChatPrivateModal);
+export default React.memo(ChatProtectedModal);
