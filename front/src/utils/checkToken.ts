@@ -20,9 +20,11 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
     dispatch(updateUser(response.data));
 
     dispatch(loginCheck());
-  } catch (e) {
+  } catch (err) {
     dispatch(deleteUser());
-    localStorage.removeItem('p_auth');
+    if (err.response.status !== 403) {
+      localStorage.removeItem('p_auth');
+    }
 
     dispatch(loginCheck());
   }
