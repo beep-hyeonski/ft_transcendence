@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { create } from 'domain';
 import { JwtPayloadDto } from 'src/auth/dto/jwt-payload.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -56,14 +57,12 @@ export class ChatService {
       createChat[fieldName] = createChatDto[fieldName];
     }
 
-    createChat.adminUsers.push(user);
     createChat.ownerUser = user;
-    createChat.joinUsers.push(user);
+    createChat.adminUsers = [user];
+    createChat.joinUsers = [user];
 
-    await this.userRepository.save(user);
-    await this.chatRepository.save(createChat);
-
-    return createChat;
+    // await this.userRepository.save(user);
+    return await this.chatRepository.save(createChat);
   }
 
   async updateChat(
