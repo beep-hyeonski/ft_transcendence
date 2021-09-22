@@ -26,46 +26,50 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-const roomdata1 = {
-  index: 0,
-  type: 'private',
-  title: 'hello world',
-};
-
-const roomdata2 = {
-  index: 1,
-  type: 'public',
-  title: 'hello world',
-};
-
-const roomdata3 = {
-  index: 2,
-  type: 'private',
-  title: 'anjnjsjka',
-};
-
 async function getChats() {
   const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat`);
   return response.data;
 }
 
+// index: -1,
+// ownerUser: {
+//   avatar: '',
+//   defeat: -1,
+//   email: '',
+//   index: -1,
+//   nickname: '',
+//   score: -1,
+//   status: '',
+//   twoFAToken: null,
+//   useTwoFA: false,
+//   username: '',
+//   victory: -1,
+// },
+// password: '',
+// status: '',
+// title: '',
+
 function ChatTable() {
   const classes = useStyles();
   const [modal, setModal] = useState({
     open: false,
-    type: '',
+    status: '',
+    title: '',
+    joinUsers: [],
+    password: '',
+    // bannedUsers: [],
+    // mutedUsers: [],
   });
-
-  const userdata = [roomdata1, roomdata2, roomdata3, roomdata1, roomdata2, roomdata3,
-    roomdata1, roomdata2, roomdata3, roomdata1, roomdata2, roomdata3];
+  const [chats, setChats] = useState([]);
 
   useEffect(() => {
     getChats().then((res) => {
       console.log(res);
+      setChats(res);
     }).catch((err) => {
       console.log(err);
     });
-  });
+  }, []);
 
   return (
     <>
@@ -75,12 +79,16 @@ function ChatTable() {
         classes={{ paper: classes.drawerPaper }}
       >
         <List>
-          {userdata.map((roomdata) => (
-            <ChatRoomList key={roomdata.index} roomdata={roomdata} setModal={setModal} />
+          {chats.map((roomdata) => (
+            <ChatRoomList
+              key={roomdata}
+              roomdata={roomdata}
+              setModal={setModal}
+            />
           ))}
         </List>
       </Drawer>
-      { modal.type === 'public' ? <ChatPublicModal open={modal.open} setModal={setModal} /> : <ChatProtectedModal open={modal.open} setModal={setModal} /> }
+      { modal.status === 'public' ? <ChatPublicModal modal={modal} setModal={setModal} /> : <ChatProtectedModal modal={modal} setModal={setModal} /> }
     </>
   );
 }

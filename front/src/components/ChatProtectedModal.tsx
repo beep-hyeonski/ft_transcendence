@@ -64,37 +64,58 @@ const useStyles = makeStyles(() => createStyles({
 }));
 
 interface ModalProps {
-  open: boolean;
+  modal: {
+    open: boolean;
+    status: string;
+    title: string;
+    joinUsers: never[];
+    password: string;
+  }
   setModal: React.Dispatch<React.SetStateAction<{
     open: boolean;
-    type: string;
-  }>>;
+    status: string;
+    title: string;
+    joinUsers: never[];
+    password: string;
+  }>>
 }
 
-function ChatProtectedModal({ open, setModal } : ModalProps) {
+function ChatProtectedModal({ modal, setModal } : ModalProps) {
   const classes = useStyles();
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setModal({ open: false, type: '' });
+    setModal({
+      open: false,
+      status: '',
+      title: '',
+      joinUsers: [],
+      password: '',
+    });
   };
 
   const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setModal({ open: false, type: '' });
+    setModal({
+      open: false,
+      status: '',
+      title: '',
+      joinUsers: [],
+      password: '',
+    });
   };
 
   return (
     <form>
       <Modal
-        open={open}
+        open={modal.open}
       >
         <div className={classes.root}>
           <IconButton className={classes.closeButtonLocation} onClick={onClickCloseButton}>
             <CancelIcon className={classes.closeButton} />
           </IconButton>
           <div className={classes.title}>
-            title
+            {modal.title}
           </div>
           <InputBase
             className={classes.input}

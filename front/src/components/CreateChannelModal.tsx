@@ -175,7 +175,6 @@ function CreateChannelModal({ create, setCreate }: CreateProps) {
   const clickCreateButton = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     createChannel(form).then((res) => {
-      console.log(res);
       setCreate(false);
     }).catch((err) => {
       console.log(err.response);

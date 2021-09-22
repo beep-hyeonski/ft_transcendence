@@ -28,9 +28,10 @@ const useStyles = makeStyles(() => createStyles({
 }));
 
 interface UserdataProps {
-  index: number
-  nickname: string
-  avatar: string
+  avatar: string,
+  index: number,
+  nickname: string,
+  status: string,
 }
 
 interface UserData {

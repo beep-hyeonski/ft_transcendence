@@ -90,40 +90,58 @@ const user3 = {
 };
 
 interface ModalProps {
-  open: boolean;
+  modal: {
+    open: boolean;
+    status: string;
+    title: string;
+    joinUsers: never[];
+    password: string;
+  }
   setModal: React.Dispatch<React.SetStateAction<{
     open: boolean;
-    type: string;
-  }>>;
+    status: string;
+    title: string;
+    joinUsers: never[];
+    password: string;
+  }>>
 }
 
-function ChatPublicModal({ open, setModal } : ModalProps) {
+function ChatPublicModal({ modal, setModal } : ModalProps) {
   const classes = useStyles();
-
-  const users = [user1, user2, user3, user1, user2, user3, user1, user2, user3,
-    user1, user2, user3, user1, user2, user3, user1, user2, user3];
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setModal({ open: false, type: '' });
+    setModal({
+      open: false,
+      status: '',
+      title: '',
+      joinUsers: [],
+      password: '',
+    });
   };
 
   const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setModal({ open: false, type: '' });
+    setModal({
+      open: false,
+      status: '',
+      title: '',
+      joinUsers: [],
+      password: '',
+    });
   };
 
   return (
     <div>
       <Modal
-        open={open}
+        open={modal.open}
       >
         <div className={classes.root}>
           <IconButton className={classes.closeButtonLocation} onClick={onClickCloseButton}>
             <CancelIcon className={classes.closeButton} />
           </IconButton>
           <div className={classes.title}>
-            title
+            {modal.title}
           </div>
           <Drawer
             classes={{ paper: classes.drawerPaper }}
@@ -131,7 +149,7 @@ function ChatPublicModal({ open, setModal } : ModalProps) {
             variant="permanent"
           >
             <GridList>
-              {users.map((user) => (
+              {modal.joinUsers.map((user) => (
                 <ChatJoinedUser user={user} />
               ))}
             </GridList>

@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LockRounded, LockOpenRounded } from '@material-ui/icons';
 import { ListItem } from '@material-ui/core';
@@ -31,7 +32,7 @@ interface StatusIconProps {
 }
 
 function StatusIcon({ classname, status }: StatusIconProps): JSX.Element {
-  if (status === 'private') {
+  if (status === 'protected') {
     return (
       <LockRounded className={classname} />
     );
@@ -43,16 +44,24 @@ function StatusIcon({ classname, status }: StatusIconProps): JSX.Element {
 
 interface RoomdataProps {
   index: number
-  type: string
+  status: string
   title: string
 }
 
 interface Roomdata {
-  roomdata: RoomdataProps;
+  roomdata: any;
   setModal: React.Dispatch<React.SetStateAction<{
     open: boolean;
-    type: string;
-  }>>;
+    status: string;
+    title: string;
+    joinUsers: never[];
+    password: string;
+  }>>
+}
+
+async function getChatInfo(index : number) {
+  const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${index}`);
+  return response.data;
 }
 
 function ChatRoomList({ roomdata, setModal } : Roomdata) {
@@ -60,9 +69,17 @@ function ChatRoomList({ roomdata, setModal } : Roomdata) {
 
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
-    console.log('clicked');
-    console.log(roomdata);
-    setModal({ open: true, type: roomdata.type });
+    getChatInfo(roomdata.index).then((res) => {
+      setModal({
+        open: true,
+        status: roomdata.status,
+        title: res.title,
+        joinUsers: res.joinUsers,
+        password: res.password,
+      });
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
   return (
@@ -70,7 +87,7 @@ function ChatRoomList({ roomdata, setModal } : Roomdata) {
       <div className={classes.title}>
         {roomdata.title}
       </div>
-      <StatusIcon classname={classes.statusIcon} status={roomdata.type} />
+      <StatusIcon classname={classes.statusIcon} status={roomdata.status} />
     </ListItem>
   );
 }
