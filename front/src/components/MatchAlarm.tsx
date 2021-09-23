@@ -11,16 +11,20 @@ import { RootState } from '../modules';
 const useStyles = makeStyles({
   alram: {
     backgroundColor: 'white',
-    width: '15vw',
-    height: '10vh',
+    width: '300px',
+    height: '100px',
     position: 'absolute',
     left: '1%',
-    top: '89%',
-    alignContent: 'center',
+    top: '88%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
   },
   alarmText: {
     margin: '5px',
     fontSize: '15px',
+    flexBasis: '300px',
   },
   Button: {
     color: '#F4F3FF',
@@ -73,7 +77,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
         ballSpeed: data.matchData.ballSpeed,
       });
       setData({
-        status: 'WAITING',
+        status: 'WAIT',
         matchData: {
           status: '',
           gameName: '',
@@ -94,7 +98,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
         ballSpeed: data.matchData.ballSpeed,
       });
       setData({
-        status: 'WAITING',
+        status: 'WAIT',
         matchData: {
           status: '',
           gameName: '',
@@ -109,27 +113,31 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
   return (
     <>
       <Paper variant="outlined" className={classes.alram}>
-        <div className={classes.alarmText}>
-          대결 요청이 들어왔습니다.
-          <br />
-          수락하시겠습니까?
+        <div>
+          <div className={classes.alarmText}>
+            대결 요청이 들어왔습니다.
+            <br />
+            수락하시겠습니까?
+          </div>
         </div>
-        <Button
-          variant="contained"
-          size="large"
-          className={classes.Button}
-          onClick={onClickAccept}
-        >
-          수락
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          className={classes.Button}
-          onClick={onClickReject}
-        >
-          거절
-        </Button>
+        <div>
+          <Button
+            variant="contained"
+            size="large"
+            className={classes.Button}
+            onClick={onClickAccept}
+          >
+            수락
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            className={classes.Button}
+            onClick={onClickReject}
+          >
+            거절
+          </Button>
+        </div>
       </Paper>
     </>
   );

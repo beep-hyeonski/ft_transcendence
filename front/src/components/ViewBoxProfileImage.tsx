@@ -1,13 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
-import { Button } from '@material-ui/core';
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core';
 import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
+import { queueGame } from '../modules/gamestate';
 
 const useStyles = makeStyles(() => createStyles({
   profileImage: {
@@ -84,15 +93,63 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
+function SpeedDialog(props: any) {
+  const { onClose, open } = props;
+  const userdata = useSelector((state: RootState) => state.profileModule);
+  const socket = useSelector((state: RootState) => state.socketModule);
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  const handleListItemClick = (value : string) => {
+    console.log(value);
+    onClose(value);
+    socket?.socket?.emit('matchRequest', {
+      receiveUserIndex: userdata.index,
+      ballSpeed: value,
+    });
+    dispatch(queueGame());
+    // history.push('/game');
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle>SELECT GAME SPEED</DialogTitle>
+      <List>
+        <ListItem button onClick={() => handleListItemClick('NORMAL')}>
+          <ListItemText primary="NORMAL" />
+        </ListItem>
+        <ListItem button onClick={() => handleListItemClick('FAST')}>
+          <ListItemText primary="FAST" />
+        </ListItem>
+      </List>
+    </Dialog>
+  );
+}
+
 function ViewBoxProfileImage() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const mydata = useSelector((state: RootState) => state.userModule);
   const userdata = useSelector((state: RootState) => state.profileModule);
-  const socket = useSelector((state: RootState) => state.socketModule);
-  const history = useHistory();
-
   const [follow, setFollow] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
+
+  const handleClickOpen = () => {
+    if (gamestate !== 'WAIT') {
+      alert('이미 게임 중이거나 게임 큐 대기중입니다.');
+      return;
+    }
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     const isFollow = (mydata.followings
@@ -128,15 +185,6 @@ function ViewBoxProfileImage() {
     });
   }
 
-  function clickPVPButton() {
-    console.log('pvp button click');
-    socket?.socket?.emit('matchRequest', {
-      receiveUserIndex: userdata.index,
-      ballSpeed: 'NORMAL',
-    });
-    history.push('/game');
-  }
-
   return (
     <>
       <Avatar
@@ -154,10 +202,14 @@ function ViewBoxProfileImage() {
       </Button>
       )}
       {userdata.nickname !== mydata.nickname && (
-      <Button className={classes.pvpButton} variant="contained" onClick={clickPVPButton}>
+      <Button className={classes.pvpButton} variant="contained" onClick={handleClickOpen}>
         PVP 신청
       </Button>
       )}
+      <SpeedDialog
+        open={open}
+        onClose={handleClose}
+      />
     </>
   );
 }

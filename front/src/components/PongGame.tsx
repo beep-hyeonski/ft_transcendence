@@ -4,9 +4,10 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
+import { waitGame } from '../modules/gamestate';
 
 const useStyles = makeStyles(() => createStyles({
   canvas: {
@@ -22,21 +23,16 @@ const keyState = {
 };
 
 interface PongProps {
-  setMatch: React.Dispatch<
-  React.SetStateAction<{
-    status: string;
-    matchData: any;
-  }>
-  >;
   data: any;
 }
 
-function PongGame({ setMatch, data }: PongProps) {
+function PongGame({ data }: PongProps) {
   const classes = useStyles();
   const history = useHistory();
   const socket = useSelector((state: RootState) => state.socketModule);
   const [game, setGame] = useState(data);
   const mydata = useSelector((state: RootState) => state.userModule);
+  const dispatch = useDispatch();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // soohchoi find 5talja very very thanks
@@ -73,9 +69,11 @@ function PongGame({ setMatch, data }: PongProps) {
       throw new Error('PongGame: canvasRef is null');
     }
 
-    socket?.socket?.on('gameLoop', (gamedata) => {
+    const callback = (gamedata: any) => {
       setGame(gamedata);
-    });
+    };
+
+    socket?.socket?.on('gameLoop', callback);
 
     const canvas = canvasRef.current;
     canvas.width = game.frameInfo.frameWidth - 5;
@@ -252,9 +250,16 @@ function PongGame({ setMatch, data }: PongProps) {
           },
         });
       }
+      dispatch(waitGame());
+      // socket?.socket?.on('gameLoop', callback);
       history.push('/');
     }
-  }, [game, history, socket, mydata, currentGameName, currentGameInfo]);
+    return () => {
+      socket?.socket?.off('gameLoop', callback);
+      window.removeEventListener('keydown', getKeyDown);
+      window.removeEventListener('keyup', getKeyUp);
+    };
+  }, [game, history, socket, mydata, currentGameName, currentGameInfo, dispatch]);
 
   return <canvas ref={canvasRef} className={classes.canvas} />;
 }

@@ -22,6 +22,7 @@ import { RootState } from './modules';
 import checkToken from './utils/checkToken';
 import { initSocket } from './modules/socket';
 import GameQueuing from './components/GameQueuing';
+import GameManager from './components/GameManager';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
@@ -53,6 +54,7 @@ function App(): JSX.Element {
       <Route path="/">
         {authState.isLoggedIn ? (
           <>
+            <GameManager />
             <Route path="/" component={SideMenu} />
             <Route path="/" exact component={MainUI} />
             <Route path="/chat" exact component={ChatUI} />
@@ -61,7 +63,6 @@ function App(): JSX.Element {
             </Route>
             <Route path="/profile/:id" exact component={ProfileUI} />
             <Route path="/setting" exact component={Setting} />
-            <Route path="/game" exact component={GameQueuing} />
           </>
         ) : (
           <LoginPage />

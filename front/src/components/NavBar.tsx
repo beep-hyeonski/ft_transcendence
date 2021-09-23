@@ -39,50 +39,13 @@ const useStyles = makeStyles({
   paper: {
     backgroundColor: '#282E4E',
   },
-  alram: {
-    backgroundColor: 'white',
-    width: '15vw',
-    height: '10vh',
-    position: 'absolute',
-    left: '1%',
-    top: '89%',
-    alignContent: 'center',
-  },
-  alarmText: {
-    margin: '5px',
-    fontSize: '15px',
-  },
-  Button: {
-    color: '#F4F3FF',
-    fontSize: '12px',
-    width: '6vw',
-    height: '3.5vh',
-    margin: '5px',
-    backgroundColor: '#282E4E',
-    '&:hover': {
-      backgroundColor: '#1C244F',
-    },
-    '&:focus': {
-      backgroundColor: '#3F446E',
-    },
-  },
+
 });
 
 const NavBar = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const mydata = useSelector((state: RootState) => state.userModule);
-  const [data, setData] = useState({
-    status: 'WAITING',
-    matchData: {
-      status: '',
-      gameName: '',
-      sendUserIndex: -1,
-      ballSpeed: '',
-    },
-  });
-  const socket = useSelector((state: RootState) => state.socketModule);
-  const history = useHistory();
 
   const onClickMain = () => {
     dispatch(changeSideBar({ type: MAIN }));
@@ -111,29 +74,6 @@ const NavBar = () => {
       console.log(error.response);
     }
   };
-
-  // const onClickAccept = () => {
-  //   if (data.status === 'REQUEST_MATCH') {
-  //     console.log(data.matchData);
-  //     socket?.socket?.emit('matchResponse', {
-  //       status: 'ACCEPT',
-  //       gameName: data.matchData.gameName,
-  //       sendUserIndex: data.matchData.sendUserIndex,
-  //       ballSpeed: data.matchData.ballSpeed,
-  //     });
-  //     history.push('/game');
-  //   }
-  // };
-
-  useEffect(() => {
-    socket?.socket?.on('matchRequest', (gamedata) => {
-      setData({
-        status: gamedata.status,
-        matchData: gamedata,
-      });
-      console.log(gamedata);
-    });
-  }, [data, socket]);
 
   return (
     <>
@@ -200,30 +140,6 @@ const NavBar = () => {
           </Link>
         </List>
       </Drawer>
-      { data.status !== 'WAITING' && <MatchAlarm data={data} setData={setData} /> }
-      {/* <Paper variant="outlined" className={classes.alram}>
-        <div className={classes.alarmText}>
-          대결 요청이 들어왔습니다.
-          <br />
-          수락하시겠습니까?
-        </div>
-        <Button
-          variant="contained"
-          size="large"
-          className={classes.Button}
-          onClick={onClickAccept}
-        >
-          수락
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          className={classes.Button}
-          onClick={onClickAccept}
-        >
-          거절
-        </Button>
-      </Paper> */}
     </>
   );
 };

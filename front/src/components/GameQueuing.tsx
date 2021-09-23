@@ -1,37 +1,60 @@
 import React, { useEffect, useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { CircularProgress } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { deleteSideData } from '../modules/sidebar';
 import PongGame from './PongGame';
+import { ingGame } from '../modules/gamestate';
+
+const useStyles = makeStyles({
+  alram: {
+    backgroundColor: 'white',
+    width: '300px',
+    height: '100px',
+    position: 'absolute',
+    left: '1%',
+    top: '88%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  alramText: {
+    margin: '10px',
+  },
+});
 
 function GameQueuing(): JSX.Element {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const socket = useSelector((state: RootState) => state.socketModule);
-  const [match, setMatch] = useState({
-    status: 'QUEUING',
-    matchData: {},
-  });
+  const { gamestate } = useSelector(
+    (state: RootState) => state.gameStateMoudle,
+  );
+  const [match, setMatch] = useState({});
 
   useEffect(() => {
-    dispatch(deleteSideData());
+    const callback = (payload: any) => {
+      if (payload.status === 'GAME_START') {
+        setMatch(payload);
+        dispatch(ingGame());
+      }
+    };
 
-    if (match.status === 'QUEUING') {
-      socket?.socket?.on('matchComplete', (payload) => {
-        console.log(payload);
-        if (payload.status === 'GAME_START') {
-          setMatch({
-            status: 'GAME_START',
-            matchData: payload,
-          });
-        }
-      });
+    if (gamestate === 'QUEUE') {
+      socket?.socket?.on('matchComplete', callback);
     }
-  }, [dispatch, match, socket]);
+    return () => {
+      socket?.socket?.off('matchComplete', callback);
+    };
+  }, [socket, gamestate, dispatch]);
 
-  if (match.status === 'GAME_START') {
-    return <PongGame data={match.matchData} setMatch={setMatch} />;
+  if (gamestate === 'ING') {
+    console.log(match);
+    return <PongGame data={match} />;
   }
-  return <div> game matching</div>;
+  return <></>;
 }
 
 export default React.memo(GameQueuing);
