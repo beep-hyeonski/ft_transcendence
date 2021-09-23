@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {
   createStyles,
   makeStyles,
@@ -6,6 +7,7 @@ import {
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ChatJoinedList from './ChatJoinedList';
+import { RootState } from '../modules';
 
 const drawerWidth = 250;
 
@@ -46,30 +48,14 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-const data1 = {
-  index: 0,
-  type: 'private',
-  title: 'hello world',
-};
-
-const data2 = {
-  index: 1,
-  type: 'public',
-  title: 'hi world',
-};
-
-const data3 = {
-  index: 2,
-  type: 'private',
-  title: 'bye world',
-};
+interface ChannelProps {
+  index: number,
+  title: string,
+}
 
 function ChatSideBar() {
   const classes = useStyles();
-
-  const userdata = [data1, data2, data3, data3, data3, data3, data3,
-    data1, data2, data3, data3, data3, data3, data3, data3, data3, data3,
-    data3, data3, data3, data3, data3, data3, data3, data3, data3, data3];
+  const joinChannels = useSelector((state: RootState) => state.userModule.joinChannels);
 
   return (
     <Drawer
@@ -81,8 +67,8 @@ function ChatSideBar() {
       anchor="right"
     >
       <List>
-        {userdata.map((user) => (
-          <ChatJoinedList key={user.index} roomdata={user} />
+        {joinChannels.map((channel : ChannelProps) => (
+          <ChatJoinedList key={channel.index} title={channel.title} />
         ))}
       </List>
     </Drawer>

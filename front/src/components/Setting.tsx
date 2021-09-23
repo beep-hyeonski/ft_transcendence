@@ -8,6 +8,7 @@ import { RootState } from '../modules';
 import SettingInputs from './SettingInputs';
 import { updateUser } from '../modules/user';
 import { getUserme } from '../utils/Requests';
+import { changeSideBar, FOLLOW } from '../modules/sidebar';
 
 const useStyles = makeStyles(() => createStyles({
   title: {
@@ -66,6 +67,7 @@ function Setting() {
   const history = useHistory();
 
   useEffect(() => {
+    dispatch(changeSideBar({ type: FOLLOW }));
     getUserme().then((res) => {
       dispatch(updateUser(res.data));
     }).catch((err) => {

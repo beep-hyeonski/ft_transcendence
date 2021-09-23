@@ -33,14 +33,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function ChatBanner() {
-  const classes = useStyles();
-  const [create, setCreate] = useState(false);
+interface ChatBannerProps {
+  clickCreateChannelButton: () => void;
+  create: boolean;
+  setCreate: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-  const clickCreateButton = () => {
-    console.log('create');
-    setCreate(true);
-  };
+function ChatBanner({ clickCreateChannelButton, create, setCreate }: ChatBannerProps) {
+  const classes = useStyles();
 
   return (
     <div className={classes.root}>
@@ -52,7 +52,7 @@ function ChatBanner() {
         size="large"
         className={classes.createButton}
         startIcon={<ControlPointIcon style={{ fontSize: '40' }} />}
-        onClick={clickCreateButton}
+        onClick={clickCreateChannelButton}
       >
         CREATE CHANNEL
       </Button>

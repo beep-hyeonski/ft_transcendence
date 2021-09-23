@@ -19,6 +19,7 @@ interface DataProps {
   twoFAToken?: string,
   status?: string,
   created_at?: string,
+  joinChannels?: [],
 }
 
 export const updateUser = (data: DataProps) => ({
@@ -49,6 +50,7 @@ type UserState = {
   twoFAToken: string,
   status: string,
   created_at: string,
+  joinChannels: [],
 };
 
 const initialState: UserState = {
@@ -68,6 +70,7 @@ const initialState: UserState = {
   twoFAToken: '',
   status: '',
   created_at: '',
+  joinChannels: [],
 };
 
 export default function userModule(state: UserState = initialState, action: UserAction) {

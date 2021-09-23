@@ -15,10 +15,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { deleteUser } from '../modules/user';
-import {
-  changeSideBar, deleteSideData, CHAT, FOLLOW,
-  MAIN,
-} from '../modules/sidebar';
+import { deleteSideData } from '../modules/sidebar';
 import { logout } from '../modules/auth';
 
 const useStyles = makeStyles({
@@ -42,22 +39,6 @@ const NavBar = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const mydata = useSelector((state: RootState) => state.userModule);
-
-  const onClickMain = () => {
-    dispatch(changeSideBar({ type: MAIN }));
-  };
-
-  const onClickProfile = () => {
-    dispatch(changeSideBar({ type: FOLLOW }));
-  };
-
-  const onClickChat = () => {
-    dispatch(changeSideBar({ type: CHAT }));
-  };
-
-  const onClickSetting = () => {
-    dispatch(changeSideBar({ type: FOLLOW }));
-  };
 
   const onClickLogout = async () => {
     try {
@@ -87,7 +68,6 @@ const NavBar = () => {
           <ListItem
             button
             alignItems="center"
-            onClick={onClickMain}
           >
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
@@ -97,7 +77,7 @@ const NavBar = () => {
           </ListItem>
         </Link>
         <Link to={`/profile/${mydata.nickname}`}>
-          <ListItem button onClick={onClickProfile}>
+          <ListItem button>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >
@@ -106,7 +86,7 @@ const NavBar = () => {
           </ListItem>
         </Link>
         <Link to="/chat">
-          <ListItem button onClick={onClickChat}>
+          <ListItem button>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >
@@ -115,7 +95,7 @@ const NavBar = () => {
           </ListItem>
         </Link>
         <Link to="/setting">
-          <ListItem button onClick={onClickSetting}>
+          <ListItem button>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >

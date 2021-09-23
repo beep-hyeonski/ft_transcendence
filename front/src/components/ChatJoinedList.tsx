@@ -10,22 +10,21 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-interface ChatRoomProps{
-  type: string;
-  title: string;
-}
-
 interface SideBarProps {
-  roomdata: ChatRoomProps;
+  title: string,
 }
 
-function ChatJoinedList({ roomdata }: SideBarProps): JSX.Element {
+function ChatJoinedList({ title }: SideBarProps): JSX.Element {
   const classes = useStyles();
 
+  const clickTest = () => {
+    console.log('test');
+  };
+
   return (
-    <ListItem button key={roomdata.title}>
+    <ListItem button key={title} onClick={clickTest}>
       <ChatBubbleOutlineRounded style={{ fontSize: 40 }} />
-      <ListItemText primary={roomdata.title} className={classes.usernameMargin} />
+      <ListItemText primary={title} className={classes.usernameMargin} />
       {/* 나가기 버튼 */}
     </ListItem>
   );

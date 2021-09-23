@@ -122,6 +122,8 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
 
   const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    // 클릭 시 해당 채팅 채널로 이동
+    // 참여중인 채팅방일 경우 이동만. 아닐 경우 추가 후 이동
     setModal({
       open: false,
       status: '',

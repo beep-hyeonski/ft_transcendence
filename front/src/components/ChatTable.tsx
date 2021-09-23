@@ -49,7 +49,11 @@ async function getChats() {
 // status: '',
 // title: '',
 
-function ChatTable() {
+interface ChatTableProps {
+  create: boolean;
+}
+
+function ChatTable({ create } : ChatTableProps) {
   const classes = useStyles();
   const [modal, setModal] = useState({
     open: false,
@@ -64,12 +68,11 @@ function ChatTable() {
 
   useEffect(() => {
     getChats().then((res) => {
-      console.log(res);
       setChats(res);
     }).catch((err) => {
       console.log(err);
     });
-  }, []);
+  }, [create]);
 
   return (
     <>

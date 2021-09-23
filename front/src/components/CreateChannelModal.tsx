@@ -8,6 +8,10 @@ import { Box, IconButton, Modal } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUser } from '../modules/user';
+import { RootState } from '../modules';
+import { getUserme, getUsers } from '../utils/Requests';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -138,6 +142,8 @@ interface CreateProps {
 
 function CreateChannelModal({ create, setCreate }: CreateProps) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const mydata = useSelector((state: RootState) => state.userModule);
 
   const [form, setForm] = useState({
     title: '',
@@ -176,6 +182,12 @@ function CreateChannelModal({ create, setCreate }: CreateProps) {
     e.preventDefault();
     createChannel(form).then((res) => {
       setCreate(false);
+      getUserme().then((response) => {
+        dispatch(updateUser(response.data));
+      }).catch((err) => {
+        console.log('clickCreateButton');
+        console.log(err);
+      });
     }).catch((err) => {
       console.log(err.response);
     });
