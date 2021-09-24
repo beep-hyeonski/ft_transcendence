@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { CircularProgress } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
-import { deleteSideData } from '../modules/sidebar';
-import PongGame from './PongGame';
 import { ingGame } from '../modules/gamestate';
+import { setGameData } from '../modules/gamedata';
 
 const useStyles = makeStyles({
   alram: {
@@ -28,16 +27,16 @@ const useStyles = makeStyles({
 function GameQueuing(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
   const socket = useSelector((state: RootState) => state.socketModule);
   const { gamestate } = useSelector(
     (state: RootState) => state.gameStateMoudle,
   );
-  const [match, setMatch] = useState({});
 
   useEffect(() => {
     const callback = (payload: any) => {
       if (payload.status === 'GAME_START') {
-        setMatch(payload);
+        dispatch(setGameData(payload));
         dispatch(ingGame());
       }
     };
@@ -51,8 +50,7 @@ function GameQueuing(): JSX.Element {
   }, [socket, gamestate, dispatch]);
 
   if (gamestate === 'ING') {
-    console.log(match);
-    return <PongGame data={match} />;
+    history.push('/game');
   }
   return <></>;
 }

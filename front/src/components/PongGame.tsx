@@ -22,17 +22,17 @@ const keyState = {
   downKey: false,
 };
 
-interface PongProps {
-  data: any;
-}
-
-function PongGame({ data }: PongProps) {
+function PongGame() {
   const classes = useStyles();
   const history = useHistory();
   const socket = useSelector((state: RootState) => state.socketModule);
-  const [game, setGame] = useState(data);
   const mydata = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
+  const { gamedata } = useSelector(
+    (state: RootState) => state.gameDataMoudle,
+  );
+  const [game, setGame] = useState(gamedata);
+  const data = gamedata;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // soohchoi find 5talja very very thanks
@@ -69,12 +69,23 @@ function PongGame({ data }: PongProps) {
       throw new Error('PongGame: canvasRef is null');
     }
 
-    const callback = (gamedata: any) => {
-      setGame(gamedata);
+    const callback = (gameData: any) => {
+      setGame(gameData);
     };
 
     socket?.socket?.on('gameLoop', callback);
 
+    if (!game.frameInfo) {
+      // 게임 하다가 새로고침 눌렀을 때 처리
+      // 새로고침 누른 사람은 메인으로 나가지는데 상대방은 계속 게임 진행함
+      // 이때 남아있는 상대가 플레이어1이면 전적이 남는데 플레이어2라면 전적 안남음..
+      // 이긴 사람이 전적남기게 하도록 고쳐도 팅긴사람이 이겨버리면 ?
+      dispatch(waitGame());
+      history.push('/');
+      return () => {
+        socket?.socket?.off('gameLoop', callback);
+      };
+    }
     const canvas = canvasRef.current;
     canvas.width = game.frameInfo.frameWidth - 5;
     canvas.height = game.frameInfo.frameHeight - 5;

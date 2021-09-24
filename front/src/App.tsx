@@ -23,6 +23,7 @@ import checkToken from './utils/checkToken';
 import { initSocket } from './modules/socket';
 import GameQueuing from './components/GameQueuing';
 import GameManager from './components/GameManager';
+import PongGame from './components/PongGame';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
@@ -63,6 +64,7 @@ function App(): JSX.Element {
             </Route>
             <Route path="/profile/:id" exact component={ProfileUI} />
             <Route path="/setting" exact component={Setting} />
+            <Route path="/game" exact component={PongGame} />
           </>
         ) : (
           <LoginPage />
