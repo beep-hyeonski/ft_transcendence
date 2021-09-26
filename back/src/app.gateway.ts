@@ -120,6 +120,13 @@ export class AppGateway
   }
   @SubscribeMessage('matchQueue')
   async onMatchQueue(client: Socket) {
+    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
+      inQueueClient.id === client.id
+    ));
+    if (isExistsInQueue !== -1) {
+      this.gameQueue.splice(isExistsInQueue, 1);
+      this.logger.log('Duplicate Queue Request');
+    }
     this.gameQueue.push(client);
     if (this.gameQueue.length >= 2) {
       const gameName = String(`game_${v1()}`);
@@ -166,12 +173,13 @@ export class AppGateway
     client: Socket,
     payload: { gameName: string; createMatchDto: CreateMatchDto },
   ) {
+    this.gameService.closeGame(payload.gameName);
     this.matchService.createMatch(payload.createMatchDto);
-    this.server.socketsLeave(payload.gameName);
     this.logger.log('game End');
     this.server.to(payload.gameName).emit('endGame', {
       status: 'GAME_END',
     });
+    this.server.socketsLeave(payload.gameName);
   }
   @SubscribeMessage('matchRequest')
   async onMatchRequest(

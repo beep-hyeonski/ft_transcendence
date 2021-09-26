@@ -181,6 +181,11 @@ export class GameService {
         throw new WsException('Invalid Key Event');
     }
   }
+
+  closeGame(gameName: string) {
+    this.gameList.delete(gameName);
+  }
+
   @Interval('gameLoop', 20)
   gameLoop() {
     this.gameList.forEach((game, gameName) => {
