@@ -4,8 +4,10 @@ import {
   Button, Modal, Drawer, GridList,
   IconButton,
 } from '@material-ui/core';
+import { useDispatch } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
 import ChatJoinedUser from './ChatJoinedUser';
+import { joinChatRoom } from '../modules/chat';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -71,26 +73,9 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-const user1 = {
-  index: 0,
-  nickname: 'user1',
-  avatar: 'https://i.pinimg.com/originals/dd/f2/25/ddf225e9914406d5e72aaa241ca5123c.gif',
-};
-
-const user2 = {
-  index: 1,
-  nickname: 'user2',
-  avatar: 'https://thumbs.gfycat.com/MerryRichAuklet-max-1mb.gif',
-};
-
-const user3 = {
-  index: 2,
-  nickname: 'user3',
-  avatar: 'https://blog.kakaocdn.net/dn/zoXNw/btq1aQQGLZE/FO4BFoXgYhIR404hhzB8G0/img.gif',
-};
-
 interface ModalProps {
   modal: {
+    index: number;
     open: boolean;
     status: string;
     title: string;
@@ -98,6 +83,7 @@ interface ModalProps {
     password: string;
   }
   setModal: React.Dispatch<React.SetStateAction<{
+    index: number;
     open: boolean;
     status: string;
     title: string;
@@ -108,10 +94,12 @@ interface ModalProps {
 
 function ChatPublicModal({ modal, setModal } : ModalProps) {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setModal({
+      index: -1,
       open: false,
       status: '',
       title: '',
@@ -123,8 +111,14 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
   const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     // 클릭 시 해당 채팅 채널로 이동
+    dispatch(joinChatRoom({
+      roomTitle: modal.title,
+      roomIndex: modal.index,
+      roomUsers: modal.joinUsers,
+    }));
     // 참여중인 채팅방일 경우 이동만. 아닐 경우 추가 후 이동
     setModal({
+      index: -1,
       open: false,
       status: '',
       title: '',

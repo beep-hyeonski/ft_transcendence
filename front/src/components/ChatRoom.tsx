@@ -8,8 +8,12 @@ import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
+import { IconButton } from '@material-ui/core';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { useDispatch, useSelector } from 'react-redux';
 import ChattingList from './ChattingList';
-import SideMenu from './SideMenu';
+import { RootState } from '../modules';
+import { exitChatRoom } from '../modules/chat';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -19,9 +23,7 @@ const useStyles = makeStyles(() => ({
     height: '95vh',
     width: '100%',
     display: 'flex',
-    // alignItems: 'flex-end',
     flexDirection: 'column-reverse',
-    // alignContent: 'flex-end',
     overflowY: 'auto',
   },
   textArea: {
@@ -46,24 +48,37 @@ const useStyles = makeStyles(() => ({
     boxShadow: '1px 1px 1px gray',
   },
   title: {
-    flexGrow: 1,
-    width: '100%',
-    height: '5rem',
+    position: 'absolute',
+    fontSize: '50px',
+    transform: 'translateY(-50%)',
     color: '#F4F3FF',
-    alignItems: 'center',
-    display: 'flex',
-    marginLeft: '15px',
+    width: '1rem',
+    marginTop: '30px',
+    marginLeft: '4rem',
   },
   titlebar: {
+    width: '100%',
+    height: '4rem',
     backgroundColor: '#3f446e',
   },
   sendIcon: {
     marginLeft: '10px',
   },
+  backButtonLocation: {
+    marginTop: '18px',
+    marginLeft: '10px',
+    width: '10px',
+    height: '10px',
+  },
+  backButton: {
+    fontSize: '3.5rem',
+  },
 }));
 
 export default function ChatRoom() {
   const classes = useStyles();
+  const chatData = useSelector((state: RootState) => state.chatModule);
+  const dispatch = useDispatch();
 
   const [messagesExample, setMsg] = useState([
     {
@@ -122,11 +137,19 @@ export default function ChatRoom() {
     setInputs('');
   };
 
+  const onClickBackButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    dispatch(exitChatRoom());
+  };
+
   return (
     <>
       <AppBar position="fixed" className={classes.titlebar}>
-        <Typography variant="h4" className={classes.title}>
-          채팅방 이름을 여기에 입력해주세요
+        <IconButton className={classes.backButtonLocation} onClick={onClickBackButton}>
+          <ArrowBackIcon className={classes.backButton} />
+        </IconButton>
+        <Typography className={classes.title}>
+          {chatData.title}
         </Typography>
       </AppBar>
       <div className={classes.test}>

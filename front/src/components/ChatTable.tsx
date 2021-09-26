@@ -56,6 +56,7 @@ interface ChatTableProps {
 function ChatTable({ create } : ChatTableProps) {
   const classes = useStyles();
   const [modal, setModal] = useState({
+    index: -1,
     open: false,
     status: '',
     title: '',

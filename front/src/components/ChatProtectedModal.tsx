@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   Button, InputBase, Modal, IconButton,
 } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
+import { joinChatRoom } from '../modules/chat';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -65,6 +67,7 @@ const useStyles = makeStyles(() => createStyles({
 
 interface ModalProps {
   modal: {
+    index: number;
     open: boolean;
     status: string;
     title: string;
@@ -72,6 +75,7 @@ interface ModalProps {
     password: string;
   }
   setModal: React.Dispatch<React.SetStateAction<{
+    index: number;
     open: boolean;
     status: string;
     title: string;
@@ -82,10 +86,13 @@ interface ModalProps {
 
 function ChatProtectedModal({ modal, setModal } : ModalProps) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const [password, setPassword] = useState('');
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setModal({
+      index: -1,
       open: false,
       status: '',
       title: '',
@@ -96,13 +103,28 @@ function ChatProtectedModal({ modal, setModal } : ModalProps) {
 
   const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    if (modal.password === password) {
+      dispatch(joinChatRoom({
+        roomTitle: modal.title,
+        roomIndex: modal.index,
+        roomUsers: modal.joinUsers,
+      }));
+    } else {
+      alert('Wrong password');
+    }
     setModal({
+      index: -1,
       open: false,
       status: '',
       title: '',
       joinUsers: [],
       password: '',
     });
+  };
+
+  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setPassword(e.target.value);
   };
 
   return (
@@ -123,6 +145,7 @@ function ChatProtectedModal({ modal, setModal } : ModalProps) {
             inputProps={{ 'aria-label': 'search user' }}
             type="password"
             name="input"
+            onChange={onChangeInput}
           />
           <Button
             variant="contained"

@@ -11,7 +11,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../modules/user';
 import { RootState } from '../modules';
-import { getUserme, getUsers } from '../utils/Requests';
+import { getUserme } from '../utils/Requests';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -143,7 +143,6 @@ interface CreateProps {
 function CreateChannelModal({ create, setCreate }: CreateProps) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const mydata = useSelector((state: RootState) => state.userModule);
 
   const [form, setForm] = useState({
     title: '',
@@ -185,10 +184,11 @@ function CreateChannelModal({ create, setCreate }: CreateProps) {
       getUserme().then((response) => {
         dispatch(updateUser(response.data));
       }).catch((err) => {
-        console.log('clickCreateButton');
+        console.log('get user error');
         console.log(err);
       });
     }).catch((err) => {
+      console.log('create channel error');
       console.log(err.response);
     });
   };

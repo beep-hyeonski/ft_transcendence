@@ -51,6 +51,7 @@ interface RoomdataProps {
 interface Roomdata {
   roomdata: any;
   setModal: React.Dispatch<React.SetStateAction<{
+    index: number;
     open: boolean;
     status: string;
     title: string;
@@ -71,6 +72,7 @@ function ChatRoomList({ roomdata, setModal } : Roomdata) {
     event.preventDefault();
     getChatInfo(roomdata.index).then((res) => {
       setModal({
+        index: res.index,
         open: true,
         status: roomdata.status,
         title: res.title,

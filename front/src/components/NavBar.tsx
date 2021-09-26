@@ -17,6 +17,7 @@ import { RootState } from '../modules';
 import { deleteUser } from '../modules/user';
 import { deleteSideData } from '../modules/sidebar';
 import { logout } from '../modules/auth';
+import { exitChatRoom } from '../modules/chat';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -50,6 +51,10 @@ const NavBar = () => {
     } catch (error: any) {
       console.log(error.response);
     }
+  };
+
+  const onClickChat = (e: React.MouseEvent<HTMLDivElement>) => {
+    dispatch(exitChatRoom());
   };
 
   return (
@@ -86,7 +91,7 @@ const NavBar = () => {
           </ListItem>
         </Link>
         <Link to="/chat">
-          <ListItem button>
+          <ListItem button onClick={onClickChat}>
             <ListItemIcon
               className={classes.ListItemIconNoWidth}
             >

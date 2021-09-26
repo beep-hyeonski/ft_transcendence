@@ -4,12 +4,14 @@ import profileModule from './profile';
 import userModule from './user';
 import sidebarModule from './sidebar';
 import authModule from './auth';
+import chatModule from './chat';
 
 const rootReducer = combineReducers({
   profileModule,
   userModule,
   sidebarModule,
   authModule,
+  chatModule,
 });
 
 export default rootReducer;
