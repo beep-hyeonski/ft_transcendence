@@ -70,6 +70,7 @@ function PongGame() {
     }
 
     const callback = (gameData: any) => {
+      console.log(gameData);
       setGame(gameData);
     };
 
@@ -80,10 +81,11 @@ function PongGame() {
       // 새로고침 누른 사람은 메인으로 나가지는데 상대방은 계속 게임 진행함
       // 이때 남아있는 상대가 플레이어1이면 전적이 남는데 플레이어2라면 전적 안남음..
       // 이긴 사람이 전적남기게 하도록 고쳐도 팅긴사람이 이겨버리면 ?
+      console.log('no game no no no');
       dispatch(waitGame());
       history.push('/');
       return () => {
-        socket?.socket?.off('gameLoop', callback);
+        socket?.socket?.off('gameLoop');
       };
     }
     const canvas = canvasRef.current;
@@ -262,11 +264,10 @@ function PongGame() {
         });
       }
       dispatch(waitGame());
-      // socket?.socket?.on('gameLoop', callback);
       history.push('/');
     }
     return () => {
-      socket?.socket?.off('gameLoop', callback);
+      socket?.socket?.off('gameLoop');
       window.removeEventListener('keydown', getKeyDown);
       window.removeEventListener('keyup', getKeyUp);
     };

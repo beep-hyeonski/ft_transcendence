@@ -6,6 +6,8 @@ import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import GameQueuing from './GameQueuing';
 import MatchAlarm from './MatchAlarm';
+import { waitGame } from '../modules/gamestate';
+import RejectAlarm from './RejectAlarm';
 
 const useStyles = makeStyles({
   paper: {
@@ -59,6 +61,7 @@ function GameManager(): JSX.Element {
       ballSpeed: '',
     },
   });
+  const [answer, setAnswer] = useState('');
 
   useEffect(() => {
     socket?.socket?.on('matchRequest', (gamedata) => {
@@ -68,7 +71,27 @@ function GameManager(): JSX.Element {
       });
       console.log(gamedata);
     });
-  }, [data, socket]);
+    return () => {
+      socket?.socket?.off('matchRequest');
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socket.socket?.on('matchReject', (payload) => {
+      setAnswer(payload.status);
+    });
+    if (answer === 'MATCH_REJECT') {
+      setTimeout(() => {
+        dispatch(waitGame());
+        setAnswer('');
+      }, 2000);
+    }
+    return () => {
+      socket?.socket?.off('matchReject');
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answer]);
 
   useEffect(() => {
     console.log('state: ', gamestate);
@@ -77,7 +100,7 @@ function GameManager(): JSX.Element {
   return (
     <>
       {gamestate !== 'WAIT' && <GameQueuing />}
-      {gamestate === 'QUEUE' && (
+      {gamestate === 'QUEUE' && answer !== 'MATCH_REJECT' && (
         <>
           <div className={classes.alram}>
             <div className={classes.alramText}>
@@ -87,7 +110,10 @@ function GameManager(): JSX.Element {
           </div>
         </>
       )}
-      {data.status !== 'WAIT' && <MatchAlarm data={data} setData={setData} />}
+      {gamestate === 'QUEUE' && answer === 'MATCH_REJECT' && (
+        <RejectAlarm />
+      )}
+      {data.status === 'REQUEST_MATCH' && <MatchAlarm data={data} setData={setData} />}
     </>
   );
 }

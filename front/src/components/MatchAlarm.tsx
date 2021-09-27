@@ -1,12 +1,11 @@
-import React from 'react';
-import {
-  makeStyles,
-} from '@material-ui/core/styles';
+import React, { useCallback, useEffect, useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
+import { ingGame } from '../modules/gamestate';
+import { setGameData } from '../modules/gamedata';
 
 const useStyles = makeStyles({
   alram: {
@@ -51,45 +50,32 @@ interface MatchAlarmProps {
       sendUserIndex: number;
       ballSpeed: string;
     };
-  }
-  setData: React.Dispatch<React.SetStateAction<{
-    status: string;
-    matchData: {
+  };
+  setData: React.Dispatch<
+    React.SetStateAction<{
       status: string;
-      gameName: string;
-      sendUserIndex: number;
-      ballSpeed: string;
-    };
-  }>>
+      matchData: {
+        status: string;
+        gameName: string;
+        sendUserIndex: number;
+        ballSpeed: string;
+      };
+    }>
+  >;
 }
 
 const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
+  const [rejectCheck, setRejectCheck] = useState<NodeJS.Timeout>();
   const classes = useStyles();
-  const history = useHistory();
+  const dispatch = useDispatch();
   const socket = useSelector((state: RootState) => state.socketModule);
 
-  const onClickAccept = () => {
-    if (data.status === 'REQUEST_MATCH') {
-      socket?.socket?.emit('matchResponse', {
-        status: 'ACCEPT',
-        gameName: data.matchData.gameName,
-        sendUserIndex: data.matchData.sendUserIndex,
-        ballSpeed: data.matchData.ballSpeed,
-      });
-      setData({
-        status: 'WAIT',
-        matchData: {
-          status: '',
-          gameName: '',
-          sendUserIndex: -1,
-          ballSpeed: '',
-        },
-      });
-      history.push('/game');
-    }
-  };
+  // useEffect(() => {
+  //   console.log('Mount!!');
+  //   return () => console.log('Un Mount!!');
+  // }, []);
 
-  const onClickReject = () => {
+  const autoReject = useCallback(() => {
     if (data.status === 'REQUEST_MATCH') {
       socket?.socket?.emit('matchResponse', {
         status: 'REJECT',
@@ -106,8 +92,72 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
           ballSpeed: '',
         },
       });
-      history.push('/');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const rejectCheckTmp = setTimeout(() => {
+      autoReject();
+    }, 30000);
+    setRejectCheck(rejectCheckTmp);
+    return () => {
+      clearTimeout(rejectCheckTmp);
+    };
+  }, [autoReject]);
+
+  const onClickAccept = () => {
+    if (rejectCheck) {
+      clearTimeout(rejectCheck);
+    }
+    socket?.socket?.emit('matchResponse', {
+      status: 'ACCEPT',
+      gameName: data.matchData.gameName,
+      sendUserIndex: data.matchData.sendUserIndex,
+      ballSpeed: data.matchData.ballSpeed,
+    });
+    setData({
+      status: 'WAIT',
+      matchData: {
+        status: '',
+        gameName: '',
+        sendUserIndex: -1,
+        ballSpeed: '',
+      },
+    });
+
+    const callback = (payload: any) => {
+      if (payload.status === 'GAME_START') {
+        dispatch(setGameData(payload));
+        dispatch(ingGame());
+      }
+    };
+
+    socket?.socket?.on('matchComplete', callback);
+    return () => {
+      socket?.socket?.off('matchComplete');
+    };
+  };
+
+  const onClickReject = () => {
+    if (rejectCheck) {
+      clearTimeout(rejectCheck);
+    }
+    socket?.socket?.emit('matchResponse', {
+      status: 'REJECT',
+      gameName: data.matchData.gameName,
+      sendUserIndex: data.matchData.sendUserIndex,
+      ballSpeed: data.matchData.ballSpeed,
+    });
+    setData({
+      status: 'WAIT',
+      matchData: {
+        status: '',
+        gameName: '',
+        sendUserIndex: -1,
+        ballSpeed: '',
+      },
+    });
   };
 
   return (

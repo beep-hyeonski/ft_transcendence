@@ -21,7 +21,6 @@ import SideMenu from './components/SideMenu';
 import { RootState } from './modules';
 import checkToken from './utils/checkToken';
 import { initSocket } from './modules/socket';
-import GameQueuing from './components/GameQueuing';
 import GameManager from './components/GameManager';
 import PongGame from './components/PongGame';
 

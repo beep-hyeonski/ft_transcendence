@@ -16,7 +16,7 @@ import {
 } from '@material-ui/core';
 import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
-import { queueGame } from '../modules/gamestate';
+import { queueGame, ingGame } from '../modules/gamestate';
 
 const useStyles = makeStyles(() => createStyles({
   profileImage: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   followButton: {
     position: 'absolute',
-    top: '75%',
+    top: '70%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#3F446E',
@@ -61,7 +61,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   unfollowButton: {
     position: 'absolute',
-    top: '75%',
+    top: '70%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#CE6F84',
@@ -77,7 +77,23 @@ const useStyles = makeStyles(() => createStyles({
   },
   pvpButton: {
     position: 'absolute',
-    top: '85%',
+    top: '80%',
+    left: '18%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#3F446E',
+    color: '#F4F3FF',
+    width: 230,
+    height: 50,
+    textTransform: 'none',
+    textShadow: '1px 1px 0.5px gray',
+    boxShadow: '1px 1px 1px gray',
+    '&:hover': {
+      backgroundColor: '#1c244f',
+    },
+  },
+  obButton: {
+    position: 'absolute',
+    top: '90%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#3F446E',
@@ -138,6 +154,8 @@ function ViewBoxProfileImage() {
   const [follow, setFollow] = useState(false);
   const [open, setOpen] = useState(false);
   const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
+  const history = useHistory();
 
   const handleClickOpen = () => {
     if (gamestate !== 'WAIT') {
@@ -185,6 +203,16 @@ function ViewBoxProfileImage() {
     });
   }
 
+  function observeButton() {
+    console.log('obobobo');
+    console.log(userdata.index);
+    socket?.emit('observeMatch', {
+      matchInUserIndex: userdata.index,
+      // number
+    });
+    dispatch(ingGame());
+  }
+
   return (
     <>
       <Avatar
@@ -204,6 +232,11 @@ function ViewBoxProfileImage() {
       {userdata.nickname !== mydata.nickname && (
       <Button className={classes.pvpButton} variant="contained" onClick={handleClickOpen}>
         PVP 신청
+      </Button>
+      )}
+      {userdata.nickname !== mydata.nickname && (
+      <Button className={classes.obButton} variant="contained" onClick={observeButton}>
+        관전하기
       </Button>
       )}
       <SpeedDialog

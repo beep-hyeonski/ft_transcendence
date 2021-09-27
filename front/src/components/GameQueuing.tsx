@@ -45,7 +45,7 @@ function GameQueuing(): JSX.Element {
       socket?.socket?.on('matchComplete', callback);
     }
     return () => {
-      socket?.socket?.off('matchComplete', callback);
+      socket?.socket?.off('matchComplete');
     };
   }, [socket, gamestate, dispatch]);
 
