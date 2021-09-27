@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
   createStyles,
@@ -53,6 +53,7 @@ interface ChannelProps {
   title: string,
 }
 
+// TODO: 채팅 채널 입장 또는 퇴장 시 sidebar 업데이트 안되는 문제 잡기
 function ChatSideBar() {
   const classes = useStyles();
   const joinChannels = useSelector((state: RootState) => state.userModule.joinChannels);
@@ -68,7 +69,7 @@ function ChatSideBar() {
     >
       <List>
         {joinChannels.map((channel : ChannelProps) => (
-          <ChatJoinedList key={channel.index} title={channel.title} />
+          <ChatJoinedList key={channel.index} index={channel.index} title={channel.title} />
         ))}
       </List>
     </Drawer>

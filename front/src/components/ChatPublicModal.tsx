@@ -4,10 +4,12 @@ import {
   Button, Modal, Drawer, GridList,
   IconButton,
 } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
+import axios from 'axios';
 import ChatJoinedUser from './ChatJoinedUser';
 import { joinChatRoom } from '../modules/chat';
+import { RootState } from '../modules';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -111,6 +113,11 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
   const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     // 클릭 시 해당 채팅 채널로 이동
+    axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`).then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      console.log(err.response);
+    });
     dispatch(joinChatRoom({
       roomTitle: modal.title,
       roomIndex: modal.index,

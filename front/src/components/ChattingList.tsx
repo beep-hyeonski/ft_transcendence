@@ -19,14 +19,14 @@ function ChattingList({ data }: any): JSX.Element {
     <ListItem>
       <DrawAvatar
         type="sideBarImage"
-        username={data.sender}
-        src={data.src}
+        username={data.sendUser.nickname}
+        src={data.sendUser.avatar}
         status="online"
       />
       <ListItemText
         className={classes.root}
-        primary={data.sender}
-        secondary={data.message}
+        primary={data.sendUser.nickname}
+        secondary={data.messageContent}
       />
     </ListItem>
   );

@@ -15,15 +15,7 @@ const getChatInfo = async (index: number) => {
 function ChatUI(): JSX.Element {
   const [create, setCreate] = useState(false);
   const dispatch = useDispatch();
-  const chatData = useSelector((state: RootState) => state.chatModule);
-  const isRoom = useSelector((state: RootState) => state.chatModule.isRoom);
-
-  // getChatInfo(2).then((res) => {
-  //   console.log(res);
-  // }).catch((err) => {
-  //   console.log('chat error');
-  //   console.log(err.response);
-  // });
+  const chatIndex = useSelector((state: RootState) => state.chatModule.index);
 
   useEffect(() => {
     dispatch(changeSideBar({ type: CHAT }));
@@ -33,7 +25,7 @@ function ChatUI(): JSX.Element {
     setCreate(true);
   };
 
-  if (isRoom) {
+  if (chatIndex !== -1) {
     return (
       <ChatRoom />
     );

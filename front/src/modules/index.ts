@@ -4,6 +4,7 @@ import profileModule from './profile';
 import userModule from './user';
 import sidebarModule from './sidebar';
 import authModule from './auth';
+import socketModule from './socket';
 import chatModule from './chat';
 
 const rootReducer = combineReducers({
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   userModule,
   sidebarModule,
   authModule,
+  socketModule,
   chatModule,
 });
 

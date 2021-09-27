@@ -8,9 +8,8 @@ import { Box, IconButton, Modal } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { updateUser } from '../modules/user';
-import { RootState } from '../modules';
 import { getUserme } from '../utils/Requests';
 
 const useStyles = makeStyles(() => createStyles({

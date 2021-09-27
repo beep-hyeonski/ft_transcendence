@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import List from '@material-ui/core/List';
 import { Drawer } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
 import ChatRoomList from './ChatRoomList';
 import ChatPublicModal from './ChatPublicModal';
 import ChatProtectedModal from './ChatProtectedModal';
+import { RootState } from '../modules';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -27,33 +30,22 @@ const useStyles = makeStyles(() => createStyles({
 }));
 
 async function getChats() {
-  const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat`);
+  const response = await axios.get(
+    `${String(process.env.REACT_APP_API_URL)}/chat`,
+  );
   return response.data;
 }
-
-// index: -1,
-// ownerUser: {
-//   avatar: '',
-//   defeat: -1,
-//   email: '',
-//   index: -1,
-//   nickname: '',
-//   score: -1,
-//   status: '',
-//   twoFAToken: null,
-//   useTwoFA: false,
-//   username: '',
-//   victory: -1,
-// },
-// password: '',
-// status: '',
-// title: '',
 
 interface ChatTableProps {
   create: boolean;
 }
 
-function ChatTable({ create } : ChatTableProps) {
+interface ChatInfoProps {
+  index: number;
+  joinUsers: any[];
+}
+
+function ChatTable({ create }: ChatTableProps) {
   const classes = useStyles();
   const [modal, setModal] = useState({
     index: -1,
@@ -65,15 +57,23 @@ function ChatTable({ create } : ChatTableProps) {
     // bannedUsers: [],
     // mutedUsers: [],
   });
-  const [chats, setChats] = useState([]);
+  const [chats, setChats] = useState<ChatInfoProps[]>([]);
+  const mydata = useSelector((state: RootState) => state.userModule);
 
   useEffect(() => {
-    getChats().then((res) => {
-      setChats(res);
-    }).catch((err) => {
-      console.log(err);
-    });
-  }, [create]);
+    getChats()
+      .then((res) => {
+        console.log(res);
+        setChats(
+          res.filter((chat: ChatInfoProps) => !chat.joinUsers.find(
+            (user: any) => user.index === mydata.index,
+          )),
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [create, mydata.index]);
 
   return (
     <>
@@ -85,14 +85,18 @@ function ChatTable({ create } : ChatTableProps) {
         <List>
           {chats.map((roomdata) => (
             <ChatRoomList
-              key={roomdata}
+              key={roomdata.index}
               roomdata={roomdata}
               setModal={setModal}
             />
           ))}
         </List>
       </Drawer>
-      { modal.status === 'public' ? <ChatPublicModal modal={modal} setModal={setModal} /> : <ChatProtectedModal modal={modal} setModal={setModal} /> }
+      {modal.status === 'public' ? (
+        <ChatPublicModal modal={modal} setModal={setModal} />
+      ) : (
+        <ChatProtectedModal modal={modal} setModal={setModal} />
+      )}
     </>
   );
 }
