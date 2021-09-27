@@ -25,7 +25,7 @@ export class ChatService {
 
   async getChats() {
     return await this.chatRepository.find({
-      relations: ['ownerUser'],
+      relations: ['ownerUser', 'joinUsers'],
     });
   }
 
@@ -360,7 +360,11 @@ export class ChatService {
       where: { index: chatIndex },
     });
 
-    return chat.messages;
+    return await this.messageRepository.find({
+      where: { chat: chat },
+      relations: ['sendUser'],
+      order: { createdAt: 'ASC' },
+    });
   }
 
   existUserInChat(userIndex: number, chat: Chat): boolean {
