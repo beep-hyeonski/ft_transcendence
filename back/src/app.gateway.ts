@@ -64,6 +64,12 @@ export class AppGateway
     const jwtDecoded = this.jwtService.verify(
       client.handshake.headers.authorization,
     );
+    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
+      inQueueClient.id === client.id
+    ));
+    if (isExistsInQueue !== -1) {
+      this.gameQueue.splice(isExistsInQueue, 1);
+    }
     this.wsClients.delete(jwtDecoded.sub);
     this.logger.log(`Client ${jwtDecoded.username} Disconnected`);
   }
