@@ -261,6 +261,16 @@ export class AppGateway
     if (gameName === '') {
       throw new WsException('Not in Game');
     }
+    const game = this.gameService.getGame(gameName);
+    client.emit('matchComplete', {
+      status: 'GAME_START',
+      gameName: gameName,
+      frameInfo: game.frameInfo,
+      gameInfo: game.gameInfo,
+      player1Info: game.playerInfo[0],
+      player2Info: game.playerInfo[1],
+      ballInfo: game.ballInfo,
+    });
     client.join(gameName);
   }
   async getUserByJwt(jwtToken: string): Promise<User> {

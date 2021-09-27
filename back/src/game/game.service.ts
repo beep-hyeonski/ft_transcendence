@@ -182,6 +182,10 @@ export class GameService {
     }
   }
 
+  getGame(gameName: string) {
+    return this.gameList.get(gameName);
+  }
+
   closeGame(gameName: string) {
     this.gameList.delete(gameName);
   }
