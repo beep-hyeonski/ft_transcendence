@@ -10,6 +10,8 @@ import axios from 'axios';
 import ChatJoinedUser from './ChatJoinedUser';
 import { joinChatRoom } from '../modules/chat';
 import { RootState } from '../modules';
+import { getUserme } from '../utils/Requests';
+import { updateUser } from '../modules/user';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -110,19 +112,23 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
     });
   };
 
-  const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickJoinButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     // 클릭 시 해당 채팅 채널로 이동
-    axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`).then((res) => {
-      console.log(res);
-    }).catch((err) => {
-      console.log(err.response);
-    });
-    dispatch(joinChatRoom({
-      roomTitle: modal.title,
-      roomIndex: modal.index,
-      roomUsers: modal.joinUsers,
-    }));
+    try {
+      await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`);
+      dispatch(joinChatRoom({
+        roomTitle: modal.title,
+        roomIndex: modal.index,
+        roomUsers: modal.joinUsers,
+      }));
+
+      const { data } = await getUserme();
+      dispatch(updateUser(data));
+    } catch (error) {
+      console.log(error);
+    }
+
     // 참여중인 채팅방일 경우 이동만. 아닐 경우 추가 후 이동
     setModal({
       index: -1,

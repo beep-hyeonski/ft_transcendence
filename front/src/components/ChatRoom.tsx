@@ -17,6 +17,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import ChattingList from './ChattingList';
 import { RootState } from '../modules';
 import { exitChatRoom } from '../modules/chat';
+import { getUserme } from '../utils/Requests';
+import { updateUser } from '../modules/user';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -107,35 +109,38 @@ export default function ChatRoom() {
   const [menu, setMenu] = useState(false);
 
   useEffect(() => {
-    axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/messages`).then((res) => {
-      const msgs = res.data.map((message: any) => ({
-        timestamp: message.createdAt,
-        sendUser: {
-          nickname: message.sendUser.nickname,
-          avatar: message.sendUser.avatar,
-        },
-        messageContent: message.messageContent,
-      }));
-      setMsg(() => msgs);
-    }).catch((err) => {
-      console.log(err);
-    });
+    try {
+      (async () => {
+        const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/messages`);
+        const msgs = data.map((message: any) => ({
+          timestamp: message.createdAt,
+          sendUser: {
+            nickname: message.sendUser.nickname,
+            avatar: message.sendUser.avatar,
+          },
+          messageContent: message.messageContent,
+        }));
+        setMsg(() => msgs);
 
-    socket?.emit('join', {
-      chatIndex: chatData.index,
-    });
+        socket?.emit('join', {
+          chatIndex: chatData.index,
+        });
 
-    socket?.on('onMessage', ({ sendUser, message }) => {
-      const data = {
-        timestamp: new Date().toUTCString(),
-        sendUser: {
-          nickname: sendUser.nickname,
-          avatar: sendUser.avatar,
-        },
-        messageContent: message,
-      };
-      setMsg((prev) => prev.concat(data));
-    });
+        socket?.on('onMessage', ({ sendUser, message }) => {
+          const msg = {
+            timestamp: new Date().toUTCString(),
+            sendUser: {
+              nickname: sendUser.nickname,
+              avatar: sendUser.avatar,
+            },
+            messageContent: message,
+          };
+          setMsg((prev) => prev.concat(msg));
+        });
+      })();
+    } catch (error) {
+      console.log(error);
+    }
 
     return () => {
       socket?.off('onMessage');
@@ -185,18 +190,18 @@ export default function ChatRoom() {
     setMenu(true);
   };
 
-  const onClickMenuExit = (e: React.MouseEvent<HTMLLIElement>) => {
+  const onClickMenuExit = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
-    // chat leave해줄 부분
-    axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`).then((res) => {
-      console.log(res.data);
-    }).catch((err) => {
-      console.log(err.response);
-    });
-    dispatch(exitChatRoom());
-    // TODO: 나간 후에 ChatTable 업데이트 안되는 문제
-
-    setMenu(false);
+    try {
+      // chat leave해줄 부분
+      await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`);
+      dispatch(exitChatRoom());
+      const { data } = await getUserme();
+      dispatch(updateUser(data));
+      setMenu(false);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (

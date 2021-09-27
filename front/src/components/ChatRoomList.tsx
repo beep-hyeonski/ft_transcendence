@@ -68,9 +68,10 @@ async function getChatInfo(index : number) {
 function ChatRoomList({ roomdata, setModal } : Roomdata) {
   const classes = useStyles();
 
-  const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
-    getChatInfo(roomdata.index).then((res) => {
+    try {
+      const res = await getChatInfo(roomdata.index);
       setModal({
         index: res.index,
         open: true,
@@ -79,9 +80,9 @@ function ChatRoomList({ roomdata, setModal } : Roomdata) {
         joinUsers: res.joinUsers,
         password: res.password,
       });
-    }).catch((err) => {
-      console.log(err);
-    });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

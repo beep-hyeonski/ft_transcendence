@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   createStyles,
   makeStyles,
@@ -8,6 +8,8 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ChatJoinedList from './ChatJoinedList';
 import { RootState } from '../modules';
+import { getUserme } from '../utils/Requests';
+import { updateUser } from '../modules/user';
 
 const drawerWidth = 250;
 
@@ -56,7 +58,20 @@ interface ChannelProps {
 // TODO: 채팅 채널 입장 또는 퇴장 시 sidebar 업데이트 안되는 문제 잡기
 function ChatSideBar() {
   const classes = useStyles();
-  const joinChannels = useSelector((state: RootState) => state.userModule.joinChannels);
+  const { joinChannels } = useSelector((state: RootState) => state.userModule);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    getUserme().then((res) => {
+      dispatch(updateUser(res.data));
+    }).catch((err) => {
+      console.log(err);
+    });
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log(joinChannels);
+  }, [joinChannels]);
 
   return (
     <Drawer
@@ -76,4 +91,4 @@ function ChatSideBar() {
   );
 }
 
-export default React.memo(ChatSideBar);
+export default ChatSideBar;

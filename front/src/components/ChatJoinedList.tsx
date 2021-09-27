@@ -22,18 +22,19 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const clickTest = (e: React.MouseEvent<HTMLDivElement>) => {
+  const clickTest = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
-    axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${index}`).then((res) => {
-      console.log(res.data);
+    try {
+      const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${index}`);
+      console.log(data);
       dispatch(joinChatRoom({
-        roomTitle: res.data.title,
-        roomIndex: res.data.index,
-        roomUsers: res.data.joinUsers,
+        roomTitle: data.title,
+        roomIndex: data.index,
+        roomUsers: data.joinUsers,
       }));
-    }).catch((err) => {
-      console.log(err.response);
-    });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

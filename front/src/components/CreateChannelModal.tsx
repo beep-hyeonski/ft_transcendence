@@ -176,20 +176,16 @@ function CreateChannelModal({ create, setCreate }: CreateProps) {
     });
   };
 
-  const clickCreateButton = (e: React.FormEvent<HTMLFormElement>) => {
+  const clickCreateButton = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createChannel(form).then((res) => {
+    try {
+      await createChannel(form);
       setCreate(false);
-      getUserme().then((response) => {
-        dispatch(updateUser(response.data));
-      }).catch((err) => {
-        console.log('get user error');
-        console.log(err);
-      });
-    }).catch((err) => {
-      console.log('create channel error');
-      console.log(err.response);
-    });
+      const { data } = await getUserme();
+      dispatch(updateUser(data));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {

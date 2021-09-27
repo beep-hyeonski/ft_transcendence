@@ -73,7 +73,7 @@ function ChatTable({ create }: ChatTableProps) {
       .catch((err) => {
         console.log(err);
       });
-  }, [create, mydata.index]);
+  }, [create, mydata.index, mydata.joinChannels]);
 
   return (
     <>
