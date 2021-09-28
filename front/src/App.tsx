@@ -66,7 +66,7 @@ function App(): JSX.Element {
           <LoginPage />
         )}
       </Route>
-      {/* <Route component={NotFoundPage} /> */}
+      <Route component={NotFoundPage} />
     </Switch>
   );
 }

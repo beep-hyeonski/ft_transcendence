@@ -19,6 +19,8 @@ import { RootState } from '../modules';
 import { exitChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';
 import { updateUser } from '../modules/user';
+import ChatUserMenu from './ChatUserMenu';
+import ChatSettingMenu from './ChatSettingMenu';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -86,6 +88,9 @@ const useStyles = makeStyles(() => ({
     transform: 'translateY(-42%)',
     marginLeft: '2rem',
   },
+  userMenu: {
+    backgroundColor: 'green',
+  },
 }));
 
 interface MessageProps {
@@ -106,7 +111,10 @@ export default function ChatRoom() {
   // setMsg => chat/{index}/messages
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [inputs, setInputs] = useState('');
-  const [menu, setMenu] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const menu = Boolean(menuAnchor);
+  const [openJoinedMenu, setOpenJoinedMenu] = useState(false);
+  const [openSettingMenu, setOpenSettingMenu] = useState(false);
 
   useEffect(() => {
     try {
@@ -186,8 +194,8 @@ export default function ChatRoom() {
 
   const onClickSettingButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log('setting');
-    setMenu(true);
+    console.log(chatData);
+    setMenuAnchor(e.currentTarget);
   };
 
   const onClickMenuExit = async (e: React.MouseEvent<HTMLLIElement>) => {
@@ -198,10 +206,20 @@ export default function ChatRoom() {
       dispatch(exitChatRoom());
       const { data } = await getUserme();
       dispatch(updateUser(data));
-      setMenu(false);
+      setMenuAnchor(null);
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const onClickMenuUser = (e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault();
+    setOpenJoinedMenu(true);
+  };
+
+  const onClickMenuRoom = (e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault();
+    setOpenSettingMenu(true);
   };
 
   return (
@@ -219,10 +237,11 @@ export default function ChatRoom() {
         <Menu
           id="menu"
           open={menu}
-          className={classes.menu}
-          onClose={() => setMenu(false)}
+          anchorEl={menuAnchor}
+          onClose={() => setMenuAnchor(null)}
         >
-          <MenuItem>유저 정보</MenuItem>
+          <MenuItem onClick={onClickMenuRoom}>채팅방 관리</MenuItem>
+          <MenuItem onClick={onClickMenuUser}>유저 정보</MenuItem>
           <MenuItem onClick={onClickMenuExit}>나가기</MenuItem>
         </Menu>
         <Typography className={classes.title}>
@@ -253,6 +272,8 @@ export default function ChatRoom() {
       >
         Send
       </Button>
+      <ChatUserMenu open={openJoinedMenu} setOpen={setOpenJoinedMenu} />
+      <ChatSettingMenu open={openSettingMenu} setOpen={setOpenSettingMenu} />
     </>
   );
 }

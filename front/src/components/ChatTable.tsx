@@ -55,7 +55,9 @@ function ChatTable({ create }: ChatTableProps) {
     joinUsers: [],
     password: '',
     // bannedUsers: [],
-    // mutedUsers: [],
+    mutedUsers: [],
+    adminUsers: [],
+    ownerUser: '',
   });
   const [chats, setChats] = useState<ChatInfoProps[]>([]);
   const mydata = useSelector((state: RootState) => state.userModule);

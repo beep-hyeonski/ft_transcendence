@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -57,6 +58,9 @@ interface Roomdata {
     title: string;
     joinUsers: never[];
     password: string;
+    mutedUsers: never[];
+    adminUsers: never[];
+    ownerUser: string;
   }>>
 }
 
@@ -72,13 +76,17 @@ function ChatRoomList({ roomdata, setModal } : Roomdata) {
     event.preventDefault();
     try {
       const res = await getChatInfo(roomdata.index);
+      console.log(res);
       setModal({
         index: res.index,
         open: true,
         status: roomdata.status,
         title: res.title,
-        joinUsers: res.joinUsers,
         password: res.password,
+        joinUsers: res.joinUsers,
+        mutedUsers: res.mutedUsers,
+        adminUsers: res.adminUsers,
+        ownerUser: res.ownerUser.nickname,
       });
     } catch (error) {
       console.log(error);

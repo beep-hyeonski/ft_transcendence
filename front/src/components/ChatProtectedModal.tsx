@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import axios from 'axios';
 import {
   Button, InputBase, Modal, IconButton,
 } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { joinChatRoom } from '../modules/chat';
+import { getUserme } from '../utils/Requests';
+import { updateUser } from '../modules/user';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -73,6 +76,9 @@ interface ModalProps {
     title: string;
     joinUsers: never[];
     password: string;
+    mutedUsers: never[];
+    adminUsers: never[];
+    ownerUser: string;
   }
   setModal: React.Dispatch<React.SetStateAction<{
     index: number;
@@ -81,6 +87,9 @@ interface ModalProps {
     title: string;
     joinUsers: never[];
     password: string;
+    mutedUsers: never[];
+    adminUsers: never[];
+    ownerUser: string;
   }>>
 }
 
@@ -98,19 +107,37 @@ function ChatProtectedModal({ modal, setModal } : ModalProps) {
       title: '',
       joinUsers: [],
       password: '',
+      mutedUsers: [],
+      adminUsers: [],
+      ownerUser: '',
     });
   };
 
-  const onClickJoinButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickJoinButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     if (modal.password === password) {
-      dispatch(joinChatRoom({
-        roomTitle: modal.title,
-        roomIndex: modal.index,
-        roomUsers: modal.joinUsers,
-      }));
+      try {
+        await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`);
+        dispatch(joinChatRoom({
+          roomTitle: modal.title,
+          roomIndex: modal.index,
+          roomJoinedUsers: modal.joinUsers,
+          roomPassword: modal.password,
+          roomStatus: modal.status,
+          roomAdmins: modal.adminUsers,
+          roomOwner: modal.ownerUser,
+          roomMuted: modal.mutedUsers,
+        }));
+
+        const { data } = await getUserme();
+        dispatch(updateUser(data));
+      } catch (error) {
+        console.log(error);
+      }
     } else {
+      setPassword('');
       alert('Wrong password');
+      return;
     }
     setModal({
       index: -1,
@@ -119,6 +146,9 @@ function ChatProtectedModal({ modal, setModal } : ModalProps) {
       title: '',
       joinUsers: [],
       password: '',
+      mutedUsers: [],
+      adminUsers: [],
+      ownerUser: '',
     });
   };
 
@@ -131,6 +161,17 @@ function ChatProtectedModal({ modal, setModal } : ModalProps) {
     <form>
       <Modal
         open={modal.open}
+        onClose={() => setModal({
+          index: -1,
+          open: false,
+          status: '',
+          title: '',
+          joinUsers: [],
+          password: '',
+          mutedUsers: [],
+          adminUsers: [],
+          ownerUser: '',
+        })}
       >
         <div className={classes.root}>
           <IconButton className={classes.closeButtonLocation} onClick={onClickCloseButton}>
@@ -145,6 +186,7 @@ function ChatProtectedModal({ modal, setModal } : ModalProps) {
             inputProps={{ 'aria-label': 'search user' }}
             type="password"
             name="input"
+            value={password}
             onChange={onChangeInput}
           />
           <Button

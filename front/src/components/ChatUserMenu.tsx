@@ -4,13 +4,14 @@ import {
   Button, Modal, Drawer, GridList,
   IconButton,
 } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
 import axios from 'axios';
 import ChatJoinedUser from './ChatJoinedUser';
 import { joinChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';
 import { updateUser } from '../modules/user';
+import { RootState } from '../modules';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -19,7 +20,7 @@ const useStyles = makeStyles(() => createStyles({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '80rem',
-    height: '45rem',
+    height: '38rem',
     backgroundColor: '#282E4E',
     borderRadius: '5px',
     boxShadow: '0.5px 0.5px 2px white',
@@ -77,107 +78,32 @@ const useStyles = makeStyles(() => createStyles({
 }));
 
 interface ModalProps {
-  modal: {
-    index: number;
-    open: boolean;
-    status: string;
-    title: string;
-    joinUsers: never[];
-    password: string;
-    mutedUsers: never[];
-    adminUsers: never[];
-    ownerUser: string;
-  }
-  setModal: React.Dispatch<React.SetStateAction<{
-    index: number;
-    open: boolean;
-    status: string;
-    title: string;
-    joinUsers: never[];
-    password: string;
-    mutedUsers: never[];
-    adminUsers: never[];
-    ownerUser: string;
-  }>>
+  open : boolean;
+  setOpen : React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function ChatPublicModal({ modal, setModal } : ModalProps) {
+function ChatPublicModal({ open, setOpen }: ModalProps) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const chatData = useSelector((state: RootState) => state.chatModule);
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setModal({
-      index: -1,
-      open: false,
-      status: '',
-      title: '',
-      joinUsers: [],
-      password: '',
-      mutedUsers: [],
-      adminUsers: [],
-      ownerUser: '',
-    });
-  };
-
-  const onClickJoinButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    // 클릭 시 해당 채팅 채널로 이동
-    try {
-      await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`);
-      dispatch(joinChatRoom({
-        roomTitle: modal.title,
-        roomIndex: modal.index,
-        roomJoinedUsers: modal.joinUsers,
-        roomPassword: modal.password,
-        roomStatus: modal.status,
-        roomAdmins: modal.adminUsers,
-        roomOwner: modal.ownerUser,
-        roomMuted: modal.mutedUsers,
-      }));
-
-      const { data } = await getUserme();
-      dispatch(updateUser(data));
-    } catch (error) {
-      console.log(error);
-    }
-
-    // 참여중인 채팅방일 경우 이동만. 아닐 경우 추가 후 이동
-    setModal({
-      index: -1,
-      open: false,
-      status: '',
-      title: '',
-      joinUsers: [],
-      password: '',
-      mutedUsers: [],
-      adminUsers: [],
-      ownerUser: '',
-    });
+    setOpen(false);
   };
 
   return (
     <div>
       <Modal
-        open={modal.open}
-        onClose={() => setModal({
-          index: -1,
-          open: false,
-          status: '',
-          title: '',
-          joinUsers: [],
-          password: '',
-          mutedUsers: [],
-          adminUsers: [],
-          ownerUser: '',
-        })}
+        open={open}
+        onClose={() => setOpen(false)}
       >
         <div className={classes.root}>
           <IconButton className={classes.closeButtonLocation} onClick={onClickCloseButton}>
             <CancelIcon className={classes.closeButton} />
           </IconButton>
           <div className={classes.title}>
-            {modal.title}
+            Joined User
           </div>
           <Drawer
             classes={{ paper: classes.drawerPaper }}
@@ -185,19 +111,11 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
             variant="permanent"
           >
             <GridList>
-              {modal.joinUsers.map((user) => (
+              {chatData.joinUsers.map((user) => (
                 <ChatJoinedUser user={user} />
               ))}
             </GridList>
           </Drawer>
-          <Button
-            variant="contained"
-            size="large"
-            className={classes.button}
-            onClick={onClickJoinButton}
-          >
-            Join this channel
-          </Button>
         </div>
       </Modal>
     </div>
