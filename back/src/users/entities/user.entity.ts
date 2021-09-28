@@ -176,12 +176,12 @@ export class User extends BaseEntity {
   @ManyToMany(() => Chat, (mutedChannels) => mutedChannels.mutedUsers)
   mutedChannels: Chat[];
 
-  @ApiProperty({
-    example: '[1, 3]',
-    description: '현재 Ban 처리 된 채널 Index 리스트',
-  })
-  @ManyToMany(() => Chat, (bannedChannels) => bannedChannels.bannedUsers)
-  bannedChannels: Chat[];
+  // @ApiProperty({
+  //   example: '[1, 3]',
+  //   description: '현재 Ban 처리 된 채널 Index 리스트',
+  // })
+  // @ManyToMany(() => Chat, (bannedChannels) => bannedChannels.bannedUsers)
+  // bannedChannels: Chat[];
 
   @ApiProperty({
     example: '[1, 2, 3]',

@@ -100,23 +100,23 @@ export class Chat extends BaseEntity {
   })
   mutedUsers: User[];
 
-  @ApiProperty({
-    example: '[3, 4]',
-    description: '현재 채팅방에서 Ban 된 User Index List',
-  })
-  @ManyToMany(() => User, (users) => users.bannedChannels)
-  @JoinTable({
-    name: 'banned_users',
-    joinColumn: {
-      name: 'banned_users',
-      referencedColumnName: 'index',
-    },
-    inverseJoinColumn: {
-      name: 'banned_channels',
-      referencedColumnName: 'index',
-    },
-  })
-  bannedUsers: User[];
+  // @ApiProperty({
+  //   example: '[3, 4]',
+  //   description: '현재 채팅방에서 Ban 된 User Index List',
+  // })
+  // @ManyToMany(() => User, (users) => users.bannedChannels)
+  // @JoinTable({
+  //   name: 'banned_users',
+  //   joinColumn: {
+  //     name: 'banned_users',
+  //     referencedColumnName: 'index',
+  //   },
+  //   inverseJoinColumn: {
+  //     name: 'banned_channels',
+  //     referencedColumnName: 'index',
+  //   },
+  // })
+  // bannedUsers: User[];
 
   @ApiProperty()
   @OneToMany(() => Message, (message) => message.chat)

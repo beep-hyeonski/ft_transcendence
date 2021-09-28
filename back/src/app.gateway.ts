@@ -84,11 +84,11 @@ export class AppGateway
       payload.chatIndex,
     );
 
-    if (
-      user.bannedChannels &&
-      user.bannedChannels.find((chat) => chat.index === payload.chatIndex)
-    )
-      throw new WsException('User has been banned from the chat');
+    // if (
+    //   user.bannedChannels &&
+    //   user.bannedChannels.find((chat) => chat.index === payload.chatIndex)
+    // )
+    //   throw new WsException('User has been banned from the chat');
 
     client.join(String(payload.chatIndex));
     client.emit('joined', { status: 'SUCCESS' });
