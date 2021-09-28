@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { RootState } from '../modules';
-import { queueGame } from '../modules/gamestate';
+import { matchQueueGame } from '../modules/gamestate';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -37,7 +37,7 @@ function GameButton(): JSX.Element {
       // gamestate가 WAIT이 아니라는 것은 게임중이거나 게임 큐를 기다리고 있는 상태
       return;
     }
-    dispatch(queueGame());
+    dispatch(matchQueueGame());
     socket.socket.emit('matchQueue', () => {});
   };
 

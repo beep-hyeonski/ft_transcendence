@@ -41,7 +41,7 @@ function GameQueuing(): JSX.Element {
       }
     };
 
-    if (gamestate === 'QUEUE') {
+    if (gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') {
       socket?.socket?.on('matchComplete', callback);
     }
     return () => {

@@ -16,7 +16,8 @@ import {
 } from '@material-ui/core';
 import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
-import { queueGame, ingGame } from '../modules/gamestate';
+import { pvpQueueGame, ingGame } from '../modules/gamestate';
+import { setGameData } from '../modules/gamedata';
 
 const useStyles = makeStyles(() => createStyles({
   profileImage: {
@@ -127,7 +128,7 @@ function SpeedDialog(props: any) {
       receiveUserIndex: userdata.index,
       ballSpeed: value,
     });
-    dispatch(queueGame());
+    dispatch(pvpQueueGame());
     // history.push('/game');
   };
 
@@ -204,13 +205,23 @@ function ViewBoxProfileImage() {
   }
 
   function observeButton() {
+    const callback = (payload : any) => {
+      if (payload.status === 'GAME_START') {
+        dispatch(setGameData(payload));
+        dispatch(ingGame());
+      }
+      console.log('asdf');
+    };
     console.log('obobobo');
     console.log(userdata.index);
+    socket?.on('matchComplete', callback);
     socket?.emit('observeMatch', {
       matchInUserIndex: userdata.index,
       // number
     });
-    dispatch(ingGame());
+    return () => {
+      socket?.off('matchComplete');
+    }
   }
 
   return (

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import MatchHistoryList from './MatchHistoryList';
 import { RootState } from '../modules';
@@ -48,45 +49,27 @@ const useStyles = makeStyles(() => createStyles({
   },
   historyBoxTitle: {
     margin: '10px 10px 10px 10px',
-    fontSize: '45px',
+    fontSize: '35px',
     backgroundColor: 'inherit',
   },
 }));
-
-const data1 = {
-  index: 0,
-  score1: '3',
-  score2: '0',
-  winner: 'joockim',
-  loser: 'hyeonski',
-  timestamp: '21.08.27 05:23',
-};
-
-const data2 = {
-  index: 1,
-  score1: '1',
-  score2: '3',
-  winner: 'juyang',
-  loser: 'jayun',
-  timestamp: '21.08.27 06:11',
-};
-
-const data3 = {
-  index: 2,
-  score1: '3',
-  score2: '2',
-  winner: 'joockim',
-  loser: 'hyeonski',
-  timestamp: '21.08.27 11:11',
-};
-
-const userHistory = [data1, data2, data3];
 
 function ViewBoxProfileInfo() {
   const classes = useStyles();
 
   const userdata = useSelector((state: RootState) => state.profileModule);
-  const userhistory = { userHistory };
+  const [recode, setRecode] = useState([]);
+  
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    axios.get(`${String(process.env.REACT_APP_API_URL)}/match/${userdata.username}`).then((res) => {
+      setRecode(res.data);
+      console.log(res.data);
+    }).catch((err) => {
+      console.log(err);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userdata.username]);
 
   return (
     <div className={classes.root}>
@@ -108,7 +91,7 @@ function ViewBoxProfileInfo() {
         <div className={classes.historyBoxTitle}>
           Match history
         </div>
-        {userhistory.userHistory.map((data) => (
+        {recode.slice(recode.length - 6, recode.length).map((data: any) => (
           <MatchHistoryList key={data.index} history={data} />
         ))}
       </div>

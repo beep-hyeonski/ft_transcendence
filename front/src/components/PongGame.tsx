@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 import { RootState } from '../modules';
 import { waitGame } from '../modules/gamestate';
 
@@ -70,7 +71,7 @@ function PongGame() {
     }
 
     const callback = (gameData: any) => {
-      console.log(gameData);
+      // console.log(gameData);
       setGame(gameData);
     };
 
@@ -88,6 +89,7 @@ function PongGame() {
         socket?.socket?.off('gameLoop');
       };
     }
+
     const canvas = canvasRef.current;
     canvas.width = game.frameInfo.frameWidth - 5;
     canvas.height = game.frameInfo.frameHeight - 5;
@@ -177,6 +179,13 @@ function PongGame() {
       context.fill();
 
       context.fillStyle = 'white';
+      context.textAlign = 'left';
+      context.font = '40px Skia';
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      context.fillText(`${gamedata.gameInfo.player1Nickname}`, 50, 50);
+      context.textAlign = 'right';
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      context.fillText(`${gamedata.gameInfo.player2Nickname}`, canvas.width - 50, 50);
       context.textAlign = 'center';
       context.font = '60px Skia';
       context.fillText(
@@ -253,24 +262,31 @@ function PongGame() {
     drawPong();
     if (player1.score >= 3 || player2.score >= 3) {
       if (currentGameInfo.player1 === mydata.username) {
-        socket?.socket?.emit('matchResult', {
-          gameName: currentGameName,
-          createMatchDto: {
-            player1Index: mydata.index,
-            player2Index: 2,
-            player1Score: player1.score,
-            player2Score: player2.score,
-          },
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${gamedata.gameInfo.player2Nickname}`).then((res) => {
+          socket?.socket?.emit('matchResult', {
+            gameName: currentGameName,
+            createMatchDto: {
+              player1Index: mydata.index,
+              player2Index: res.data.index,
+              player1Score: player1.score,
+              player2Score: player2.score,
+            },
+          });
+        }).catch((err) => {
+          console.log(err);
         });
       }
       dispatch(waitGame());
       history.push('/');
     }
     return () => {
+      dispatch(waitGame());
       socket?.socket?.off('gameLoop');
       window.removeEventListener('keydown', getKeyDown);
       window.removeEventListener('keyup', getKeyUp);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game, history, socket, mydata, currentGameName, currentGameInfo, dispatch]);
 
   return <canvas ref={canvasRef} className={classes.canvas} />;

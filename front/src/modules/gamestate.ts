@@ -1,14 +1,19 @@
 const GAMEWAIT = 'gamestate/WAIT' as const;
-const GAMEQUEUE = 'gamestate/QUEUE' as const;
+const MATCHGAMEQUEUE = 'gamestate/MATCHQUEUE' as const;
+const PVPGAMEQUEUE = 'gamestate/PVPQUEUE' as const;
 const GAMEING = 'gamestate/ING' as const;
 
 export const waitGame = () => ({
   type: GAMEWAIT,
 });
 
-export const queueGame = () => ({
-  type: GAMEQUEUE,
+export const matchQueueGame = () => ({
+  type: MATCHGAMEQUEUE,
 });
+
+export const pvpQueueGame = () => ({
+  type: PVPGAMEQUEUE,
+})
 
 export const ingGame = () => ({
   type: GAMEING,
@@ -20,7 +25,8 @@ type GameState = {
 
 type GameStateAction =
 | ReturnType<typeof waitGame>
-| ReturnType<typeof queueGame>
+| ReturnType<typeof matchQueueGame>
+| ReturnType<typeof pvpQueueGame>
 | ReturnType<typeof ingGame>;
 
 const initialState: GameState = {
@@ -34,8 +40,10 @@ export default function gameStateMoudle(
   switch (action.type) {
     case GAMEWAIT:
       return { ...state, gamestate: 'WAIT' };
-    case GAMEQUEUE:
-      return { ...state, gamestate: 'QUEUE' };
+    case MATCHGAMEQUEUE:
+      return { ...state, gamestate: 'MATCHQUEUE' };
+    case PVPGAMEQUEUE:
+      return { ...state, gamestate: 'PVPQUEUE' };
     case GAMEING:
       return { ...state, gamestate: 'ING' };
     default:

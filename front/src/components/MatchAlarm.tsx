@@ -47,6 +47,7 @@ interface MatchAlarmProps {
     matchData: {
       status: string;
       gameName: string;
+      sendUserNickname: string,
       sendUserIndex: number;
       ballSpeed: string;
     };
@@ -57,6 +58,7 @@ interface MatchAlarmProps {
       matchData: {
         status: string;
         gameName: string;
+        sendUserNickname: string,
         sendUserIndex: number;
         ballSpeed: string;
       };
@@ -88,6 +90,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
         matchData: {
           status: '',
           gameName: '',
+          sendUserNickname: '',
           sendUserIndex: -1,
           ballSpeed: '',
         },
@@ -121,6 +124,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
       matchData: {
         status: '',
         gameName: '',
+        sendUserNickname: '',
         sendUserIndex: -1,
         ballSpeed: '',
       },
@@ -154,6 +158,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
       matchData: {
         status: '',
         gameName: '',
+        sendUserNickname: '',
         sendUserIndex: -1,
         ballSpeed: '',
       },
@@ -165,9 +170,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
       <Paper variant="outlined" className={classes.alram}>
         <div>
           <div className={classes.alarmText}>
-            대결 요청이 들어왔습니다.
-            <br />
-            수락하시겠습니까?
+            {data.matchData.sendUserNickname} 으로부터 퐁게임 요청이 들어왔습니다. 수락하시겠습니까?
           </div>
         </div>
         <div>
