@@ -212,6 +212,7 @@ export class AppGateway
     this.wsClients.get(payload.receiveUserIndex).emit('matchRequest', {
       status: 'REQUEST_MATCH',
       sendUserIndex: sender.index,
+      sendUserNickname: sender.nickname,
       gameName: gameName,
       ballSpeed: payload.ballSpeed,
     });

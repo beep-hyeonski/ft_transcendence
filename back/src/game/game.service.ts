@@ -20,7 +20,9 @@ interface IGameInfo {
   ballSpeed: number;
   stickMoveSpeed: number;
   player1: string;
+  player1Nickname: string;
   player2: string;
+  player2Nickname: string;
 }
 interface IPlayerInfo {
   x: number;
@@ -49,7 +51,7 @@ export class Game {
   angle: number;
   direction: number;
   private gameService: GameService;
-  constructor(player1: string, player2: string, ballSpeed: BallSpeed) {
+  constructor(player1: string, player1Nickname: string, player2: string, player2Nickname: string, ballSpeed: BallSpeed) {
     this.gameService = new GameService();
     this.frameInfo = {
       frameWidth: 1400,
@@ -59,7 +61,9 @@ export class Game {
       ballSpeed: ballSpeed,
       stickMoveSpeed: 15,
       player1: player1,
+      player1Nickname: player1Nickname,
       player2: player2,
+      player2Nickname: player2Nickname,
     };
     this.playerInfo.push({
       x: 0,
@@ -117,7 +121,9 @@ export class GameService {
   ): Game {
     const newGame: Game = new Game(
       player1.username,
+      player1.nickname,
       player2.username,
+      player2.nickname,
       ballSpeed,
     );
     this.gameList.set(gameName, newGame);
