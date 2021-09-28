@@ -124,6 +124,18 @@ export class AppGateway
       throw new WsException('User has been muted from this chat');
     }
   }
+  @SubscribeMessage('cancelQueue')
+  async cancelQueue(client: Socket) {
+    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
+      inQueueClient.id === client.id
+    ));
+    if (isExistsInQueue !== -1) {
+      this.gameQueue.splice(isExistsInQueue, 1);
+    }
+    client.emit('cancelComplete', {
+      status: 'CANCELED',
+    });
+  }
   @SubscribeMessage('matchQueue')
   async onMatchQueue(client: Socket) {
     const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
