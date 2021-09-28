@@ -66,6 +66,49 @@ function PongGame() {
   };
 
   useEffect(() => {
+    function getKeyDown(evt: KeyboardEvent) {
+      switch (evt.code) {
+        case 'ArrowUp':
+          keyState.upKey = true;
+          break;
+        case 'ArrowDown':
+          keyState.downKey = true;
+          break;
+        default:
+          break;
+      }
+    }
+
+    function getKeyUp(evt: KeyboardEvent) {
+      switch (evt.code) {
+        case 'ArrowUp':
+          keyState.upKey = false;
+          break;
+        case 'ArrowDown':
+          keyState.downKey = false;
+          break;
+        default:
+          break;
+      }
+    }
+
+    window.addEventListener('keydown', getKeyDown);
+    window.addEventListener('keyup', getKeyUp);
+
+    return () => {
+      dispatch(waitGame())
+      socket?.socket?.emit('quitGame', {
+        ganeName: gamedata.gameName,
+      });
+      socket?.socket?.off('gameLoop');
+      window.removeEventListener('keydown', getKeyDown);
+      window.removeEventListener('keyup', getKeyUp);
+      console.log('game end');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (canvasRef.current == null) {
       throw new Error('PongGame: canvasRef is null');
     }
@@ -210,33 +253,33 @@ function PongGame() {
     //   drawPong();
     // }
 
-    function getKeyDown(evt: KeyboardEvent) {
-      switch (evt.code) {
-        case 'ArrowUp':
-          keyState.upKey = true;
-          break;
-        case 'ArrowDown':
-          keyState.downKey = true;
-          break;
-        default:
-          break;
-      }
-    }
+    // function getKeyDown(evt: KeyboardEvent) {
+    //   switch (evt.code) {
+    //     case 'ArrowUp':
+    //       keyState.upKey = true;
+    //       break;
+    //     case 'ArrowDown':
+    //       keyState.downKey = true;
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
 
-    function getKeyUp(evt: KeyboardEvent) {
-      switch (evt.code) {
-        case 'ArrowUp':
-          keyState.upKey = false;
-          break;
-        case 'ArrowDown':
-          keyState.downKey = false;
-          break;
-        default:
-          break;
-      }
-    }
-    window.addEventListener('keydown', getKeyDown);
-    window.addEventListener('keyup', getKeyUp);
+    // function getKeyUp(evt: KeyboardEvent) {
+    //   switch (evt.code) {
+    //     case 'ArrowUp':
+    //       keyState.upKey = false;
+    //       break;
+    //     case 'ArrowDown':
+    //       keyState.downKey = false;
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
+    // window.addEventListener('keydown', getKeyDown);
+    // window.addEventListener('keyup', getKeyUp);
     // window.addEventListener('resize', resizeCanvas);
 
     // const myVar = setInterval(drawPong, 300);
@@ -281,11 +324,15 @@ function PongGame() {
       history.push('/');
     }
     return () => {
-      dispatch(waitGame());
-      socket?.socket?.off('gameLoop');
-      window.removeEventListener('keydown', getKeyDown);
-      window.removeEventListener('keyup', getKeyUp);
-    };
+
+    }
+
+    // return () => {
+    //   dispatch(waitGame());
+    //   socket?.socket?.off('gameLoop');
+    //   window.removeEventListener('keydown', getKeyDown);
+    //   window.removeEventListener('keyup', getKeyUp);
+    // };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game, history, socket, mydata, currentGameName, currentGameInfo, dispatch]);
 
