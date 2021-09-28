@@ -136,6 +136,10 @@ export class AppGateway
       status: 'CANCELED',
     });
   }
+  @SubscribeMessage('quitGame')
+  async quitGame(client: Socket, payload: { gameName: string }) {
+    client.leave(payload.gameName);
+  }
   @SubscribeMessage('matchQueue')
   async onMatchQueue(client: Socket) {
     const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
