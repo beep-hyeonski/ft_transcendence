@@ -16,6 +16,8 @@ import { Match } from 'src/match/entities/match.entity';
 export enum UserStatus {
   ONLINE = 'online',
   OFFLINE = 'offline',
+  INQUEUE = 'inqueue',
+  INGAME = 'ingame',
 }
 
 @Entity()
