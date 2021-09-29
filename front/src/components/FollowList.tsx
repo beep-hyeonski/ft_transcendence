@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React from 'react';
+import React, { useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import axios from 'axios';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useHistory } from 'react-router-dom';
@@ -45,6 +46,10 @@ interface UserdataProps {
 function FollowList({ user }: UserdataProps): JSX.Element {
   const classes = useStyles();
   const history = useHistory();
+  const [status, setStatus] = useState('');
+  axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${user.nickname}`).then((res: any) => {
+    setStatus(res.data.status);
+  });
 
   const onClickFollowUser = () => {
     history.push(`/profile/${user.nickname}`);
@@ -59,7 +64,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
         status={user.status}
       />
       <ListItemText primary={user.nickname} className={classes.usernameMargin} />
-      <StatusIcon status={user.status} />
+      <StatusIcon status={status} />
     </ListItem>
   );
 }
