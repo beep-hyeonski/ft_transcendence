@@ -65,13 +65,9 @@ function ChatSideBar() {
     getUserme().then((res) => {
       dispatch(updateUser(res.data));
     }).catch((err) => {
-      console.log(err);
+      console.log(err.response);
     });
   }, [dispatch]);
-
-  useEffect(() => {
-    console.log(joinChannels);
-  }, [joinChannels]);
 
   return (
     <Drawer

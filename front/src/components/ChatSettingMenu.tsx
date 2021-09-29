@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import Radio from '@material-ui/core/Radio';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Box, IconButton, Modal } from '@material-ui/core';
@@ -10,6 +10,9 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import { RootState } from '../modules';
+import { joinChatRoom } from '../modules/chat';
+import { getUserme } from '../utils/Requests';
+import { updateUser } from '../modules/user';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -117,22 +120,6 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-interface CreateChannelProps {
-  title: string;
-  status: string;
-  password: string;
-}
-
-const createChannel = async (data : CreateChannelProps) => {
-  const form = {
-    title: data.title,
-    status: data.status,
-    password: data.password,
-  };
-  const res = await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat`, form);
-  return res.data;
-};
-
 interface CreateProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -141,6 +128,7 @@ interface CreateProps {
 function ChatSettingMenu({ open, setOpen }: CreateProps) {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
+  const dispatch = useDispatch();
 
   const [form, setForm] = useState({
     title: '',
@@ -175,19 +163,65 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
     });
   };
 
-  const clickChangeButton = (e: React.FormEvent<HTMLFormElement>) => {
+  const clickChangeButton = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(form);
+    const data = {
+      title: form.title,
+      status: form.status,
+      password: form.password,
+    };
+    if (form.title === '') {
+      data.title = chatData.title;
+    }
+    try {
+      const res = await axios.patch(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`, data);
+      console.log(res.data);
+      dispatch(joinChatRoom({
+        roomTitle: res.data.title,
+        roomIndex: res.data.index,
+        roomPassword: res.data.password,
+        roomStatus: res.data.status,
+        roomJoinedUsers: chatData.joinUsers,
+        roomAdmins: chatData.adminUsers,
+        roomMuted: chatData.mutedUsers,
+        roomOwner: chatData.ownerUser,
+      }));
+      const userdata = await getUserme();
+      dispatch(updateUser(userdata.data));
+      setOpen(false);
+      setForm({
+        title: '',
+        password: '',
+        status: chatData.status,
+      });
+    } catch (error) {
+      console.log(error.response);
+    }
   };
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setOpen(false);
+    setForm({
+      title: '',
+      password: '',
+      status: chatData.status,
+    });
   };
 
   return (
     <div>
-      <Modal open={open}>
+      <Modal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setForm({
+            title: '',
+            password: '',
+            status: chatData.status,
+          });
+        }}
+      >
         <div className={classes.root}>
           <IconButton className={classes.closeButtonLocation} onClick={onClickCloseButton}>
             <CancelIcon className={classes.closeButton} />
@@ -200,6 +234,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
               className={classes.channelName}
               name="title"
               placeholder={chatData.title}
+              value={form.title}
               onChange={onChange}
             />
             <RadioGroup className={classes.radioGroup} row name="status" value={form.status} onChange={clickRadio}>
@@ -229,6 +264,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
               className={classes.channelPassword}
               placeholder="Password"
               name="password"
+              value={form.password}
               onChange={onChange}
               disabled={form.status === 'public'}
             />

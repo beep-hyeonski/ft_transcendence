@@ -54,6 +54,7 @@ const useStyles = makeStyles(() => ({
     width: '1rem',
     marginTop: '30px',
     marginLeft: '7rem',
+    whiteSpace: 'nowrap',
   },
   titlebar: {
     width: '100%',
@@ -215,11 +216,13 @@ export default function ChatRoom() {
   const onClickMenuUser = (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     setOpenJoinedMenu(true);
+    setMenuAnchor(null);
   };
 
   const onClickMenuRoom = (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     setOpenSettingMenu(true);
+    setMenuAnchor(null);
   };
 
   return (

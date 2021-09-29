@@ -1,14 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   createStyles,
   makeStyles,
 } from '@material-ui/core/styles';
 import { List } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import { getUserme } from '../utils/Requests';
-import { updateUser } from '../modules/user';
+import { useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import FollowList from './FollowList';
 
@@ -53,8 +50,6 @@ const useStyles = makeStyles(() => createStyles({
 
 function ProfileSideBar() {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const history = useHistory();
 
   const mydata = useSelector((state: RootState) => state.userModule);
 

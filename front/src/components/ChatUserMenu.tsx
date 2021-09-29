@@ -1,16 +1,11 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
-  Button, Modal, Drawer, GridList,
-  IconButton,
+  Modal, Drawer, GridList, IconButton,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
-import axios from 'axios';
 import ChatJoinedUser from './ChatJoinedUser';
-import { joinChatRoom } from '../modules/chat';
-import { getUserme } from '../utils/Requests';
-import { updateUser } from '../modules/user';
 import { RootState } from '../modules';
 
 const useStyles = makeStyles(() => createStyles({
@@ -84,7 +79,6 @@ interface ModalProps {
 
 function ChatPublicModal({ open, setOpen }: ModalProps) {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const chatData = useSelector((state: RootState) => state.chatModule);
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
