@@ -202,7 +202,6 @@ export default function ChatRoom() {
   const onClickMenuExit = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      // chat leave해줄 부분
       await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`);
       dispatch(exitChatRoom());
       const { data } = await getUserme();

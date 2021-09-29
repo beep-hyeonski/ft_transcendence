@@ -71,6 +71,7 @@ export default function chatModule(
 ) {
   switch (action.type) {
     case JOIN_CHAT_ROOM:
+      console.log(action.joinUsers);
       return {
         ...state,
         title: action.title,
