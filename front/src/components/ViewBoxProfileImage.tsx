@@ -1,12 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
-import { Button } from '@material-ui/core';
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core';
 import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
+import { pvpQueueGame, ingGame } from '../modules/gamestate';
+import { setGameData } from '../modules/gamedata';
 
 const useStyles = makeStyles(() => createStyles({
   profileImage: {
@@ -35,7 +46,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   followButton: {
     position: 'absolute',
-    top: '75%',
+    top: '70%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#3F446E',
@@ -51,7 +62,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   unfollowButton: {
     position: 'absolute',
-    top: '75%',
+    top: '70%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#CE6F84',
@@ -65,15 +76,99 @@ const useStyles = makeStyles(() => createStyles({
       backgroundColor: '#cc6b80',
     },
   },
+  pvpButton: {
+    position: 'absolute',
+    top: '80%',
+    left: '18%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#3F446E',
+    color: '#F4F3FF',
+    width: 230,
+    height: 50,
+    textTransform: 'none',
+    textShadow: '1px 1px 0.5px gray',
+    boxShadow: '1px 1px 1px gray',
+    '&:hover': {
+      backgroundColor: '#1c244f',
+    },
+  },
+  obButton: {
+    position: 'absolute',
+    top: '90%',
+    left: '18%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#3F446E',
+    color: '#F4F3FF',
+    width: 230,
+    height: 50,
+    textTransform: 'none',
+    textShadow: '1px 1px 0.5px gray',
+    boxShadow: '1px 1px 1px gray',
+    '&:hover': {
+      backgroundColor: '#1c244f',
+    },
+  },
 }));
+
+function SpeedDialog(props: any) {
+  const { onClose, open } = props;
+  const userdata = useSelector((state: RootState) => state.profileModule);
+  const socket = useSelector((state: RootState) => state.socketModule);
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  const handleListItemClick = (value : string) => {
+    console.log(value);
+    onClose(value);
+    socket?.socket?.emit('matchRequest', {
+      receiveUserIndex: userdata.index,
+      ballSpeed: value,
+    });
+    dispatch(pvpQueueGame());
+    // history.push('/game');
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle>SELECT GAME SPEED</DialogTitle>
+      <List>
+        <ListItem button onClick={() => handleListItemClick('NORMAL')}>
+          <ListItemText primary="NORMAL" />
+        </ListItem>
+        <ListItem button onClick={() => handleListItemClick('FAST')}>
+          <ListItemText primary="FAST" />
+        </ListItem>
+      </List>
+    </Dialog>
+  );
+}
 
 function ViewBoxProfileImage() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const mydata = useSelector((state: RootState) => state.userModule);
   const userdata = useSelector((state: RootState) => state.profileModule);
-
   const [follow, setFollow] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
+  const history = useHistory();
+
+  const handleClickOpen = () => {
+    if (gamestate !== 'WAIT') {
+      alert('이미 게임 중이거나 게임 큐 대기중입니다.');
+      return;
+    }
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     const isFollow = (mydata.followings
@@ -109,6 +204,26 @@ function ViewBoxProfileImage() {
     });
   }
 
+  function observeButton() {
+    const callback = (payload : any) => {
+      if (payload.status === 'GAME_START') {
+        dispatch(setGameData(payload));
+        dispatch(ingGame());
+      }
+      console.log('asdf');
+    };
+    console.log('obobobo');
+    console.log(userdata.index);
+    socket?.on('matchComplete', callback);
+    socket?.emit('observeMatch', {
+      matchInUserIndex: userdata.index,
+      // number
+    });
+    return () => {
+      socket?.off('matchComplete');
+    }
+  }
+
   return (
     <>
       <Avatar
@@ -125,6 +240,20 @@ function ViewBoxProfileImage() {
         Follow
       </Button>
       )}
+      {userdata.nickname !== mydata.nickname && (
+      <Button className={classes.pvpButton} variant="contained" onClick={handleClickOpen}>
+        PVP 신청
+      </Button>
+      )}
+      {userdata.nickname !== mydata.nickname && (
+      <Button className={classes.obButton} variant="contained" onClick={observeButton}>
+        관전하기
+      </Button>
+      )}
+      <SpeedDialog
+        open={open}
+        onClose={handleClose}
+      />
     </>
   );
 }

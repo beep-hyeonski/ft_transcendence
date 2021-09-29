@@ -2,6 +2,10 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import GavelIcon from '@material-ui/icons/Gavel';
 import { makeStyles } from '@material-ui/core/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { RootState } from '../modules';
+import { matchQueueGame } from '../modules/gamestate';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -24,9 +28,17 @@ const useStyles = makeStyles((theme) => ({
 
 function GameButton(): JSX.Element {
   const classes = useStyles();
+  const socket = useSelector((state: RootState) => state.socketModule);
+  const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
+  const dispatch = useDispatch();
 
   const clickGamestartButton = () => {
-    console.log('click gamestart');
+    if (!socket || !socket.socket || gamestate !== 'WAIT') {
+      // gamestate가 WAIT이 아니라는 것은 게임중이거나 게임 큐를 기다리고 있는 상태
+      return;
+    }
+    dispatch(matchQueueGame());
+    socket.socket.emit('matchQueue', () => {});
   };
 
   return (
@@ -43,5 +55,19 @@ function GameButton(): JSX.Element {
     </div>
   );
 }
+
+/* <div>
+<Link to="/game">
+  <Button
+    variant="contained"
+    size="large"
+    className={classes.button}
+    startIcon={<GavelIcon style={{ fontSize: '40' }} />}
+    onClick={clickGamestartButton}
+  >
+    GAME START
+  </Button>
+</Link>
+</div> */
 
 export default React.memo(GameButton);

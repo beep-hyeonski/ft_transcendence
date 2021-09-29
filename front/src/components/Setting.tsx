@@ -99,7 +99,7 @@ function Setting() {
   };
 
   const clickSaveButton = async (form: { nickname: string; twofa: boolean }) => {
-    if (form.nickname !== '' && (form.nickname.length < 2 || form.nickname === 'me' || form.nickname.length >= 10)) {
+    if (form.nickname !== '' && (form.nickname.length < 2 || form.nickname === 'me' || form.nickname.length > 10)) {
       alert('닉네임은 2~10글자로 써야합니다.');
       return;
     }

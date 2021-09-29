@@ -23,7 +23,6 @@ import { MatchService } from './match/match.service';
 import { v1 } from 'uuid';
 import { GameService, BallSpeed, Game, KeyState } from './game/game.service';
 import { Interval } from '@nestjs/schedule';
-
 @UseFilters(WebsocketExceptionFilter)
 @WebSocketGateway(8001, { cors: true })
 export class AppGateway
@@ -37,26 +36,19 @@ export class AppGateway
     private gameService: GameService,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
   ) {}
-
   @WebSocketServer()
   server: Server;
-
   wsClients: Map<number, Socket> = new Map<number, Socket>();
-
   gameQueue: Array<Socket> = [];
-
   private logger: Logger = new Logger('AppGateway');
-
   afterInit() {
     this.gameService.attachServer(this.server);
     this.logger.log(`Socket Server Initialized`);
   }
-
   handleConnection(client: Socket) {
     const jwtDecoded = this.jwtService.verify(
       client.handshake.headers.authorization,
     );
-
     if (this.wsClients.has(jwtDecoded.sub)) {
       client.emit('exception', {
         status: 'error',
@@ -68,32 +60,33 @@ export class AppGateway
     this.wsClients.set(jwtDecoded.sub, client);
     this.logger.log(`Client ${jwtDecoded.username} Connected`);
   }
-
   handleDisconnect(client: Socket) {
     const jwtDecoded = this.jwtService.verify(
       client.handshake.headers.authorization,
     );
+    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
+      inQueueClient.id === client.id
+    ));
+    if (isExistsInQueue !== -1) {
+      this.gameQueue.splice(isExistsInQueue, 1);
+    }
     this.wsClients.delete(jwtDecoded.sub);
     this.logger.log(`Client ${jwtDecoded.username} Disconnected`);
   }
-
   @SubscribeMessage('join')
   async joinChat(client: Socket, payload: { chatIndex: number }) {
     const user = await this.validateChatUser(
       client.handshake.headers.authorization,
       payload.chatIndex,
     );
-
     if (user.bannedChannels.find((chat) => chat.index === payload.chatIndex))
       throw new WsException('User has been banned from the chat');
-
     client.join(String(payload.chatIndex));
     client.emit('joined', { status: 'SUCCESS' });
     this.logger.log(
       `Client ${user.username} joined to chat ${payload.chatIndex}`,
     );
   }
-
   @SubscribeMessage('leave')
   async leaveChat(client: Socket, payload: { chatIndex: number }) {
     const user = await this.validateChatUser(
@@ -104,7 +97,6 @@ export class AppGateway
     client.emit('left', { status: 'SUCCESS' });
     this.logger.log(`Client ${user.username} left chat ${payload.chatIndex}`);
   }
-
   @SubscribeMessage('onMessage')
   async onMessage(
     client: Socket,
@@ -115,18 +107,15 @@ export class AppGateway
       client.handshake.headers.authorization,
       payload.chatIndex,
     );
-
     const clients = this.server.sockets.adapter.rooms.get(roomName);
     if (!clients || !clients.has(client.id))
       throw new WsException('User Not Joined in the Chat Socket');
-
     if (!user.mutedChannels.find((chat) => chat.index !== payload.chatIndex)) {
       const message = new Message();
       message.chat = await this.chatService.getChat(payload.chatIndex);
       message.sendUser = user;
       message.messageContent = payload.message;
       this.messageRepository.save(message);
-
       client.to(roomName).emit('onMessage', {
         sender: user.username,
         message: payload.message,
@@ -135,31 +124,61 @@ export class AppGateway
       throw new WsException('User has been muted from this chat');
     }
   }
-
+  @SubscribeMessage('cancelQueue')
+  async cancelQueue(client: Socket) {
+    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
+      inQueueClient.id === client.id
+    ));
+    if (isExistsInQueue !== -1) {
+      this.gameQueue.splice(isExistsInQueue, 1);
+    }
+    client.emit('cancelComplete', {
+      status: 'CANCELED',
+    });
+    const user = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    this.usersService.statusChange(user.index, 'ONLINE');
+  }
+  @SubscribeMessage('quitGame')
+  async quitGame(client: Socket, payload: { gameName: string }) {
+    client.leave(payload.gameName);
+    const user = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    this.usersService.statusChange(user.index, 'ONLINE');
+  }
   @SubscribeMessage('matchQueue')
   async onMatchQueue(client: Socket) {
+    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
+      inQueueClient.id === client.id
+    ));
+    if (isExistsInQueue !== -1) {
+      this.gameQueue.splice(isExistsInQueue, 1);
+      this.logger.log('Duplicate Queue Request');
+    }
     this.gameQueue.push(client);
+    const requestUser = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    this.usersService.statusChange(requestUser.index, 'INQUEUE')
     if (this.gameQueue.length >= 2) {
       const gameName = String(`game_${v1()}`);
-
       const player1 = await this.getUserByJwt(
         this.gameQueue[0].handshake.headers.authorization,
       );
       const player2 = await this.getUserByJwt(
         this.gameQueue[1].handshake.headers.authorization,
       );
-
       this.gameQueue[0].join(gameName);
       this.gameQueue[1].join(gameName);
       this.gameQueue = this.gameQueue.slice(2);
-
       const game: Game = this.gameService.gameSet(
         gameName,
         player1,
         player2,
         BallSpeed.NORMAL,
       );
-
       this.server.to(gameName).emit('matchComplete', {
         status: 'GAME_START',
         gameName: gameName,
@@ -169,9 +188,11 @@ export class AppGateway
         player2Info: game.playerInfo[1],
         ballInfo: game.ballInfo,
       });
+      this.logger.log(gameName);
+      this.usersService.statusChange(player1.index, 'INGAME');
+      this.usersService.statusChange(player2.index, 'INGAME');
     }
   }
-
   @SubscribeMessage('sendKeyEvent')
   onKeyEvent(
     client: Socket,
@@ -183,20 +204,26 @@ export class AppGateway
       payload.keyState,
     );
   }
-
   @SubscribeMessage('matchResult')
   async matchResult(
     client: Socket,
     payload: { gameName: string; createMatchDto: CreateMatchDto },
   ) {
     this.matchService.createMatch(payload.createMatchDto);
-    this.server.socketsLeave(payload.gameName);
-
+    this.logger.log('game End');
     this.server.to(payload.gameName).emit('endGame', {
       status: 'GAME_END',
     });
+    this.server.in(payload.gameName).fetchSockets().then((sockets) => {
+      sockets.forEach((socket) => {
+        this.getUserByJwt(socket.handshake.headers.authorization).then((user) => {
+          this.usersService.statusChange(user.index, 'ONLINE');
+        });
+      })
+    });
+    this.gameService.closeGame(payload.gameName);
+    this.server.socketsLeave(payload.gameName);
   }
-
   @SubscribeMessage('matchRequest')
   async onMatchRequest(
     client: Socket,
@@ -205,18 +232,17 @@ export class AppGateway
     const sender = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-
     const gameName = String(`game_${v1()}`);
     client.join(gameName);
-
     this.wsClients.get(payload.receiveUserIndex).emit('matchRequest', {
       status: 'REQUEST_MATCH',
       sendUserIndex: sender.index,
+      sendUserNickname: sender.nickname,
       gameName: gameName,
       ballSpeed: payload.ballSpeed,
     });
+    this.usersService.statusChange(sender.index, 'INQUEUE');
   }
-
   @SubscribeMessage('matchResponse')
   async onMatchAccepted(
     client: Socket,
@@ -231,7 +257,6 @@ export class AppGateway
       case 'ACCEPT':
         const clients = this.server.sockets.adapter.rooms.has(payload.gameName);
         if (!clients) throw new WsException('Bad Request');
-
         const player1 = await this.getUserByJwt(
           this.wsClients.get(payload.sendUserIndex).handshake.headers
             .authorization,
@@ -240,14 +265,12 @@ export class AppGateway
           client.handshake.headers.authorization,
         );
         client.join(payload.gameName);
-
         const game: Game = this.gameService.gameSet(
           payload.gameName,
           player1,
           player2,
           BallSpeed.NORMAL,
         );
-
         this.server.to(payload.gameName).emit('matchComplete', {
           status: 'GAME_START',
           gameName: payload.gameName,
@@ -257,40 +280,60 @@ export class AppGateway
           player2Info: game.playerInfo[1],
           ballInfo: game.ballInfo,
         });
+        this.usersService.statusChange(player1.index, 'INGAME');
+        this.usersService.statusChange(player2.index, 'INGAME');
         break;
       case 'REJECT':
         this.server.socketsLeave(payload.gameName);
         this.wsClients.get(payload.sendUserIndex).emit('matchReject', {
           status: 'MATCH_REJECT',
         });
+        this.usersService.statusChange(payload.sendUserIndex, 'ONLINE');
         break;
       default:
+        this.server.in(payload.gameName).fetchSockets().then((sockets) => {
+          sockets.forEach((socket) => {
+            this.getUserByJwt(socket.handshake.headers.authorization).then((user) => {
+              this.usersService.statusChange(user.index, 'ONLINE');
+            });
+          })
+        });
         throw new WsException('Bad Request');
     }
   }
-
   @SubscribeMessage('observeMatch')
-  observeMatch(client: Socket, payload: { matchInUserIndex: number }) {
+  async observeMatch(client: Socket, payload: { matchInUserIndex: number }) {
     let gameName = '';
-
     this.wsClients.get(payload.matchInUserIndex).rooms.forEach((room) => {
       if (room.indexOf('game_') !== -1) gameName = room;
     });
     if (gameName === '') {
       throw new WsException('Not in Game');
     }
+    const game = this.gameService.getGame(gameName);
+    client.emit('matchComplete', {
+      status: 'GAME_START',
+      gameName: gameName,
+      frameInfo: game.frameInfo,
+      gameInfo: game.gameInfo,
+      player1Info: game.playerInfo[0],
+      player2Info: game.playerInfo[1],
+      ballInfo: game.ballInfo,
+    });
     client.join(gameName);
-  }
 
+    const user = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    await this.usersService.statusChange(user.index, 'INGAME');
+  }
   async getUserByJwt(jwtToken: string): Promise<User> {
     const jwtDecode = this.jwtService.verify(jwtToken);
     return await this.usersService.getUser(jwtDecode.username);
   }
-
   async validateChatUser(token: string, chatIndex: number): Promise<User> {
     let user: User;
     let chat: Chat;
-
     try {
       user = await this.getUserByJwt(token);
     } catch (e) {
@@ -298,7 +341,6 @@ export class AppGateway
         throw new WsException('User Not Found');
       else throw e;
     }
-
     try {
       chat = await this.chatService.getChat(chatIndex);
     } catch (e) {
@@ -306,10 +348,8 @@ export class AppGateway
         throw new WsException('Chat Not Found');
       else throw e;
     }
-
     if (!chat.joinUsers.find((joinUser) => joinUser.index === user.index))
       throw new WsException('User Not Joined in the Chat');
-
     return user;
   }
 }

@@ -67,7 +67,7 @@ function ChatTable() {
         </List>
       </Drawer>
       {/* <ChatPublicModal /> */}
-      <ChatPrivateModal />
+      {/* <ChatPrivateModal /> */}
     </>
   );
 }

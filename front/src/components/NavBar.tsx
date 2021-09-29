@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   makeStyles,
 } from '@material-ui/core/styles';
@@ -11,7 +11,9 @@ import {
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SettingsIcon from '@material-ui/icons/Settings';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { deleteUser } from '../modules/user';
@@ -20,6 +22,7 @@ import {
   MAIN,
 } from '../modules/sidebar';
 import { logout } from '../modules/auth';
+import MatchAlarm from './MatchAlarm';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -36,6 +39,7 @@ const useStyles = makeStyles({
   paper: {
     backgroundColor: '#282E4E',
   },
+
 });
 
 const NavBar = () => {
@@ -72,69 +76,71 @@ const NavBar = () => {
   };
 
   return (
-    <Drawer
-      variant="permanent"
-      anchor="right"
-      classes={{ paper: classes.paper }}
-    >
-      <List
-        component="nav"
-        disablePadding
-        aria-label="navigation bar"
-        className={classes.ListDownAlign}
+    <>
+      <Drawer
+        variant="permanent"
+        anchor="right"
+        classes={{ paper: classes.paper }}
       >
-        <Link to="/">
-          <ListItem
-            button
-            alignItems="center"
-            onClick={onClickMain}
-          >
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
+        <List
+          component="nav"
+          disablePadding
+          aria-label="navigation bar"
+          className={classes.ListDownAlign}
+        >
+          <Link to="/">
+            <ListItem
+              button
+              alignItems="center"
+              onClick={onClickMain}
             >
-              <SportsEsports className={classes.fontsizeManager} />
-            </ListItemIcon>
-          </ListItem>
-        </Link>
-        <Link to={`/profile/${mydata.nickname}`}>
-          <ListItem button onClick={onClickProfile}>
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
-            >
-              <Person className={classes.fontsizeManager} />
-            </ListItemIcon>
-          </ListItem>
-        </Link>
-        <Link to="/chat">
-          <ListItem button onClick={onClickChat}>
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
-            >
-              <Chat className={classes.fontsizeManager} />
-            </ListItemIcon>
-          </ListItem>
-        </Link>
-        <Link to="/setting">
-          <ListItem button onClick={onClickSetting}>
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
-            >
-              <SettingsIcon className={classes.fontsizeManager} />
-            </ListItemIcon>
-          </ListItem>
-        </Link>
-        <Link to="/">
-          <ListItem button>
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
-              onClick={onClickLogout}
-            >
-              <ExitToAppIcon className={classes.fontsizeManager} />
-            </ListItemIcon>
-          </ListItem>
-        </Link>
-      </List>
-    </Drawer>
+              <ListItemIcon
+                className={classes.ListItemIconNoWidth}
+              >
+                <SportsEsports className={classes.fontsizeManager} />
+              </ListItemIcon>
+            </ListItem>
+          </Link>
+          <Link to={`/profile/${mydata.nickname}`}>
+            <ListItem button onClick={onClickProfile}>
+              <ListItemIcon
+                className={classes.ListItemIconNoWidth}
+              >
+                <Person className={classes.fontsizeManager} />
+              </ListItemIcon>
+            </ListItem>
+          </Link>
+          <Link to="/chat">
+            <ListItem button onClick={onClickChat}>
+              <ListItemIcon
+                className={classes.ListItemIconNoWidth}
+              >
+                <Chat className={classes.fontsizeManager} />
+              </ListItemIcon>
+            </ListItem>
+          </Link>
+          <Link to="/setting">
+            <ListItem button onClick={onClickSetting}>
+              <ListItemIcon
+                className={classes.ListItemIconNoWidth}
+              >
+                <SettingsIcon className={classes.fontsizeManager} />
+              </ListItemIcon>
+            </ListItem>
+          </Link>
+          <Link to="/">
+            <ListItem button>
+              <ListItemIcon
+                className={classes.ListItemIconNoWidth}
+                onClick={onClickLogout}
+              >
+                <ExitToAppIcon className={classes.fontsizeManager} />
+              </ListItemIcon>
+            </ListItem>
+          </Link>
+        </List>
+      </Drawer>
+    </>
   );
 };
 

@@ -1,9 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { WsException } from '@nestjs/websockets';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserStatus } from 'src/users/entities/user.entity';
 import { Server } from 'socket.io';
-
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 interface IBallInfo {
   x: number;
   y: number;
@@ -13,19 +14,18 @@ interface IBallInfo {
   speed: number;
   color: string;
 }
-
 interface IFrameInfo {
   frameWidth: number;
   frameHeight: number;
 }
-
 interface IGameInfo {
   ballSpeed: number;
   stickMoveSpeed: number;
   player1: string;
+  player1Nickname: string;
   player2: string;
+  player2Nickname: string;
 }
-
 interface IPlayerInfo {
   x: number;
   y: number;
@@ -34,63 +34,55 @@ interface IPlayerInfo {
   score: number;
   color: string;
 }
-
 export enum BallSpeed {
   NORMAL = 5,
   HARD = 8,
 }
-
 export enum KeyState {
   upKey = 'upKey',
   downKey = 'downKey',
 }
-
 export class Game {
   frameInfo: IFrameInfo;
   gameInfo: IGameInfo;
-  playerInfo: IPlayerInfo[];
+  playerInfo: Array<IPlayerInfo> = [];
   // player1Info: IPlayerInfo;
   // player2Info: IPlayerInfo;
   ballInfo: IBallInfo;
-
   collidePoint: number;
   angle: number;
   direction: number;
-
   private gameService: GameService;
-
-  constructor(player1: string, player2: string, ballSpeed: BallSpeed) {
+  constructor(player1: string, player1Nickname: string, player2: string, player2Nickname: string, ballSpeed: BallSpeed) {
     this.gameService = new GameService();
-
     this.frameInfo = {
       frameWidth: 1400,
       frameHeight: 700,
     };
-
     this.gameInfo = {
       ballSpeed: ballSpeed,
       stickMoveSpeed: 15,
       player1: player1,
+      player1Nickname: player1Nickname,
       player2: player2,
+      player2Nickname: player2Nickname,
     };
-
-    this.playerInfo[0] = {
+    this.playerInfo.push({
       x: 0,
       y: this.frameInfo.frameHeight / 2 - 150,
       stickWidth: 30,
       stickHeight: this.frameInfo.frameHeight / 5,
       score: 0,
       color: 'blue',
-    };
-    this.playerInfo[1] = {
+    });
+    this.playerInfo.push({
       x: this.frameInfo.frameWidth - 30,
       y: this.frameInfo.frameHeight / 2 - 150,
       stickWidth: 30,
       stickHeight: this.frameInfo.frameHeight / 5,
       score: 0,
       color: 'red',
-    };
-
+    });
     this.ballInfo = {
       x: this.frameInfo.frameWidth / 2,
       y: this.frameInfo.frameHeight / 2,
@@ -100,7 +92,6 @@ export class Game {
       speed: ballSpeed,
       color: 'yellow',
     };
-
     this.collidePoint =
       this.ballInfo.y -
       (this.frameInfo.frameWidth / 2 + this.frameInfo.frameHeight / 2 / 2);
@@ -116,18 +107,14 @@ export class Game {
     this.ballInfo.velocityY = Math.sin(this.angle) * this.ballInfo.speed;
   }
 }
-
 @Injectable()
 export class GameService {
   constructor() {}
-
   gameList: Map<string, Game> = new Map<string, Game>();
   server: Server;
-
   attachServer(server: Server) {
     this.server = server;
   }
-
   gameSet(
     gameName: string,
     player1: User,
@@ -136,20 +123,20 @@ export class GameService {
   ): Game {
     const newGame: Game = new Game(
       player1.username,
+      player1.nickname,
       player2.username,
+      player2.nickname,
       ballSpeed,
     );
     this.gameList.set(gameName, newGame);
     return newGame;
   }
-
   collision(game: Game, playerNumber: 1 | 2): Boolean {
     const playerInfo: IPlayerInfo = game.playerInfo[playerNumber - 1];
     const playerTop = playerInfo.y;
     const playerBottom = playerInfo.y + playerInfo.stickHeight;
     const playerLeft = playerInfo.x;
     const playerRight = playerInfo.x + playerInfo.stickWidth;
-
     const ballInfo: IBallInfo = game.ballInfo;
     const ballTop = ballInfo.y - ballInfo.radius;
     const ballBottom = ballInfo.y + ballInfo.radius;
@@ -162,7 +149,6 @@ export class GameService {
       ballTop < playerBottom
     );
   }
-
   ballReset(game: Game) {
     game.ballInfo.x = game.frameInfo.frameWidth / 2;
     game.ballInfo.y = game.frameInfo.frameHeight / 2;
@@ -172,7 +158,6 @@ export class GameService {
       game.ballInfo.velocityY *= -1;
     }
   }
-
   applyEvent(gameName: string, sender: string, keyState: KeyState) {
     const game: Game = this.gameList.get(gameName);
     let playerNumber: number;
@@ -205,6 +190,14 @@ export class GameService {
     }
   }
 
+  getGame(gameName: string) {
+    return this.gameList.get(gameName);
+  }
+
+  closeGame(gameName: string) {
+    this.gameList.delete(gameName);
+  }
+
   @Interval('gameLoop', 20)
   gameLoop() {
     this.gameList.forEach((game, gameName) => {
@@ -212,7 +205,6 @@ export class GameService {
         game.ballInfo.x + game.ballInfo.radius < game.frameInfo.frameWidth / 2
           ? 1
           : 2;
-
       if (this.collision(game, playerNumber)) {
         let collidePoint: number =
           game.ballInfo.y -
@@ -231,27 +223,22 @@ export class GameService {
         game.ballInfo.velocityY = Math.sin(angle) * game.ballInfo.speed;
         // game.ballInfo.speed += 0.2;
       }
-
       if (
         game.ballInfo.y + game.ballInfo.radius >= game.frameInfo.frameHeight ||
         game.ballInfo.y - game.ballInfo.radius <= 0
       ) {
         game.ballInfo.velocityY *= -1;
       }
-
       if (game.ballInfo.x - game.ballInfo.radius < 0) {
         game.playerInfo[1].score += 1;
         this.ballReset(game);
       }
-
       if (game.ballInfo.x + game.ballInfo.radius > game.frameInfo.frameWidth) {
         game.playerInfo[0].score += 1;
         this.ballReset(game);
       }
-
       game.ballInfo.x += game.ballInfo.velocityX;
       game.ballInfo.y += game.ballInfo.velocityY;
-
       this.server.to(gameName).emit('gameLoop', {
         frameInfo: game.frameInfo,
         ballInfo: game.ballInfo,

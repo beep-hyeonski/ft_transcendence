@@ -88,7 +88,7 @@ function SignUpPage() {
       alert('인증 정보가 유효하지 않습니다.');
       return;
     }
-    if (form.nickname.length < 2 || form.nickname.length >= 10) {
+    if (form.nickname.length < 2 || form.nickname.length > 10) {
       alert('닉네임은 2~10글자로 써야합니다.');
       return;
     } if (form.nickname === 'me') {

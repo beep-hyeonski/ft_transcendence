@@ -69,6 +69,7 @@ export class MatchService {
 
     return await this.matchRepository.find({
       where: [{ winner: user.index }, { loser: user.index }],
+      relations: ['winner', 'loser'],
     });
   }
 }
