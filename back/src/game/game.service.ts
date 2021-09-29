@@ -109,8 +109,7 @@ export class Game {
 }
 @Injectable()
 export class GameService {
-  constructor(@InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+  constructor() {}
   gameList: Map<string, Game> = new Map<string, Game>();
   server: Server;
   attachServer(server: Server) {
@@ -197,30 +196,6 @@ export class GameService {
 
   closeGame(gameName: string) {
     this.gameList.delete(gameName);
-  }
-
-  async statusChange(index: number, status: string) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: index },
-    });
-
-    switch (status) {
-      case 'ONLINE':
-        user.status = UserStatus.ONLINE;
-        break;
-      case 'OFFLINE':
-        user.status = UserStatus.OFFLINE;
-        break;
-      case 'INQUEUE':
-        user.status = UserStatus.INQUEUE;
-        break;
-      case 'INGAME':
-        user.status = UserStatus.INGAME;
-        break;
-      default:
-        throw new WsException('Not Valid Status');
-    }
-    await this.userRepository.save(user);
   }
 
   @Interval('gameLoop', 20)

@@ -3,13 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { User, UserStatus } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import {
   LoginStatus,
   LoginStatusDto,
 } from 'src/auth/dto/user-login-status.dto';
 import { JwtPayloadDto, JwtPermission } from 'src/auth/dto/jwt-payload.dto';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class UsersService {
@@ -76,5 +77,29 @@ export class UsersService {
     );
 
     return new LoginStatusDto(token, LoginStatus.SUCCESS);
+  }
+
+  async statusChange(index: number, status: string) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { index: index },
+    });
+
+    switch (status) {
+      case 'ONLINE':
+        user.status = UserStatus.ONLINE;
+        break;
+      case 'OFFLINE':
+        user.status = UserStatus.OFFLINE;
+        break;
+      case 'INQUEUE':
+        user.status = UserStatus.INQUEUE;
+        break;
+      case 'INGAME':
+        user.status = UserStatus.INGAME;
+        break;
+      default:
+        throw new WsException('Not Valid Status');
+    }
+    await this.userRepository.save(user);
   }
 }

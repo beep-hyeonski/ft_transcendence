@@ -138,7 +138,7 @@ export class AppGateway
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    this.gameService.statusChange(user.index, 'ONLINE');
+    this.usersService.statusChange(user.index, 'ONLINE');
   }
   @SubscribeMessage('quitGame')
   async quitGame(client: Socket, payload: { gameName: string }) {
@@ -157,7 +157,7 @@ export class AppGateway
     const requestUser = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    this.gameService.statusChange(requestUser.index, 'INQUEUE')
+    this.usersService.statusChange(requestUser.index, 'INQUEUE')
     if (this.gameQueue.length >= 2) {
       const gameName = String(`game_${v1()}`);
       const player1 = await this.getUserByJwt(
@@ -185,8 +185,8 @@ export class AppGateway
         ballInfo: game.ballInfo,
       });
       this.logger.log(gameName);
-      this.gameService.statusChange(player1.index, 'INGAME');
-      this.gameService.statusChange(player2.index, 'INGAME');
+      this.usersService.statusChange(player1.index, 'INGAME');
+      this.usersService.statusChange(player2.index, 'INGAME');
     }
   }
   @SubscribeMessage('sendKeyEvent')
@@ -217,7 +217,7 @@ export class AppGateway
         client.handshake.headers.authorization,
       );
       
-      this.gameService.statusChange(user.index, 'ONLINE');
+      this.usersService.statusChange(user.index, 'ONLINE');
     });
   }
   @SubscribeMessage('matchRequest')
@@ -237,7 +237,7 @@ export class AppGateway
       gameName: gameName,
       ballSpeed: payload.ballSpeed,
     });
-    this.gameService.statusChange(sender.index, 'INQUEUE');
+    this.usersService.statusChange(sender.index, 'INQUEUE');
   }
   @SubscribeMessage('matchResponse')
   async onMatchAccepted(
@@ -276,8 +276,8 @@ export class AppGateway
           player2Info: game.playerInfo[1],
           ballInfo: game.ballInfo,
         });
-        this.gameService.statusChange(player1.index, 'INGAME');
-        this.gameService.statusChange(player2.index, 'INGAME');
+        this.usersService.statusChange(player1.index, 'INGAME');
+        this.usersService.statusChange(player2.index, 'INGAME');
         break;
       case 'REJECT':
         this.server.socketsLeave(payload.gameName);
@@ -289,7 +289,7 @@ export class AppGateway
             client.handshake.headers.authorization,
           );
           
-          this.gameService.statusChange(user.index, 'ONLINE');
+          this.usersService.statusChange(user.index, 'ONLINE');
         });
         break;
       default:
@@ -298,7 +298,7 @@ export class AppGateway
             client.handshake.headers.authorization,
           );
           
-          this.gameService.statusChange(user.index, 'ONLINE');
+          this.usersService.statusChange(user.index, 'ONLINE');
         });
         throw new WsException('Bad Request');
     }
@@ -327,7 +327,7 @@ export class AppGateway
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    await this.gameService.statusChange(user.index, 'INGAME');
+    await this.usersService.statusChange(user.index, 'INGAME');
   }
   async getUserByJwt(jwtToken: string): Promise<User> {
     const jwtDecode = this.jwtService.verify(jwtToken);
