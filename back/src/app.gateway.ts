@@ -209,20 +209,19 @@ export class AppGateway
     client: Socket,
     payload: { gameName: string; createMatchDto: CreateMatchDto },
   ) {
-    this.gameService.closeGame(payload.gameName);
     this.matchService.createMatch(payload.createMatchDto);
     this.logger.log('game End');
     this.server.to(payload.gameName).emit('endGame', {
       status: 'GAME_END',
     });
-    this.server.socketsLeave(payload.gameName);
-    this.server.of(payload.gameName).sockets.forEach( async (socket) => {
-      const user = await this.getUserByJwt(
-        client.handshake.headers.authorization,
-      );
-      
-      this.usersService.statusChange(user.index, 'ONLINE');
+    this.server.of(payload.gameName).sockets.forEach(async (socket: Socket) => {
+      this.getUserByJwt(socket.handshake.headers.authorization).then((user) => {
+        this.logger.log(user.username);
+        this.usersService.statusChange(user.index, 'ONLINE');
+      });
     });
+    this.gameService.closeGame(payload.gameName);
+    this.server.socketsLeave(payload.gameName);
   }
   @SubscribeMessage('matchRequest')
   async onMatchRequest(
