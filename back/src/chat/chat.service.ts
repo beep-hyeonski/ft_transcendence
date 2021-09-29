@@ -149,10 +149,10 @@ export class ChatService {
   async registerAdmin(
     jwtPayloadDto: JwtPayloadDto,
     chatIndex: number,
-    username: string,
+    nickname: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { nickname: nickname },
     });
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers'],
@@ -177,10 +177,10 @@ export class ChatService {
   async unRegisterAdmin(
     jwtPayloadDto: JwtPayloadDto,
     chatIndex: number,
-    username: string,
+    nickname: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { nickname: nickname },
     });
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers'],
@@ -205,10 +205,10 @@ export class ChatService {
   async registerMuteUser(
     jwtPayloadDto: JwtPayloadDto,
     chatIndex: number,
-    username: string,
+    nickname: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { nickname: nickname },
     });
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers', 'mutedUsers'],
@@ -244,10 +244,10 @@ export class ChatService {
   async unRegisterMuteUser(
     jwtPayloadDto: JwtPayloadDto,
     chatIndex: number,
-    username: string,
+    nickname: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { nickname: nickname },
     });
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers', 'mutedUsers'],

@@ -125,7 +125,7 @@ export class AppGateway
 
     if (
       !user.mutedChannels ||
-      !user.mutedChannels.find((chat) => chat.index !== payload.chatIndex)
+      !user.mutedChannels.find((chat) => chat.index === payload.chatIndex)
     ) {
       const message = new Message();
       message.chat = await this.chatService.getChat(payload.chatIndex);
