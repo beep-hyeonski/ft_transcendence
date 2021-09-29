@@ -1,13 +1,11 @@
-import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import {
-  Button, Modal, Drawer, GridList,
-  IconButton,
-} from '@material-ui/core';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
-import ChatJoinedUser from './ChatJoinedUser';
+import {
+  Button, InputBase, Modal, IconButton,
+} from '@material-ui/core';
+import CancelIcon from '@material-ui/icons/Cancel';
 import { joinChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';
 import { updateUser } from '../modules/user';
@@ -18,33 +16,36 @@ const useStyles = makeStyles(() => createStyles({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '80rem',
-    height: '45rem',
+    width: '50rem',
+    height: '24rem',
     backgroundColor: '#282E4E',
-    borderRadius: '5px',
+    borderRadius: '8px',
     boxShadow: '0.5px 0.5px 2px white',
   },
   title: {
     fontSize: '7rem',
     color: '#F4F3FF',
-    marginTop: '1rem',
-    marginLeft: '3rem',
+    marginTop: '0.5rem',
+    marginLeft: '2rem',
     textShadow: '1px 1px 2px black',
   },
-  content: {
-    marginTop: '1rem',
-    marginLeft: '3rem',
-    width: '74rem',
-    height: '23rem',
-    backgroundColor: 'inherit',
+  input: {
+    marginLeft: '4rem',
+    marginTop: '1.5rem',
+    width: '80%',
+    height: '5rem',
+    borderRadius: '8px',
+    backgroundColor: 'white',
+    paddingLeft: '1.2rem',
+    fontSize: '2.5rem',
   },
   button: {
     position: 'absolute',
-    marginTop: '4rem',
-    right: '3rem',
-    width: '20rem',
-    height: '4.5rem',
-    fontSize: '25px',
+    marginTop: '9rem',
+    right: '2rem',
+    width: '18rem',
+    height: '4rem',
+    fontSize: '20px',
     color: '#282E4E',
     backgroundColor: '#A19BEE',
     '&:hover': {
@@ -52,15 +53,6 @@ const useStyles = makeStyles(() => createStyles({
     },
     boxShadow: '0.5px 0.5px 3px black',
     textShadow: '1px 1px 1px gray',
-  },
-  drawerPaper: {
-    marginTop: '10rem',
-    marginLeft: '3rem',
-    width: '74rem',
-    height: '23rem',
-    backgroundColor: '#F4F3FF',
-    borderRadius: '3px',
-    boxShadow: '1.5px 1.5px 2px black',
   },
   closeButtonLocation: {
     position: 'absolute',
@@ -101,9 +93,10 @@ interface ModalProps {
   }>>
 }
 
-function ChatPublicModal({ modal, setModal } : ModalProps) {
+function ChatProtectedModal({ modal, setModal } : ModalProps) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const [password, setPassword] = useState('');
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -122,27 +115,30 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
 
   const onClickJoinButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    // 클릭 시 해당 채팅 채널로 이동
-    try {
-      await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`);
-      dispatch(joinChatRoom({
-        roomTitle: modal.title,
-        roomIndex: modal.index,
-        roomJoinedUsers: modal.joinUsers,
-        roomPassword: modal.password,
-        roomStatus: modal.status,
-        roomAdmins: modal.adminUsers,
-        roomOwner: modal.ownerUser,
-        roomMuted: modal.mutedUsers,
-      }));
+    if (modal.password === password) {
+      try {
+        await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`);
+        dispatch(joinChatRoom({
+          roomTitle: modal.title,
+          roomIndex: modal.index,
+          roomJoinedUsers: modal.joinUsers,
+          roomPassword: modal.password,
+          roomStatus: modal.status,
+          roomAdmins: modal.adminUsers,
+          roomOwner: modal.ownerUser,
+          roomMuted: modal.mutedUsers,
+        }));
 
-      const { data } = await getUserme();
-      dispatch(updateUser(data));
-    } catch (error) {
-      console.log(error);
+        const { data } = await getUserme();
+        dispatch(updateUser(data));
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      setPassword('');
+      alert('Wrong password');
+      return;
     }
-
-    // 참여중인 채팅방일 경우 이동만. 아닐 경우 추가 후 이동
     setModal({
       index: -1,
       open: false,
@@ -156,8 +152,13 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
     });
   };
 
+  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setPassword(e.target.value);
+  };
+
   return (
-    <div>
+    <form>
       <Modal
         open={modal.open}
         onClose={() => setModal({
@@ -179,17 +180,15 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
           <div className={classes.title}>
             {modal.title}
           </div>
-          <Drawer
-            classes={{ paper: classes.drawerPaper }}
-            className={classes.content}
-            variant="permanent"
-          >
-            <GridList>
-              {modal.joinUsers.map((user) => (
-                <ChatJoinedUser user={user} isInRoom={false} />
-              ))}
-            </GridList>
-          </Drawer>
+          <InputBase
+            className={classes.input}
+            placeholder="Password"
+            inputProps={{ 'aria-label': 'search user' }}
+            type="password"
+            name="input"
+            value={password}
+            onChange={onChangeInput}
+          />
           <Button
             variant="contained"
             size="large"
@@ -200,8 +199,8 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
           </Button>
         </div>
       </Modal>
-    </div>
+    </form>
   );
 }
 
-export default React.memo(ChatPublicModal);
+export default React.memo(ChatProtectedModal);

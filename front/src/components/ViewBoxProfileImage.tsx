@@ -176,7 +176,7 @@ function ViewBoxProfileImage() {
     setFollow(isFollow);
   }, [mydata.followings, userdata.nickname]);
 
-  function clickFollowButton() {
+  const clickFollowButton = () => { 
     const followForm = {
       followedUser: userdata.username,
     };
@@ -189,7 +189,7 @@ function ViewBoxProfileImage() {
     });
   }
 
-  function clickUnfollowButton() {
+  const clickUnfollowButton = () => {
     const followForm = {
       data: {
         followedUser: userdata.username,
@@ -204,7 +204,7 @@ function ViewBoxProfileImage() {
     });
   }
 
-  function observeButton() {
+  const observeButton = () => {
     const callback = (payload : any) => {
       if (payload.status === 'GAME_START') {
         dispatch(setGameData(payload));

@@ -7,6 +7,7 @@ import authModule from './auth';
 import socketModule from './socket';
 import gameStateMoudle from './gamestate';
 import gameDataMoudle from './gamedata';
+import chatModule from './chat';
 
 const rootReducer = combineReducers({
   profileModule,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   authModule,
   gameStateMoudle,
   gameDataMoudle,
+  chatModule,
 });
 
 export default rootReducer;

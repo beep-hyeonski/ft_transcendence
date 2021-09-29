@@ -2,17 +2,15 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import axios from 'axios';
 import { changeUser } from '../modules/profile';
 import ViewBox from './ViewBox';
-import { RootState } from '../modules';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
 
 function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
   const dispatch = useDispatch();
-  const userdata = useSelector((state: RootState) => state.profileModule);
   const { id } = props.match.params;
   const [isValid, setIsValid] = useState(true);
 

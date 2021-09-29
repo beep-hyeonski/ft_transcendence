@@ -79,8 +79,13 @@ export class AppGateway
       client.handshake.headers.authorization,
       payload.chatIndex,
     );
-    if (user.bannedChannels.find((chat) => chat.index === payload.chatIndex))
-      throw new WsException('User has been banned from the chat');
+
+    // if (
+    //   user.bannedChannels &&
+    //   user.bannedChannels.find((chat) => chat.index === payload.chatIndex)
+    // )
+    //   throw new WsException('User has been banned from the chat');
+
     client.join(String(payload.chatIndex));
     client.emit('joined', { status: 'SUCCESS' });
     this.logger.log(
@@ -110,14 +115,22 @@ export class AppGateway
     const clients = this.server.sockets.adapter.rooms.get(roomName);
     if (!clients || !clients.has(client.id))
       throw new WsException('User Not Joined in the Chat Socket');
-    if (!user.mutedChannels.find((chat) => chat.index !== payload.chatIndex)) {
+
+    if (
+      !user.mutedChannels ||
+      !user.mutedChannels.find((chat) => chat.index === payload.chatIndex)
+    ) {
       const message = new Message();
       message.chat = await this.chatService.getChat(payload.chatIndex);
       message.sendUser = user;
       message.messageContent = payload.message;
       this.messageRepository.save(message);
-      client.to(roomName).emit('onMessage', {
-        sender: user.username,
+
+      this.server.to(roomName).emit('onMessage', {
+        sendUser: {
+          nickname: user.nickname,
+          avatar: user.avatar,
+        },
         message: payload.message,
       });
     } else {

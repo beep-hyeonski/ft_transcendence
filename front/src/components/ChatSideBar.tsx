@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   createStyles,
   makeStyles,
@@ -6,6 +7,9 @@ import {
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ChatJoinedList from './ChatJoinedList';
+import { RootState } from '../modules';
+import { getUserme } from '../utils/Requests';
+import { updateUser } from '../modules/user';
 
 const drawerWidth = 250;
 
@@ -46,30 +50,24 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-const data1 = {
-  index: 0,
-  type: 'private',
-  title: 'hello world',
-};
+interface ChannelProps {
+  index: number,
+  title: string,
+}
 
-const data2 = {
-  index: 1,
-  type: 'public',
-  title: 'hi world',
-};
-
-const data3 = {
-  index: 2,
-  type: 'private',
-  title: 'bye world',
-};
-
+// TODO: 채팅 채널 입장 또는 퇴장 시 sidebar 업데이트 안되는 문제 잡기
 function ChatSideBar() {
   const classes = useStyles();
+  const { joinChannels } = useSelector((state: RootState) => state.userModule);
+  const dispatch = useDispatch();
 
-  const userdata = [data1, data2, data3, data3, data3, data3, data3,
-    data1, data2, data3, data3, data3, data3, data3, data3, data3, data3,
-    data3, data3, data3, data3, data3, data3, data3, data3, data3, data3];
+  useEffect(() => {
+    getUserme().then((res) => {
+      dispatch(updateUser(res.data));
+    }).catch((err) => {
+      console.log(err.response);
+    });
+  }, [dispatch]);
 
   return (
     <Drawer
@@ -81,12 +79,12 @@ function ChatSideBar() {
       anchor="right"
     >
       <List>
-        {userdata.map((user) => (
-          <ChatJoinedList key={user.index} roomdata={user} />
+        {joinChannels.map((channel : ChannelProps) => (
+          <ChatJoinedList key={channel.index} index={channel.index} title={channel.title} />
         ))}
       </List>
     </Drawer>
   );
 }
 
-export default React.memo(ChatSideBar);
+export default ChatSideBar;

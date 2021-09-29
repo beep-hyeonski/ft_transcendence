@@ -1,6 +1,8 @@
 import React from 'react';
+import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Avatar } from '@material-ui/core';
+import { Avatar, IconButton } from '@material-ui/core';
+import JoinedUserMenu from './JoinedUserMenu';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -25,19 +27,32 @@ const useStyles = makeStyles(() => createStyles({
     marginLeft: '1rem',
     textShadow: '0.5px 0.5px 1px gray',
   },
+  menuIconLocation: {
+    width: '1rem',
+    height: '1rem',
+    position: 'absolute',
+    marginTop: '1.8rem',
+    marginLeft: '19.2rem',
+  },
+  menuIcon: {
+    fontSize: '2rem',
+    color: 'black',
+  },
 }));
 
 interface UserdataProps {
-  index: number
-  nickname: string
-  avatar: string
+  avatar: string,
+  index: number,
+  nickname: string,
+  status: string,
 }
 
 interface UserData {
   user: UserdataProps
+  isInRoom: boolean
 }
 
-const ChatJoinedUser = ({ user } : UserData) => {
+const ChatJoinedUser = ({ user, isInRoom } : UserData) => {
   const classes = useStyles();
 
   return (
@@ -46,6 +61,7 @@ const ChatJoinedUser = ({ user } : UserData) => {
       <div className={classes.username}>
         {user.nickname}
       </div>
+      {isInRoom ? <JoinedUserMenu user={user} /> : null}
     </div>
   );
 };

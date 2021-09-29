@@ -24,7 +24,7 @@ export class ChatService {
 
   async getChats() {
     return await this.chatRepository.find({
-      relations: ['ownerUser'],
+      relations: ['ownerUser', 'joinUsers'],
     });
   }
 
@@ -35,7 +35,7 @@ export class ChatService {
         'adminUsers',
         'joinUsers',
         'mutedUsers',
-        'bannedUsers',
+        // 'bannedUsers',
       ],
       where: { index: chatIndex },
     });
@@ -56,14 +56,12 @@ export class ChatService {
       createChat[fieldName] = createChatDto[fieldName];
     }
 
-    createChat.adminUsers.push(user);
     createChat.ownerUser = user;
-    createChat.joinUsers.push(user);
+    createChat.adminUsers = [user];
+    createChat.joinUsers = [user];
 
-    await this.userRepository.save(user);
-    await this.chatRepository.save(createChat);
-
-    return createChat;
+    // await this.userRepository.save(user);
+    return await this.chatRepository.save(createChat);
   }
 
   async updateChat(
@@ -150,10 +148,10 @@ export class ChatService {
   async registerAdmin(
     jwtPayloadDto: JwtPayloadDto,
     chatIndex: number,
-    username: string,
+    nickname: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { nickname: nickname },
     });
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers'],
@@ -178,10 +176,10 @@ export class ChatService {
   async unRegisterAdmin(
     jwtPayloadDto: JwtPayloadDto,
     chatIndex: number,
-    username: string,
+    nickname: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { nickname: nickname },
     });
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers'],
@@ -206,10 +204,10 @@ export class ChatService {
   async registerMuteUser(
     jwtPayloadDto: JwtPayloadDto,
     chatIndex: number,
-    username: string,
+    nickname: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { nickname: nickname },
     });
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers', 'mutedUsers'],
@@ -245,10 +243,10 @@ export class ChatService {
   async unRegisterMuteUser(
     jwtPayloadDto: JwtPayloadDto,
     chatIndex: number,
-    username: string,
+    nickname: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { nickname: nickname },
     });
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers', 'mutedUsers'],
@@ -277,83 +275,83 @@ export class ChatService {
     return chat;
   }
 
-  async registerBanUser(
-    jwtPayloadDto: JwtPayloadDto,
-    chatIndex: number,
-    username: string,
-  ) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
-    });
+  // async registerBanUser(
+  //   jwtPayloadDto: JwtPayloadDto,
+  //   chatIndex: number,
+  //   username: string,
+  // ) {
+  //   const user = await this.userRepository.findOneOrFail({
+  //     where: { username: username },
+  //   });
 
-    const chat = await this.chatRepository.findOneOrFail({
-      relations: ['ownerUser', 'adminUsers', 'joinUsers', 'bannedUsers'],
-      where: { index: chatIndex },
-    });
+  //   const chat = await this.chatRepository.findOneOrFail({
+  //     relations: ['ownerUser', 'adminUsers', 'joinUsers', 'bannedUsers'],
+  //     where: { index: chatIndex },
+  //   });
 
-    if (
-      jwtPayloadDto.username !== chat.ownerUser.username &&
-      !chat.adminUsers.find(
-        (adminUser) => adminUser.index === jwtPayloadDto.sub,
-      )
-    ) {
-      throw new ForbiddenException('Permission Denied');
-    }
+  //   if (
+  //     jwtPayloadDto.username !== chat.ownerUser.username &&
+  //     !chat.adminUsers.find(
+  //       (adminUser) => adminUser.index === jwtPayloadDto.sub,
+  //     )
+  //   ) {
+  //     throw new ForbiddenException('Permission Denied');
+  //   }
 
-    if (chat.adminUsers.find((adminUser) => adminUser.index === user.index)) {
-      throw new BadRequestException('Impossible to ban owner or admin');
-    }
+  //   if (chat.adminUsers.find((adminUser) => adminUser.index === user.index)) {
+  //     throw new BadRequestException('Impossible to ban owner or admin');
+  //   }
 
-    if (
-      chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
-    ) {
-      throw new BadRequestException('User have already been banned');
-    }
+  //   if (
+  //     chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
+  //   ) {
+  //     throw new BadRequestException('User have already been banned');
+  //   }
 
-    if (this.existUserInChat(user.index, chat) === false)
-      throw new BadRequestException('User is not in the chat');
+  //   if (this.existUserInChat(user.index, chat) === false)
+  //     throw new BadRequestException('User is not in the chat');
 
-    chat.bannedUsers.push(user);
-    await this.chatRepository.save(chat);
+  //   chat.bannedUsers.push(user);
+  //   await this.chatRepository.save(chat);
 
-    return chat;
-  }
+  //   return chat;
+  // }
 
-  async unRegisterBanUser(
-    jwtPayloadDto: JwtPayloadDto,
-    chatIndex: number,
-    username: string,
-  ) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
-    });
-    const chat = await this.chatRepository.findOneOrFail({
-      relations: ['ownerUser', 'adminUsers', 'joinUsers', 'bannedUsers'],
-      where: { index: chatIndex },
-    });
+  // async unRegisterBanUser(
+  //   jwtPayloadDto: JwtPayloadDto,
+  //   chatIndex: number,
+  //   username: string,
+  // ) {
+  //   const user = await this.userRepository.findOneOrFail({
+  //     where: { username: username },
+  //   });
+  //   const chat = await this.chatRepository.findOneOrFail({
+  //     relations: ['ownerUser', 'adminUsers', 'joinUsers', 'bannedUsers'],
+  //     where: { index: chatIndex },
+  //   });
 
-    if (
-      jwtPayloadDto.username !== chat.ownerUser.username &&
-      !chat.adminUsers.find(
-        (adminUser) => adminUser.index === jwtPayloadDto.sub,
-      )
-    ) {
-      throw new ForbiddenException('Permission Denied');
-    }
+  //   if (
+  //     jwtPayloadDto.username !== chat.ownerUser.username &&
+  //     !chat.adminUsers.find(
+  //       (adminUser) => adminUser.index === jwtPayloadDto.sub,
+  //     )
+  //   ) {
+  //     throw new ForbiddenException('Permission Denied');
+  //   }
 
-    if (
-      !chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
-    ) {
-      throw new BadRequestException('User have not been banned');
-    }
+  //   if (
+  //     !chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
+  //   ) {
+  //     throw new BadRequestException('User have not been banned');
+  //   }
 
-    chat.bannedUsers = chat.bannedUsers.filter(
-      (bannedUser) => bannedUser.index !== user.index,
-    );
-    await this.chatRepository.save(chat);
+  //   chat.bannedUsers = chat.bannedUsers.filter(
+  //     (bannedUser) => bannedUser.index !== user.index,
+  //   );
+  //   await this.chatRepository.save(chat);
 
-    return chat;
-  }
+  //   return chat;
+  // }
 
   async getMessages(chatIndex: number) {
     const chat = await this.chatRepository.findOneOrFail({
@@ -361,7 +359,11 @@ export class ChatService {
       where: { index: chatIndex },
     });
 
-    return chat.messages;
+    return await this.messageRepository.find({
+      where: { chat: chat },
+      relations: ['sendUser'],
+      order: { createdAt: 'ASC' },
+    });
   }
 
   existUserInChat(userIndex: number, chat: Chat): boolean {

@@ -1,34 +1,38 @@
-import React from 'react';
-import { Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
-import SideMenu from './SideMenu';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../modules';
+import { changeSideBar, CHAT } from '../modules/sidebar';
 import ChatBanner from './ChatBanner';
 import ChatTable from './ChatTable';
-import ChatPublicModal from './ChatPublicModal';
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-    color: '#F4F3FF',
-    position: 'absolute',
-    fontSize: '25px',
-    right: '20%',
-    backgroundColor: '#282E4E',
-    '&:hover': {
-      backgroundColor: '#1C244F',
-    },
-    '&:focus': {
-      backgroundColor: '#3F446E',
-    },
-  },
-}));
+import ChatRoom from './ChatRoom';
 
 function ChatUI(): JSX.Element {
+  const [create, setCreate] = useState(false);
+  const dispatch = useDispatch();
+  const chatIndex = useSelector((state: RootState) => state.chatModule.index);
+
+  useEffect(() => {
+    dispatch(changeSideBar({ type: CHAT }));
+  }, [dispatch]);
+
+  const clickCreateChannelButton = () => {
+    setCreate(true);
+  };
+
+  if (chatIndex !== -1) {
+    return (
+      <ChatRoom />
+    );
+  }
+
   return (
     <>
-      <ChatBanner />
-      <ChatTable />
+      <ChatBanner
+        clickCreateChannelButton={clickCreateChannelButton}
+        create={create}
+        setCreate={setCreate}
+      />
+      <ChatTable create={create} />
     </>
   );
 }

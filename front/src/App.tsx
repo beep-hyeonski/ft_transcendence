@@ -31,15 +31,16 @@ function App(): JSX.Element {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    checkToken(dispatch).then(() => {});
-    if (authState.isLoggedIn) {
-      const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
-        extraHeaders: {
-          Authorization: `${String(authState.token)}`,
-        },
-      });
-      dispatch(initSocket(socket));
-    }
+    checkToken(dispatch).then(() => {
+      if (authState.isLoggedIn) {
+        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
+          extraHeaders: {
+            Authorization: `${String(authState.token)}`,
+          },
+        });
+        dispatch(initSocket(socket));
+      }
+    });
   }, [authState.isLoggedIn, authState.token, dispatch]);
 
   return (
@@ -69,7 +70,7 @@ function App(): JSX.Element {
           <LoginPage />
         )}
       </Route>
-      {/* <Route component={NotFoundPage} /> */}
+      <Route component={NotFoundPage} />
     </Switch>
   );
 }

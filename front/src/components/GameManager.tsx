@@ -112,7 +112,7 @@ function GameManager(): JSX.Element {
     console.log('state: ', gamestate);
   }, [gamestate]);
 
-  function clickCancleButton() {
+  const clickCancleButton = () => {
     socket?.socket?.emit('cancelQueue', () => {});
   }
 

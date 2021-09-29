@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
+import CreateChannelModal from './CreateChannelModal';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -32,12 +33,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function ChatBanner() {
-  const classes = useStyles();
+interface ChatBannerProps {
+  clickCreateChannelButton: () => void;
+  create: boolean;
+  setCreate: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-  const clickCreateButton = () => {
-    console.log('create');
-  };
+function ChatBanner({ clickCreateChannelButton, create, setCreate }: ChatBannerProps) {
+  const classes = useStyles();
 
   return (
     <div className={classes.root}>
@@ -49,10 +52,11 @@ function ChatBanner() {
         size="large"
         className={classes.createButton}
         startIcon={<ControlPointIcon style={{ fontSize: '40' }} />}
-        onClick={clickCreateButton}
+        onClick={clickCreateChannelButton}
       >
         CREATE CHANNEL
       </Button>
+      <CreateChannelModal create={create} setCreate={setCreate} />
     </div>
   );
 }
