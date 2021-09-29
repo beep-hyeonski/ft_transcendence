@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   Modal, Drawer, GridList, IconButton,
 } from '@material-ui/core';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
 import ChatJoinedUser from './ChatJoinedUser';
 import { RootState } from '../modules';

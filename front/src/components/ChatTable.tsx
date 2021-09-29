@@ -10,24 +10,26 @@ import ChatPublicModal from './ChatPublicModal';
 import ChatProtectedModal from './ChatProtectedModal';
 import { RootState } from '../modules';
 
-const useStyles = makeStyles(() => createStyles({
-  root: {
-    position: 'absolute',
-    top: '54%',
-    left: '41.5%',
-    transform: 'translate(-50%, -50%)',
-    width: '78%',
-    height: '81%',
-  },
-  drawerPaper: {
-    backgroundColor: 'white',
-    width: '100%',
-    height: '100%',
-    borderRadius: '3px',
-    boxShadow: '3.5px 3.5px 3px gray',
-    display: 'flex',
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      position: 'absolute',
+      top: '54%',
+      left: '41.5%',
+      transform: 'translate(-50%, -50%)',
+      width: '78%',
+      height: '81%',
+    },
+    drawerPaper: {
+      backgroundColor: 'white',
+      width: '100%',
+      height: '100%',
+      borderRadius: '3px',
+      boxShadow: '3.5px 3.5px 3px gray',
+      display: 'flex',
+    },
+  }),
+);
 
 async function getChats() {
   const response = await axios.get(
@@ -42,6 +44,8 @@ interface ChatTableProps {
 
 interface ChatInfoProps {
   index: number;
+  status: string;
+  title: string;
   joinUsers: any[];
 }
 
@@ -67,9 +71,10 @@ function ChatTable({ create }: ChatTableProps) {
       .then((res) => {
         console.log(res);
         setChats(
-          res.filter((chat: ChatInfoProps) => !chat.joinUsers.find(
-            (user: any) => user.index === mydata.index,
-          )),
+          res.filter(
+            (chat: ChatInfoProps) =>
+              !chat.joinUsers.find((user: any) => user.index === mydata.index),
+          ),
         );
       })
       .catch((err) => {

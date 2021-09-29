@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const INITDATA = 'gamedata/INIT' as const;
 const SETDATA = 'gamedata/SET' as const;
 
@@ -11,12 +12,12 @@ export const setGameData = (data: any) => ({
 });
 
 type GameData = {
-  gamedata: any,
+  gamedata: any;
 };
 
 type GameDataAction =
-| ReturnType<typeof initGameData>
-| ReturnType<typeof setGameData>;
+  | ReturnType<typeof initGameData>
+  | ReturnType<typeof setGameData>;
 
 const initialState: GameData = {
   gamedata: {},
@@ -25,7 +26,7 @@ const initialState: GameData = {
 export default function gameDataMoudle(
   state: GameData = initialState,
   action: GameDataAction,
-) {
+): GameData {
   switch (action.type) {
     case INITDATA:
       return { ...state, gamedata: {} };

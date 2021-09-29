@@ -1,25 +1,25 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const UPDATE = 'user/UPDATE' as const;
 const DELETE = 'user/DELETE' as const;
-const LOGIN = 'user/LOGIN' as const;
 
 interface DataProps {
-  index: number,
-  username: string,
-  nickname: string,
-  email?: string,
-  avatar?: string,
-  followers?: string[],
-  followings?: string[],
-  blockers?: string[],
-  blockings?: string[],
-  score?: number,
-  victory?: number,
-  defeat?: number,
-  useTwoFA: boolean,
-  twoFAToken?: string,
-  status?: string,
-  created_at?: string,
-  joinChannels?: [],
+  index: number;
+  username: string;
+  nickname: string;
+  email?: string;
+  avatar?: string;
+  followers?: string[];
+  followings?: string[];
+  blockers?: string[];
+  blockings?: string[];
+  score?: number;
+  victory?: number;
+  defeat?: number;
+  useTwoFA: boolean;
+  twoFAToken?: string;
+  status?: string;
+  created_at?: string;
+  joinChannels?: [];
 }
 
 export const updateUser = (data: DataProps) => ({
@@ -29,28 +29,26 @@ export const updateUser = (data: DataProps) => ({
 
 export const deleteUser = () => ({ type: DELETE });
 
-type UserAction =
-  | ReturnType<typeof updateUser>
-  | ReturnType<typeof deleteUser>;
+type UserAction = ReturnType<typeof updateUser> | ReturnType<typeof deleteUser>;
 
 type UserState = {
-  index: number,
-  username: string,
-  nickname: string,
-  email: string,
-  avatar: string,
-  followers: string[],
-  followings: string[],
-  blockers: string[],
-  blockings: string[],
-  score: number,
-  victory: number,
-  defeat: number,
-  useTwoFA: boolean,
-  twoFAToken: string,
-  status: string,
-  created_at: string,
-  joinChannels: [],
+  index: number;
+  username: string;
+  nickname: string;
+  email: string;
+  avatar: string;
+  followers: string[];
+  followings: string[];
+  blockers: string[];
+  blockings: string[];
+  score: number;
+  victory: number;
+  defeat: number;
+  useTwoFA: boolean;
+  twoFAToken: string;
+  status: string;
+  created_at: string;
+  joinChannels: [];
 };
 
 const initialState: UserState = {
@@ -73,7 +71,10 @@ const initialState: UserState = {
   joinChannels: [],
 };
 
-export default function userModule(state: UserState = initialState, action: UserAction) {
+export default function userModule(
+  state: UserState = initialState,
+  action: UserAction,
+): UserState {
   switch (action.type) {
     case UPDATE:
       return { ...state, ...action.payload.data };

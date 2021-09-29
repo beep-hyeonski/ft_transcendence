@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import {
   Button,
@@ -114,7 +113,6 @@ function SpeedDialog(props: any) {
   const { onClose, open } = props;
   const userdata = useSelector((state: RootState) => state.profileModule);
   const socket = useSelector((state: RootState) => state.socketModule);
-  const history = useHistory();
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -129,7 +127,6 @@ function SpeedDialog(props: any) {
       ballSpeed: value,
     });
     dispatch(pvpQueueGame());
-    // history.push('/game');
   };
 
   return (
@@ -156,7 +153,6 @@ function ViewBoxProfileImage() {
   const [open, setOpen] = useState(false);
   const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
   const { socket } = useSelector((state: RootState) => state.socketModule);
-  const history = useHistory();
 
   const handleClickOpen = () => {
     if (gamestate !== 'WAIT') {

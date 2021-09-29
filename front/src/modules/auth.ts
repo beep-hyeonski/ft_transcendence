@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const CHECK = 'auth/CHECK' as const;
 const LOGIN = 'auth/LOGIN' as const;
 const LOGOUT = 'auth/LOGOUT' as const;
@@ -29,7 +30,7 @@ const initialState: AuthState = {
 export default function authModule(
   state: AuthState = initialState,
   action: AuthAction,
-) {
+): AuthState {
   switch (action.type) {
     case CHECK:
       return {

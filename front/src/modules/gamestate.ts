@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const GAMEWAIT = 'gamestate/WAIT' as const;
 const MATCHGAMEQUEUE = 'gamestate/MATCHQUEUE' as const;
 const PVPGAMEQUEUE = 'gamestate/PVPQUEUE' as const;

@@ -8,7 +8,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Box, IconButton, Modal } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Button from '@material-ui/core/Button';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';

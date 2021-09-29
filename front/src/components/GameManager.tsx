@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { CircularProgress, Button } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import GameQueuing from './GameQueuing';
 import MatchAlarm from './MatchAlarm';
@@ -53,7 +52,6 @@ function GameManager(): JSX.Element {
     (state: RootState) => state.gameStateMoudle,
   );
   const socket = useSelector((state: RootState) => state.socketModule);
-  const history = useHistory();
   const [data, setData] = useState({
     status: 'WAIT',
     matchData: {

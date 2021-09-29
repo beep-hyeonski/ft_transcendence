@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeUser } from '../modules/profile';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const CHANGE_STATUS = 'sidebar/CHANGE_STATUS' as const;
 const DELETE = 'sidebar/DELETE' as const;
 
@@ -19,12 +20,12 @@ export const deleteSideData = () => ({
 });
 
 type SidebarState = {
-  data: SidebarDataProps,
+  data: SidebarDataProps;
 };
 
 type SidebarAction =
-| ReturnType<typeof changeSideBar>
-| ReturnType<typeof deleteSideData>;
+  | ReturnType<typeof changeSideBar>
+  | ReturnType<typeof deleteSideData>;
 
 // TODO: 초기 값 설정 해주는 방식 생각하기
 const initialState: SidebarState = {
@@ -33,7 +34,10 @@ const initialState: SidebarState = {
   },
 };
 
-export default function sidebarModule(state: SidebarState = initialState, action: SidebarAction) {
+export default function sidebarModule(
+  state: SidebarState = initialState,
+  action: SidebarAction,
+): SidebarState {
   switch (action.type) {
     case CHANGE_STATUS:
       return { ...state, data: action.payload.data };

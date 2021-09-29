@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { deleteSideData, changeSideBar, MAIN } from '../modules/sidebar';
+import { changeSideBar, MAIN } from '../modules/sidebar';
 import GameButton from './GameButton';
 
 function MainUI(): JSX.Element {

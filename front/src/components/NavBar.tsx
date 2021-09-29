@@ -1,13 +1,7 @@
 import React from 'react';
-import {
-  makeStyles,
-} from '@material-ui/core/styles';
-import {
-  Drawer, List, ListItem, ListItemIcon,
-} from '@material-ui/core';
-import {
-  SportsEsports, Person, Chat,
-} from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core/styles';
+import { Drawer, List, ListItem, ListItemIcon } from '@material-ui/core';
+import { SportsEsports, Person, Chat } from '@material-ui/icons';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SettingsIcon from '@material-ui/icons/Settings';
 import axios from 'axios';
@@ -53,7 +47,7 @@ const NavBar = () => {
     }
   };
 
-  const onClickChat = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onClickChat = () => {
     dispatch(exitChatRoom());
   };
 
@@ -70,40 +64,29 @@ const NavBar = () => {
         className={classes.ListDownAlign}
       >
         <Link to="/">
-          <ListItem
-            button
-            alignItems="center"
-          >
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
-            >
+          <ListItem button alignItems="center">
+            <ListItemIcon className={classes.ListItemIconNoWidth}>
               <SportsEsports className={classes.fontsizeManager} />
             </ListItemIcon>
           </ListItem>
         </Link>
         <Link to={`/profile/${mydata.nickname}`}>
           <ListItem button>
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
-            >
+            <ListItemIcon className={classes.ListItemIconNoWidth}>
               <Person className={classes.fontsizeManager} />
             </ListItemIcon>
           </ListItem>
         </Link>
         <Link to="/chat">
           <ListItem button onClick={onClickChat}>
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
-            >
+            <ListItemIcon className={classes.ListItemIconNoWidth}>
               <Chat className={classes.fontsizeManager} />
             </ListItemIcon>
           </ListItem>
         </Link>
         <Link to="/setting">
           <ListItem button>
-            <ListItemIcon
-              className={classes.ListItemIconNoWidth}
-            >
+            <ListItemIcon className={classes.ListItemIconNoWidth}>
               <SettingsIcon className={classes.fontsizeManager} />
             </ListItemIcon>
           </ListItem>

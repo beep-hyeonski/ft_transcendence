@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const JOIN_CHAT_ROOM = 'chat/JOIN_CHAT_ROOM' as const;
 const EXIT_CHAT_ROOM = 'chat/EXIT_CHAT_ROOM' as const;
 
@@ -68,7 +69,7 @@ const initialState: ChatState = {
 export default function chatModule(
   state: ChatState = initialState,
   action: ChatAction,
-) {
+): ChatState {
   switch (action.type) {
     case JOIN_CHAT_ROOM:
       console.log(action.joinUsers);

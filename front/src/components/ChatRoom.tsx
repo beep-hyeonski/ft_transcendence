@@ -103,7 +103,7 @@ interface MessageProps {
   messageContent: string;
 }
 
-export default function ChatRoom() {
+export default function ChatRoom(): JSX.Element {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
   const { socket } = useSelector((state: RootState) => state.socketModule);

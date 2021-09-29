@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Socket } from 'socket.io-client';
 
 const INIT = 'socket/INIT' as const;
@@ -17,7 +18,10 @@ const initialState: SocketState = {
   socket: null,
 };
 
-export default function socketModule(state: SocketState = initialState, action: SocketAction) {
+export default function socketModule(
+  state: SocketState = initialState,
+  action: SocketAction,
+): SocketState {
   switch (action.type) {
     case INIT:
       return {

@@ -1,7 +1,6 @@
 import React from 'react';
-import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Avatar, IconButton } from '@material-ui/core';
+import { Avatar } from '@material-ui/core';
 import JoinedUserMenu from './JoinedUserMenu';
 
 const useStyles = makeStyles(() => createStyles({
