@@ -143,6 +143,10 @@ export class AppGateway
   @SubscribeMessage('quitGame')
   async quitGame(client: Socket, payload: { gameName: string }) {
     client.leave(payload.gameName);
+    const user = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    this.usersService.statusChange(user.index, 'ONLINE');
   }
   @SubscribeMessage('matchQueue')
   async onMatchQueue(client: Socket) {
@@ -212,7 +216,7 @@ export class AppGateway
       status: 'GAME_END',
     });
     this.server.socketsLeave(payload.gameName);
-    (await this.server.in(payload.gameName).fetchSockets()).forEach( async (client) => {
+    this.server.of(payload.gameName).sockets.forEach( async (socket) => {
       const user = await this.getUserByJwt(
         client.handshake.headers.authorization,
       );
@@ -284,13 +288,7 @@ export class AppGateway
         this.wsClients.get(payload.sendUserIndex).emit('matchReject', {
           status: 'MATCH_REJECT',
         });
-        (await this.server.in(payload.gameName).fetchSockets()).forEach( async (client) => {
-          const user = await this.getUserByJwt(
-            client.handshake.headers.authorization,
-          );
-          
-          this.usersService.statusChange(user.index, 'ONLINE');
-        });
+        this.usersService.statusChange(payload.sendUserIndex, 'ONLINE');
         break;
       default:
         (await this.server.in(payload.gameName).fetchSockets()).forEach( async (client) => {
