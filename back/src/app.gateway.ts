@@ -162,6 +162,7 @@ export class AppGateway
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
+    this.logger.debug(`${user.nickname} quit game`)
     await this.usersService.statusChange(user.index, 'ONLINE');
   }
   @SubscribeMessage('matchQueue')
@@ -225,17 +226,10 @@ export class AppGateway
     client: Socket,
     payload: { gameName: string; createMatchDto: CreateMatchDto },
   ) {
-    this.matchService.createMatch(payload.createMatchDto);
+    await this.matchService.createMatch(payload.createMatchDto);
     this.logger.log('game End');
     this.server.to(payload.gameName).emit('endGame', {
       status: 'GAME_END',
-    });
-    this.server.in(payload.gameName).fetchSockets().then((sockets) => {
-      sockets.forEach( (socket) => {
-        this.getUserByJwt(socket.handshake.headers.authorization).then( async (user) => {
-          await this.usersService.statusChange(user.index, 'ONLINE');
-        });
-      })
     });
     this.gameService.closeGame(payload.gameName);
     this.server.socketsLeave(payload.gameName);

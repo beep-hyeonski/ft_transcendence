@@ -49,16 +49,15 @@ export class MatchService {
       createMatch.loserScore = createMatchDto.player1Score;
     }
 
-    getManager()
-      .transaction(async (transactionalEntityManager) => {
+    try {
+      await getManager().transaction(async (transactionalEntityManager) => {
         await transactionalEntityManager.save(player1);
         await transactionalEntityManager.save(player2);
         await transactionalEntityManager.save(createMatch);
-      })
-      .catch(() => {
-        throw new TypeORMError('Transaction Error');
       });
-
+    } catch (e) {
+      throw new TypeORMError('Transaction Error');
+    }
     return createMatch;
   }
 
