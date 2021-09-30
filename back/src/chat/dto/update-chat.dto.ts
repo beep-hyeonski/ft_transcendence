@@ -13,12 +13,10 @@ export class UpdateChatDto {
     description: 'Chat Title',
     example: 'Come in without Juyang!',
   })
-  @IsOptional()
   @IsString()
   title: string;
 
   @ApiProperty({ description: 'Chat Status', example: 'protected' })
-  @IsOptional()
   @IsEnum(ChatStatus)
   status: ChatStatus;
 
