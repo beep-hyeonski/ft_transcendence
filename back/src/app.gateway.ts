@@ -154,7 +154,7 @@ export class AppGateway
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    this.usersService.statusChange(user.index, 'ONLINE');
+    await this.usersService.statusChange(user.index, 'ONLINE');
   }
   @SubscribeMessage('quitGame')
   async quitGame(client: Socket, payload: { gameName: string }) {
@@ -162,7 +162,7 @@ export class AppGateway
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    this.usersService.statusChange(user.index, 'ONLINE');
+    await this.usersService.statusChange(user.index, 'ONLINE');
   }
   @SubscribeMessage('matchQueue')
   async onMatchQueue(client: Socket) {
@@ -177,7 +177,7 @@ export class AppGateway
     const requestUser = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    this.usersService.statusChange(requestUser.index, 'INQUEUE')
+    await this.usersService.statusChange(requestUser.index, 'INQUEUE')
     if (this.gameQueue.length >= 2) {
       const gameName = String(`game_${v1()}`);
       const player1 = await this.getUserByJwt(
@@ -205,8 +205,8 @@ export class AppGateway
         ballInfo: game.ballInfo,
       });
       this.logger.log(gameName);
-      this.usersService.statusChange(player1.index, 'INGAME');
-      this.usersService.statusChange(player2.index, 'INGAME');
+      await this.usersService.statusChange(player1.index, 'INGAME');
+      await this.usersService.statusChange(player2.index, 'INGAME');
     }
   }
   @SubscribeMessage('sendKeyEvent')
@@ -257,8 +257,8 @@ export class AppGateway
       gameName: gameName,
       ballSpeed: payload.ballSpeed,
     });
-    this.usersService.statusChange(payload.receiveUserIndex, 'INQUEUE');
-    this.usersService.statusChange(sender.index, 'INQUEUE');
+    await this.usersService.statusChange(payload.receiveUserIndex, 'INQUEUE');
+    await this.usersService.statusChange(sender.index, 'INQUEUE');
   }
   @SubscribeMessage('matchResponse')
   async onMatchAccepted(
@@ -297,8 +297,8 @@ export class AppGateway
           player2Info: game.playerInfo[1],
           ballInfo: game.ballInfo,
         });
-        this.usersService.statusChange(player1.index, 'INGAME');
-        this.usersService.statusChange(player2.index, 'INGAME');
+        await this.usersService.statusChange(player1.index, 'INGAME');
+        await this.usersService.statusChange(player2.index, 'INGAME');
         break;
       case 'REJECT':
         this.server.socketsLeave(payload.gameName);
@@ -308,14 +308,14 @@ export class AppGateway
         this.wsClients.get(payload.sendUserIndex).emit('matchReject', {
           status: 'MATCH_REJECT',
         });
-        this.usersService.statusChange(receiveUser.index, 'ONLINE');
-        this.usersService.statusChange(payload.sendUserIndex, 'ONLINE');
+        await this.usersService.statusChange(receiveUser.index, 'ONLINE');
+        await this.usersService.statusChange(payload.sendUserIndex, 'ONLINE');
         break;
       default:
         this.server.in(payload.gameName).fetchSockets().then((sockets) => {
           sockets.forEach((socket) => {
-            this.getUserByJwt(socket.handshake.headers.authorization).then((user) => {
-              this.usersService.statusChange(user.index, 'ONLINE');
+            this.getUserByJwt(socket.handshake.headers.authorization).then( async (user) => {
+              await this.usersService.statusChange(user.index, 'ONLINE');
             });
           })
         });
@@ -346,7 +346,7 @@ export class AppGateway
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    this.usersService.statusChange(user.index, 'INGAME');
+    await this.usersService.statusChange(user.index, 'INGAME');
   }
   async getUserByJwt(jwtToken: string): Promise<User> {
     const jwtDecode = this.jwtService.verify(jwtToken);
