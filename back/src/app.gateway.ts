@@ -231,9 +231,9 @@ export class AppGateway
       status: 'GAME_END',
     });
     this.server.in(payload.gameName).fetchSockets().then((sockets) => {
-      sockets.forEach((socket) => {
-        this.getUserByJwt(socket.handshake.headers.authorization).then((user) => {
-          this.usersService.statusChange(user.index, 'ONLINE');
+      sockets.forEach( (socket) => {
+        this.getUserByJwt(socket.handshake.headers.authorization).then( async (user) => {
+          await this.usersService.statusChange(user.index, 'ONLINE');
         });
       })
     });
@@ -346,7 +346,7 @@ export class AppGateway
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    await this.usersService.statusChange(user.index, 'INGAME');
+    this.usersService.statusChange(user.index, 'INGAME');
   }
   async getUserByJwt(jwtToken: string): Promise<User> {
     const jwtDecode = this.jwtService.verify(jwtToken);
