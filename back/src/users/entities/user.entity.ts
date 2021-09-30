@@ -246,8 +246,9 @@ export class User extends BaseEntity {
     description: 'user 생성 시간',
   })
   @CreateDateColumn({
-    type: 'timestamp',
+    type: 'timestamptz',
+    name: 'created_at',
     default: () => 'now()',
   })
-  created_at: Date;
+  createdAt: Date;
 }

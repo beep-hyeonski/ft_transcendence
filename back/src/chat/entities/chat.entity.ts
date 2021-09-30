@@ -150,7 +150,7 @@ export class Chat extends BaseEntity {
     description: 'Chat 생성 시간',
   })
   @CreateDateColumn({
-    type: 'timestamp',
+    type: 'timestamptz',
     name: 'created_at',
     default: () => 'now()',
   })

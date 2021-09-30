@@ -56,7 +56,7 @@ export class Message extends BaseEntity {
     description: '메시지를 전송한 시간',
   })
   @CreateDateColumn({
-    type: 'timestamp',
+    type: 'timestamptz',
     name: 'created_at',
     default: () => 'now()',
   })
