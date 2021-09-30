@@ -28,7 +28,24 @@ export class UsersService {
 
   async getUser(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      relations: ['followings', 'blockings', 'joinChannels'],
+      relations: ['followings', 'blockings'],
+      where: { username: username },
+    });
+
+    if (!user) throw new NotFoundException('User Not Found');
+    return user;
+  }
+
+  async getUserWithChat(username: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      relations: [
+        'followings',
+        'blockings',
+        'ownerChannels',
+        'adminChannels',
+        'joinChannels',
+        'mutedChannels',
+      ],
       where: { username: username },
     });
 

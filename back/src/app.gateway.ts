@@ -344,11 +344,15 @@ export class AppGateway
     const jwtDecode = this.jwtService.verify(jwtToken);
     return await this.usersService.getUser(jwtDecode.username);
   }
+  async getUserWithChatByJwt(jwtToken: string): Promise<User> {
+    const jwtDecode = this.jwtService.verify(jwtToken);
+    return await this.usersService.getUserWithChat(jwtDecode.username);
+  }
   async validateChatUser(token: string, chatIndex: number): Promise<User> {
     let user: User;
     let chat: Chat;
     try {
-      user = await this.getUserByJwt(token);
+      user = await this.getUserWithChatByJwt(token);
     } catch (e) {
       if (e instanceof EntityNotFoundError)
         throw new WsException('User Not Found');
