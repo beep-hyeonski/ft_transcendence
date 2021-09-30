@@ -46,6 +46,14 @@ export class UsersController {
     return this.usersService.patchUser(req.user, updateUserDto);
   }
 
+  @ApiOperation({ summary: '내 채팅 정보 조회' })
+  @ApiOkResponse({ type: User })
+  @UseGuards(JwtAuthGuard)
+  @Get('me/chat')
+  async getUserWithChat(@Req() req: any) {
+    return await this.usersService.getUserWithChat(req.user.username);
+  }
+
   @ApiOperation({
     summary: 'nickname 검색',
     description: 'nickname에 해당하는 user의 정보를 조회한다.',

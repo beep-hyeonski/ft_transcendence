@@ -28,7 +28,14 @@ export class UsersService {
 
   async getUser(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      relations: ['followings', 'blockings'],
+      relations: [
+        'followings',
+        'blockings',
+        'ownerChannels',
+        'adminChannels',
+        'joinChannels',
+        'mutedChannels',
+      ],
       where: { username: username },
     });
 
@@ -39,7 +46,6 @@ export class UsersService {
   async getUserWithChat(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
       relations: [
-        'followings',
         'blockings',
         'ownerChannels',
         'adminChannels',
