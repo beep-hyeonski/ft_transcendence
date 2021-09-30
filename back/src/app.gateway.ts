@@ -306,13 +306,11 @@ export class AppGateway
         await this.usersService.statusChange(payload.sendUserIndex, 'ONLINE');
         break;
       default:
-        this.server.in(payload.gameName).fetchSockets().then((sockets) => {
-          sockets.forEach((socket) => {
-            this.getUserByJwt(socket.handshake.headers.authorization).then( async (user) => {
-              await this.usersService.statusChange(user.index, 'ONLINE');
-            });
-          })
-        });
+        const sockets = await this.server.in(payload.gameName).fetchSockets();
+        for (const socket of sockets) {
+          const user = await this.getUserByJwt(socket.handshake.headers.authorization);
+          await this.usersService.statusChange(user.index, 'ONLINE');
+        }
         throw new WsException('Bad Request');
     }
   }
