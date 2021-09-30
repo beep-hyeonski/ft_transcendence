@@ -302,9 +302,13 @@ export class AppGateway
         break;
       case 'REJECT':
         this.server.socketsLeave(payload.gameName);
+        const receiveUser = await this.getUserByJwt(
+          client.handshake.headers.authorization,
+        );
         this.wsClients.get(payload.sendUserIndex).emit('matchReject', {
           status: 'MATCH_REJECT',
         });
+        this.usersService.statusChange(receiveUser.index, 'ONLINE');
         this.usersService.statusChange(payload.sendUserIndex, 'ONLINE');
         break;
       default:
