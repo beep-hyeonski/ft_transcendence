@@ -257,6 +257,7 @@ export class AppGateway
       gameName: gameName,
       ballSpeed: payload.ballSpeed,
     });
+    this.usersService.statusChange(payload.receiveUserIndex, 'INQUEUE');
     this.usersService.statusChange(sender.index, 'INQUEUE');
   }
   @SubscribeMessage('matchResponse')
