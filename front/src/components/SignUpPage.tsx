@@ -104,7 +104,7 @@ function SignUpPage() {
     try {
       const data = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/signup`, signupForm);
       localStorage.setItem('p_auth', String(data.data.jwt));
-      checkToken(dispatch);
+      await checkToken(dispatch);
       if (isLoggedIn) {
         const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
           extraHeaders: {

@@ -31,16 +31,17 @@ function App(): JSX.Element {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    checkToken(dispatch).then(() => {
-      if (authState.isLoggedIn) {
-        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
-          extraHeaders: {
-            Authorization: `${String(authState.token)}`,
-          },
-        });
-        dispatch(initSocket(socket));
-      }
-    });
+    (async () => {
+      await checkToken(dispatch);
+    })();
+    if (authState.isLoggedIn) {
+      const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
+        extraHeaders: {
+          Authorization: `${String(authState.token)}`,
+        },
+      });
+      dispatch(initSocket(socket));
+    }
   }, [authState.isLoggedIn, authState.token, dispatch]);
 
   return (

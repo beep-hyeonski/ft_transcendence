@@ -100,7 +100,7 @@ function EmailVerifyPage() {
     try {
       const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/twofa`, twofaForm);
       localStorage.setItem('p_auth', String(ret.data.jwt));
-      checkToken(dispatch);
+      await checkToken(dispatch);
       if (isLoggedIn) {
         const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
           extraHeaders: {
