@@ -47,7 +47,7 @@ function LobyUserList({ user } : UserdataProps): JSX.Element {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  if (user.status === 'offline') return <></>;
+  // if (user.status === 'offline') return <></>;
 
   const onClickLobyUser = () => {
     dispatch(changeSideBar({ type: FOLLOW }));

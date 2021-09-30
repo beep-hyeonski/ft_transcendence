@@ -4,12 +4,13 @@ import {
   makeStyles,
 } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import LobyUserList from './LobyUserList';
 import { getUsers } from '../utils/Requests';
 import checkToken from '../utils/checkToken';
+import { RootState } from '../modules';
 
 const drawerWidth = 250;
 
@@ -54,19 +55,25 @@ function LobySideBar() {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const { index } = useSelector((state: RootState) => state.userModule)
 
   // TODO: 에러 분기 나눠주기
   useEffect(() => {
-    getUsers().then((res) => {
-      setUsers(res);
-    }).catch((err) => {
-      console.log(err.response);
-      checkToken(dispatch);
-      alert('인증 정보가 유효하지 않습니다');
-      history.push('/');
-    });
-  }, [history, dispatch]);
+    (async () => {
+      try {
+        const data: any[] = await getUsers();
+        const onlineUsers = data.filter((user: any) => (user.index !== index && user.status !== "offline"));
+        setUsers(onlineUsers);
+      } catch (err: any) {
+        console.log(err.response);
+        checkToken(dispatch);
+        alert('인증 정보가 유효하지 않습니다');
+        history.push('/');
+      }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Drawer
