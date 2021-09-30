@@ -23,7 +23,7 @@ const keyState = {
   downKey: false,
 };
 
-function PongGame() {
+function PongGame(): JSX.Element {
   const classes = useStyles();
   const history = useHistory();
   const socket = useSelector((state: RootState) => state.socketModule);
@@ -33,13 +33,9 @@ function PongGame() {
     (state: RootState) => state.gameDataMoudle,
   );
   const [game, setGame] = useState(gamedata);
-  const data = gamedata;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // soohchoi find 5talja very very thanks
-
-  const currentGameName = data.gameName;
-  const currentGameInfo = data.gameInfo;
 
   const drawStick = (
     ctx: CanvasRenderingContext2D,
@@ -100,7 +96,7 @@ function PongGame() {
       socket?.socket?.emit('quitGame', {
         gameName: gamedata.gameName,
       });
-      socket?.socket?.off('gameLoop');
+      // socket?.socket?.off('gameLoop');
       window.removeEventListener('keydown', getKeyDown);
       window.removeEventListener('keyup', getKeyUp);
       console.log('game end');
@@ -176,7 +172,7 @@ function PongGame() {
       if (keyState.upKey === true) {
         socket?.socket?.emit('sendKeyEvent', {
           sender: mydata.username,
-          gameName: currentGameName,
+          gameName: gamedata.gameName,
           keyState: 'upKey',
         });
         // user2.y -= game.gameInfo.stickMoveSpeed;
@@ -187,7 +183,7 @@ function PongGame() {
       if (keyState.downKey === true) {
         socket?.socket?.emit('sendKeyEvent', {
           sender: mydata.username,
-          gameName: currentGameName,
+          gameName: gamedata.gameName,
           keyState: 'downKey',
         });
         // user2.y += stickMoveSpeed;
@@ -304,28 +300,44 @@ function PongGame() {
 
     drawPong();
     if (player1.score >= 3 || player2.score >= 3) {
-      if (currentGameInfo.player1 === mydata.username) {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${gamedata.gameInfo.player2Nickname}`).then((res) => {
-          socket?.socket?.emit('matchResult', {
-            gameName: currentGameName,
-            createMatchDto: {
-              player1Index: mydata.index,
-              player2Index: res.data.index,
-              player1Score: player1.score,
-              player2Score: player2.score,
-            },
-          });
-        }).catch((err) => {
-          console.log(err);
-        });
+      if (gamedata.gameInfo.player1 === mydata.username) {
+        (async () => {
+          try {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${gamedata.gameInfo.player2Nickname}`);
+            socket?.socket?.emit('matchResult', {
+              gameName: gamedata.gameName,
+              createMatchDto: {
+                player1Index: mydata.index,
+                player2Index: data.index,
+                player1Score: player1.score,
+                player2Score: player2.score,
+              },
+            });
+          } catch (err) {
+            console.log(err);
+          }
+        })();
+        // // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        // axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${gamedata.gameInfo.player2Nickname}`).then((res) => {
+        //   socket?.socket?.emit('matchResult', {
+        //     gameName: gamedata.gameName,
+        //     createMatchDto: {
+        //       player1Index: mydata.index,
+        //       player2Index: res.data.index,
+        //       player1Score: player1.score,
+        //       player2Score: player2.score,
+        //     },
+        //   });
+        // }).catch((err) => {
+        //   console.log(err);
+        // });
       }
       dispatch(waitGame());
-      console.log('test');
       history.push('/');
     }
     return () => {
-
+      socket?.socket?.off('gameLoop');
     }
 
     // return () => {
@@ -335,7 +347,7 @@ function PongGame() {
     //   window.removeEventListener('keyup', getKeyUp);
     // };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game, history, socket, mydata, currentGameName, currentGameInfo, dispatch]);
+  }, [game, history, socket, mydata, gamedata.gameName, gamedata.gameInfo, dispatch]);
 
   return <canvas ref={canvasRef} className={classes.canvas} />;
 }

@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
-import { ingGame } from '../modules/gamestate';
+import { ingGame, waitGame } from '../modules/gamestate';
 import { setGameData } from '../modules/gamedata';
 
 const useStyles = makeStyles({
@@ -95,6 +95,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
           ballSpeed: '',
         },
       });
+      dispatch(waitGame());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -163,6 +164,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
         ballSpeed: '',
       },
     });
+    dispatch(waitGame());
   };
 
   return (

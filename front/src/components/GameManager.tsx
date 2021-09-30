@@ -5,7 +5,7 @@ import { CircularProgress, Button } from '@material-ui/core';
 import { RootState } from '../modules';
 import GameQueuing from './GameQueuing';
 import MatchAlarm from './MatchAlarm';
-import { waitGame } from '../modules/gamestate';
+import { waitGame, pvpQueueGame } from '../modules/gamestate';
 import RejectAlarm from './RejectAlarm';
 
 const useStyles = makeStyles({
@@ -71,6 +71,7 @@ function GameManager(): JSX.Element {
         status: gamedata.status,
         matchData: gamedata,
       });
+      dispatch(pvpQueueGame());
       console.log(gamedata);
     });
     return () => {
