@@ -49,12 +49,6 @@ function FollowList({ user }: UserdataProps): JSX.Element {
   const history = useHistory();
   const [menuAnchor, setMenuAnchor] = React.useState<null | any>(null);
   const menu = Boolean(menuAnchor);
-  const [status, setStatus] = useState('');
-
-  // 왜 hooks으로 묶여있지 않은지
-  axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${user.nickname}`).then((res: any) => {
-    setStatus(res.data.status);
-  });
 
   const onClickFollowUser = () => {
     history.push(`/profile/${user.nickname}`);
@@ -86,7 +80,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
         status={user.status}
       />
       <ListItemText primary={user.nickname} className={classes.usernameMargin} />
-      <StatusIcon status={status} />
+      <StatusIcon status={user.status} />
       <Menu
         id="menu"
         open={menu}

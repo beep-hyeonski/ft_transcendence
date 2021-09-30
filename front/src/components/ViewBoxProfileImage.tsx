@@ -45,7 +45,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   followButton: {
     position: 'absolute',
-    top: '70%',
+    top: '75%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#3F446E',
@@ -61,7 +61,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   unfollowButton: {
     position: 'absolute',
-    top: '70%',
+    top: '75%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#CE6F84',
@@ -77,7 +77,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   pvpButton: {
     position: 'absolute',
-    top: '80%',
+    top: '85%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#3F446E',
@@ -93,7 +93,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   obButton: {
     position: 'absolute',
-    top: '90%',
+    top: '85%',
     left: '18%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#3F446E',
@@ -109,7 +109,7 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-function SpeedDialog(props: any) {
+function GameSpeedDialog(props: any) {
   const { onClose, open } = props;
   const userdata = useSelector((state: RootState) => state.profileModule);
   const socket = useSelector((state: RootState) => state.socketModule);
@@ -154,7 +154,7 @@ function ViewBoxProfileImage() {
   const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
   const { socket } = useSelector((state: RootState) => state.socketModule);
 
-  const handleClickOpen = () => {
+  const pvpRequestButton = () => {
     if (gamestate !== 'WAIT') {
       alert('이미 게임 중이거나 게임 큐 대기중입니다.');
       return;
@@ -162,7 +162,7 @@ function ViewBoxProfileImage() {
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const dialogClose = () => {
     setOpen(false);
   };
 
@@ -172,7 +172,7 @@ function ViewBoxProfileImage() {
     setFollow(isFollow);
   }, [mydata.followings, userdata.nickname]);
 
-  const clickFollowButton = () => { 
+  const clickFollowButton = () => {
     const followForm = {
       followedUser: userdata.username,
     };
@@ -206,20 +206,17 @@ function ViewBoxProfileImage() {
         dispatch(setGameData(payload));
         dispatch(ingGame());
       }
-      console.log('asdf');
     };
-    console.log('obobobo');
-    console.log(userdata.index);
     socket?.on('matchComplete', callback);
     socket?.emit('observeMatch', {
-      matchInUserIndex: userdata.index,
       // number
+      matchInUserIndex: userdata.index,
     });
     return () => {
       socket?.off('matchComplete');
     }
   }
-
+  
   return (
     <>
       <Avatar
@@ -236,19 +233,19 @@ function ViewBoxProfileImage() {
         Follow
       </Button>
       )}
-      {userdata.nickname !== mydata.nickname && (
-      <Button className={classes.pvpButton} variant="contained" onClick={handleClickOpen}>
+      {userdata.nickname !== mydata.nickname && userdata.status === 'online' && (
+      <Button className={classes.pvpButton} variant="contained" onClick={pvpRequestButton}>
         PVP 신청
       </Button>
       )}
-      {userdata.nickname !== mydata.nickname && (
+      {userdata.nickname !== mydata.nickname && userdata.status === 'ingame' && (
       <Button className={classes.obButton} variant="contained" onClick={observeButton}>
         관전하기
       </Button>
       )}
-      <SpeedDialog
+      <GameSpeedDialog
         open={open}
-        onClose={handleClose}
+        onClose={dialogClose}
       />
     </>
   );

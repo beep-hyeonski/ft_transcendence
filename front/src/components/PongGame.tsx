@@ -98,7 +98,7 @@ function PongGame() {
     return () => {
       dispatch(waitGame())
       socket?.socket?.emit('quitGame', {
-        ganeName: gamedata.gameName,
+        gameName: gamedata.gameName,
       });
       socket?.socket?.off('gameLoop');
       window.removeEventListener('keydown', getKeyDown);
@@ -321,6 +321,7 @@ function PongGame() {
         });
       }
       dispatch(waitGame());
+      console.log('test');
       history.push('/');
     }
     return () => {

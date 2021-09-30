@@ -51,7 +51,7 @@ function GameManager(): JSX.Element {
   const { gamestate } = useSelector(
     (state: RootState) => state.gameStateMoudle,
   );
-  const socket = useSelector((state: RootState) => state.socketModule);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
   const [data, setData] = useState({
     status: 'WAIT',
     matchData: {
@@ -65,7 +65,8 @@ function GameManager(): JSX.Element {
   const [answer, setAnswer] = useState('');
 
   useEffect(() => {
-    socket?.socket?.on('matchRequest', (gamedata) => {
+    console.log(socket)
+    socket?.on('matchRequest', (gamedata) => {
       setData({
         status: gamedata.status,
         matchData: gamedata,
@@ -73,25 +74,25 @@ function GameManager(): JSX.Element {
       console.log(gamedata);
     });
     return () => {
-      socket?.socket?.off('matchRequest');
+      socket?.off('matchRequest');
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    socket?.socket?.on('cancelComplete', (payload) => {
+    socket?.on('cancelComplete', (payload) => {
       if (payload.status === 'CANCELED'){
         dispatch(waitGame());
       }
     })
     return () => {
-      socket?.socket?.off('cancleComplete');
+      socket?.off('cancleComplete');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    socket.socket?.on('matchReject', (payload) => {
+    socket?.on('matchReject', (payload) => {
       setAnswer(payload.status);
     });
     if (answer === 'MATCH_REJECT') {
@@ -101,7 +102,7 @@ function GameManager(): JSX.Element {
       }, 2000);
     }
     return () => {
-      socket?.socket?.off('matchReject');
+      socket?.off('matchReject');
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [answer]);
@@ -111,7 +112,7 @@ function GameManager(): JSX.Element {
   }, [gamestate]);
 
   const clickCancleButton = () => {
-    socket?.socket?.emit('cancelQueue', () => {});
+    socket?.emit('cancelQueue', () => {});
   }
 
   return (

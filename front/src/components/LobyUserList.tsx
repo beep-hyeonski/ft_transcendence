@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
-import { WbSunnyRounded } from '@material-ui/icons';
+import { WbSunnyRounded, NightsStayRounded, AdbRounded } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -20,6 +20,26 @@ interface UserdataProps {
     avatar: string,
     status: string,
   }
+}
+
+interface StatusIconProps {
+  status: string
+}
+
+function StatusIcon({ status }: StatusIconProps): JSX.Element {
+  if (status === 'offline') {
+    return (
+      <NightsStayRounded style={{ color: '#666666' }} />
+    );
+  }
+  if (status === 'ingame') {
+    return (
+      <AdbRounded style={{ color: '#DAADFF' }} />
+    );
+  }
+  return (
+    <WbSunnyRounded style={{ color: '#FFFA66' }} />
+  );
 }
 
 function LobyUserList({ user } : UserdataProps): JSX.Element {
@@ -43,7 +63,7 @@ function LobyUserList({ user } : UserdataProps): JSX.Element {
         status={user.status}
       />
       <ListItemText primary={user.nickname} className={classes.usernameMargin} />
-      <WbSunnyRounded style={{ color: '#FFFA66' }} />
+      <StatusIcon status={user.status} />
     </ListItem>
   );
 }

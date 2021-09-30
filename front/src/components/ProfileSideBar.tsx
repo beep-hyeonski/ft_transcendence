@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   createStyles,
   makeStyles,
 } from '@material-ui/core/styles';
 import { List } from '@material-ui/core';
+import axios from 'axios';
 import Drawer from '@material-ui/core/Drawer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import FollowList from './FollowList';
+import { updateUser } from '../modules/user';
 
 const drawerWidth = 250;
 
@@ -50,8 +52,15 @@ const useStyles = makeStyles(() => createStyles({
 
 function ProfileSideBar() {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const mydata = useSelector((state: RootState) => state.userModule);
+  useEffect(() => {
+    axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${mydata.nickname}`).then((res: any) => {
+      dispatch(updateUser(res.data));
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Drawer

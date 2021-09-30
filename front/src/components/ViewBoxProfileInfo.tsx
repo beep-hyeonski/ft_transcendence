@@ -64,7 +64,6 @@ function ViewBoxProfileInfo() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     axios.get(`${String(process.env.REACT_APP_API_URL)}/match/${userdata.username}`).then((res) => {
       setRecode(res.data);
-      console.log(res.data);
     }).catch((err) => {
       console.log(err);
     });
