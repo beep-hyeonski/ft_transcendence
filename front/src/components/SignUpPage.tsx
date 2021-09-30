@@ -13,56 +13,58 @@ import { RootState } from '../modules';
 import checkToken from '../utils/checkToken';
 import { initSocket } from '../modules/socket';
 
-const useStyles = makeStyles(() => createStyles({
-  title: {
-    color: '#282E4E',
-    fontSize: '40px',
-    margin: '30px 25px',
-    letterSpacing: '3px',
-    textShadow: '1px 1px 1px gray',
-  },
-  divStyle: {
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    height: '650px',
-    width: '1000px',
-    backgroundColor: 'white',
-    border: '1px solid white',
-    borderRadius: '10px',
-    boxShadow: '3.5px 3.5px 3px gray',
-  },
-  profileImage: {
-    position: 'absolute',
-    left: '20%',
-    top: '45%',
-    transform: 'translate(-50%, -50%)',
-    width: '275px',
-    height: '275px',
-    boxShadow: '1px 1px 1.5px lightgray',
-  },
-  changeLabel: {
-    position: 'absolute',
-    left: '20%',
-    top: '75%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#F4F3FF',
-    color: '#282E4E',
-    width: 150,
-    height: 50,
-    textTransform: 'none',
-    textShadow: '0.5px 0.5px 0.5px gray',
-    boxShadow: '1px 1px 1px gray',
-    '&:hover': {
-      backgroundColor: '#e3e0ff',
+const useStyles = makeStyles(() =>
+  createStyles({
+    title: {
+      color: '#282E4E',
+      fontSize: '40px',
+      margin: '30px 25px',
+      letterSpacing: '3px',
+      textShadow: '1px 1px 1px gray',
     },
-    textAlign: 'center',
-    lineHeight: '48px',
-    borderRadius: '4px',
-    fontSize: '15px',
-  },
-}));
+    divStyle: {
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+      height: '650px',
+      width: '1000px',
+      backgroundColor: 'white',
+      border: '1px solid white',
+      borderRadius: '10px',
+      boxShadow: '3.5px 3.5px 3px gray',
+    },
+    profileImage: {
+      position: 'absolute',
+      left: '20%',
+      top: '45%',
+      transform: 'translate(-50%, -50%)',
+      width: '275px',
+      height: '275px',
+      boxShadow: '1px 1px 1.5px lightgray',
+    },
+    changeLabel: {
+      position: 'absolute',
+      left: '20%',
+      top: '75%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: '#F4F3FF',
+      color: '#282E4E',
+      width: 150,
+      height: 50,
+      textTransform: 'none',
+      textShadow: '0.5px 0.5px 0.5px gray',
+      boxShadow: '1px 1px 1px gray',
+      '&:hover': {
+        backgroundColor: '#e3e0ff',
+      },
+      textAlign: 'center',
+      lineHeight: '48px',
+      borderRadius: '4px',
+      fontSize: '15px',
+    },
+  }),
+);
 
 function SignUpPage() {
   const classes = useStyles();
@@ -76,13 +78,18 @@ function SignUpPage() {
       history.push('/');
     }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history]);
 
   // https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg
-  const [image, setImage] = useState('https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg');
+  const [image, setImage] = useState(
+    'https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg',
+  );
 
-  const clickSignUpButton = async (form: { nickname: string; email: string; }) => {
+  const clickSignUpButton = async (form: {
+    nickname: string;
+    email: string;
+  }) => {
     const token = localStorage.getItem('p_auth');
     if (!token) {
       alert('인증 정보가 유효하지 않습니다.');
@@ -91,7 +98,8 @@ function SignUpPage() {
     if (form.nickname.length < 2 || form.nickname.length > 10) {
       alert('닉네임은 2~10글자로 써야합니다.');
       return;
-    } if (form.nickname === 'me') {
+    }
+    if (form.nickname === 'me') {
       alert('사용할 수 없는 닉네임입니다.');
       return;
     }
@@ -102,7 +110,10 @@ function SignUpPage() {
       avatar: image,
     };
     try {
-      const data = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/signup`, signupForm);
+      const data = await axios.post(
+        `${String(process.env.REACT_APP_API_URL)}/auth/signup`,
+        signupForm,
+      );
       localStorage.setItem('p_auth', String(data.data.jwt));
       await checkToken(dispatch);
       if (isLoggedIn) {
@@ -140,7 +151,10 @@ function SignUpPage() {
     if (file) {
       formData.set('image', file);
     }
-    const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/images`, formData);
+    const ret = await axios.post(
+      `${String(process.env.REACT_APP_API_URL)}/images`,
+      formData,
+    );
     setImage(ret.data.image);
   };
 
@@ -149,17 +163,19 @@ function SignUpPage() {
 
   return (
     <div className={classes.divStyle}>
-      <div className={classes.title}>
-        Sign Up
-      </div>
-      <Avatar
-        className={classes.profileImage}
-        src={image}
-      />
+      <div className={classes.title}>Sign Up</div>
+      <Avatar className={classes.profileImage} src={image} />
       <label className={classes.changeLabel} htmlFor="file">
         Change Image
       </label>
-      <input style={{ display: 'none' }} id="file" type="file" name="profileImage" onChange={changeImage} accept=".jpg, .jpeg, .png, .gif" />
+      <input
+        style={{ display: 'none' }}
+        id="file"
+        type="file"
+        name="profileImage"
+        onChange={changeImage}
+        accept=".jpg, .jpeg, .png, .gif"
+      />
       <SignUpInputs onSubmit={clickSignUpButton} buttonName="Sign Up" />
     </div>
   );

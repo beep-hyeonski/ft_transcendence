@@ -18,18 +18,14 @@ const useStyles = makeStyles({
   },
 });
 
-export interface DrawAvatarProps{
+export interface DrawAvatarProps {
   username: string;
   status: string;
   src: string;
   type: string;
 }
 
-function DrawAvatar({
-  username,
-  src,
-  type,
-}: DrawAvatarProps): JSX.Element {
+function DrawAvatar({ username, src, type }: DrawAvatarProps): JSX.Element {
   const classes = useStyles();
 
   if (type === 'sideBarImage') {

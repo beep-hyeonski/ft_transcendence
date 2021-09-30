@@ -9,31 +9,33 @@ import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
 
-const useStyles = makeStyles(() => createStyles({
-  menuIconLocation: {
-    width: '1rem',
-    height: '1rem',
-    position: 'absolute',
-    marginTop: '1.8rem',
-    marginLeft: '19.2rem',
-  },
-  menuIcon: {
-    fontSize: '2rem',
-    color: 'black',
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    menuIconLocation: {
+      width: '1rem',
+      height: '1rem',
+      position: 'absolute',
+      marginTop: '1.8rem',
+      marginLeft: '19.2rem',
+    },
+    menuIcon: {
+      fontSize: '2rem',
+      color: 'black',
+    },
+  }),
+);
 
 interface UserdataProps {
-  avatar: string,
-  index: number,
-  nickname: string,
-  status: string,
+  avatar: string;
+  index: number;
+  nickname: string;
+  status: string;
 }
 
 interface UserData {
-  user: UserdataProps
-  isOwner: boolean
-  isManager: boolean
+  user: UserdataProps;
+  isOwner: boolean;
+  isManager: boolean;
 }
 
 const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
@@ -52,16 +54,18 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/admin`,
         { nickname: user.nickname },
       );
-      dispatch(joinChatRoom({
-        roomIndex: data.index,
-        roomTitle: data.title,
-        roomPassword: data.password,
-        roomStatus: data.status,
-        roomJoinedUsers: data.joinUsers,
-        roomAdmins: data.adminUsers,
-        roomMuted: chatData.mutedUsers,
-        roomOwner: chatData.ownerUser,
-      }));
+      dispatch(
+        joinChatRoom({
+          roomIndex: data.index,
+          roomTitle: data.title,
+          roomPassword: data.password,
+          roomStatus: data.status,
+          roomJoinedUsers: data.joinUsers,
+          roomAdmins: data.adminUsers,
+          roomMuted: chatData.mutedUsers,
+          roomOwner: chatData.ownerUser,
+        }),
+      );
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error.response);
@@ -75,16 +79,18 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/admin`,
         { data: { nickname: user.nickname } },
       );
-      dispatch(joinChatRoom({
-        roomIndex: data.index,
-        roomTitle: data.title,
-        roomPassword: data.password,
-        roomStatus: data.status,
-        roomJoinedUsers: data.joinUsers,
-        roomAdmins: data.adminUsers,
-        roomMuted: chatData.mutedUsers,
-        roomOwner: chatData.ownerUser,
-      }));
+      dispatch(
+        joinChatRoom({
+          roomIndex: data.index,
+          roomTitle: data.title,
+          roomPassword: data.password,
+          roomStatus: data.status,
+          roomJoinedUsers: data.joinUsers,
+          roomAdmins: data.adminUsers,
+          roomMuted: chatData.mutedUsers,
+          roomOwner: chatData.ownerUser,
+        }),
+      );
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error.response);
@@ -98,16 +104,18 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/mute`,
         { nickname: user.nickname },
       );
-      dispatch(joinChatRoom({
-        roomIndex: data.index,
-        roomTitle: data.title,
-        roomPassword: data.password,
-        roomStatus: data.status,
-        roomJoinedUsers: data.joinUsers,
-        roomAdmins: data.adminUsers,
-        roomMuted: data.mutedUsers,
-        roomOwner: chatData.ownerUser,
-      }));
+      dispatch(
+        joinChatRoom({
+          roomIndex: data.index,
+          roomTitle: data.title,
+          roomPassword: data.password,
+          roomStatus: data.status,
+          roomJoinedUsers: data.joinUsers,
+          roomAdmins: data.adminUsers,
+          roomMuted: data.mutedUsers,
+          roomOwner: chatData.ownerUser,
+        }),
+      );
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error.response);
@@ -121,16 +129,18 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/mute`,
         { data: { nickname: user.nickname } },
       );
-      dispatch(joinChatRoom({
-        roomIndex: data.index,
-        roomTitle: data.title,
-        roomPassword: data.password,
-        roomStatus: data.status,
-        roomJoinedUsers: data.joinUsers,
-        roomAdmins: data.adminUsers,
-        roomMuted: data.mutedUsers,
-        roomOwner: chatData.ownerUser,
-      }));
+      dispatch(
+        joinChatRoom({
+          roomIndex: data.index,
+          roomTitle: data.title,
+          roomPassword: data.password,
+          roomStatus: data.status,
+          roomJoinedUsers: data.joinUsers,
+          roomAdmins: data.adminUsers,
+          roomMuted: data.mutedUsers,
+          roomOwner: chatData.ownerUser,
+        }),
+      );
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error.response);
@@ -143,22 +153,26 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   };
 
   useEffect(() => {
-    const adminUser = chatData.adminUsers.find((admin: any) => admin.nickname === user.nickname);
+    const adminUser = chatData.adminUsers.find(
+      (admin: any) => admin.nickname === user.nickname,
+    );
     setIsAdmin(adminUser === undefined);
-    const mutedUser = chatData.mutedUsers.find((muted: any) => muted.nickname === user.nickname);
+    const mutedUser = chatData.mutedUsers.find(
+      (muted: any) => muted.nickname === user.nickname,
+    );
     setIsMuted(mutedUser === undefined);
   }, [chatData.adminUsers, chatData.mutedUsers, menuAnchor, user.nickname]);
 
   function adminMenu() {
     if (isAdmin) {
-      return <MenuItem onClick={onClickAddAdmin}>관리자 권한 부여 </MenuItem>
+      return <MenuItem onClick={onClickAddAdmin}>관리자 권한 부여 </MenuItem>;
     }
-    return <MenuItem onClick={onClickDeleteAdmin}>관리자 권한 해제</MenuItem>
+    return <MenuItem onClick={onClickDeleteAdmin}>관리자 권한 해제</MenuItem>;
   }
 
   function muteMenu() {
     if (isMuted) {
-    return <MenuItem onClick={onClickMuteUser}>채팅 금지</MenuItem>;
+      return <MenuItem onClick={onClickMuteUser}>채팅 금지</MenuItem>;
     }
     return <MenuItem onClick={onClickUnMuteUser}>채팅 금지 해제</MenuItem>;
   }
@@ -170,10 +184,7 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
 
   return (
     <>
-      <IconButton
-        className={classes.menuIconLocation}
-        onClick={onClickMenu}
-      >
+      <IconButton className={classes.menuIconLocation} onClick={onClickMenu}>
         <MenuIcon className={classes.menuIcon} />
       </IconButton>
       <Menu
@@ -183,7 +194,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       >
         <MenuItem onClick={onClickProfile}>프로필 보기</MenuItem>
         {isOwner && chatData.ownerUser !== user.nickname ? adminMenu() : null}
-        {chatData.ownerUser !== user.nickname && isAdmin && isManager ? muteMenu() : null}
+        {chatData.ownerUser !== user.nickname && isAdmin && isManager
+          ? muteMenu()
+          : null}
       </Menu>
     </>
   );

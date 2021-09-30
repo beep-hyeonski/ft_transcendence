@@ -14,21 +14,21 @@ export const matchQueueGame = () => ({
 
 export const pvpQueueGame = () => ({
   type: PVPGAMEQUEUE,
-})
+});
 
 export const ingGame = () => ({
   type: GAMEING,
 });
 
 type GameState = {
-  gamestate: string,
+  gamestate: string;
 };
 
 type GameStateAction =
-| ReturnType<typeof waitGame>
-| ReturnType<typeof matchQueueGame>
-| ReturnType<typeof pvpQueueGame>
-| ReturnType<typeof ingGame>;
+  | ReturnType<typeof waitGame>
+  | ReturnType<typeof matchQueueGame>
+  | ReturnType<typeof pvpQueueGame>
+  | ReturnType<typeof ingGame>;
 
 const initialState: GameState = {
   gamestate: 'WAIT',

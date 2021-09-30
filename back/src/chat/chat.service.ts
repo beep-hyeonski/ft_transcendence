@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayloadDto } from 'src/auth/dto/jwt-payload.dto';
@@ -78,12 +77,24 @@ export class ChatService {
       throw new ForbiddenException('Permission Denied');
     if (updateChatDto.status !== ChatStatus.PROTECTED && updateChatDto.password)
       throw new BadRequestException('Do Not set Password if not protected');
-    if (chat.status === ChatStatus.PUBLIC && updateChatDto.status === ChatStatus.PROTECTED && (!updateChatDto.password || updateChatDto.password.length < 8)) {
-      throw new BadRequestException('Valid Password Required, length more than 8');
+    if (
+      chat.status === ChatStatus.PUBLIC &&
+      updateChatDto.status === ChatStatus.PROTECTED &&
+      (!updateChatDto.password || updateChatDto.password.length < 8)
+    ) {
+      throw new BadRequestException(
+        'Valid Password Required, length more than 8',
+      );
     }
-    if (chat.status === ChatStatus.PROTECTED && updateChatDto.status === ChatStatus.PROTECTED && updateChatDto.password) {
-      if (updateChatDto.password !== "" && updateChatDto.password.length < 8) {
-        throw new BadRequestException('Valid Password Required, length more than 8');
+    if (
+      chat.status === ChatStatus.PROTECTED &&
+      updateChatDto.status === ChatStatus.PROTECTED &&
+      updateChatDto.password
+    ) {
+      if (updateChatDto.password !== '' && updateChatDto.password.length < 8) {
+        throw new BadRequestException(
+          'Valid Password Required, length more than 8',
+        );
       }
     }
 

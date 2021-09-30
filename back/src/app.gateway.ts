@@ -23,6 +23,7 @@ import { MatchService } from './match/match.service';
 import { v1 } from 'uuid';
 import { GameService, BallSpeed, Game, KeyState } from './game/game.service';
 import { Interval } from '@nestjs/schedule';
+
 @UseFilters(WebsocketExceptionFilter)
 @WebSocketGateway(8001, { cors: true })
 export class AppGateway
@@ -36,15 +37,19 @@ export class AppGateway
     private gameService: GameService,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
   ) {}
+
   @WebSocketServer()
   server: Server;
+
   wsClients: Map<number, Socket> = new Map<number, Socket>();
   gameQueue: Array<Socket> = [];
   private logger: Logger = new Logger('AppGateway');
+
   afterInit() {
     this.gameService.attachServer(this.server);
     this.logger.log(`Socket Server Initialized`);
   }
+
   handleConnection(client: Socket) {
     const jwtDecoded = this.jwtService.verify(
       client.handshake.headers.authorization,
@@ -62,13 +67,14 @@ export class AppGateway
     this.logger.log(`Client ${jwtDecoded.username} Connected`);
     this.usersService.statusChange(jwtDecoded.sub, 'ONLINE');
   }
+
   handleDisconnect(client: Socket) {
     const jwtDecoded = this.jwtService.verify(
       client.handshake.headers.authorization,
     );
-    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
-      inQueueClient.id === client.id
-    ));
+    const isExistsInQueue = this.gameQueue.findIndex(
+      (inQueueClient) => inQueueClient.id === client.id,
+    );
     if (isExistsInQueue !== -1) {
       this.gameQueue.splice(isExistsInQueue, 1);
     }
@@ -76,6 +82,7 @@ export class AppGateway
     this.usersService.statusChange(jwtDecoded.sub, 'OFFLINE');
     this.logger.log(`Client ${jwtDecoded.username} Disconnected`);
   }
+
   @SubscribeMessage('join')
   async joinChat(client: Socket, payload: { chatIndex: number }) {
     const user = await this.validateChatUser(
@@ -95,6 +102,7 @@ export class AppGateway
       `Client ${user.username} joined to chat ${payload.chatIndex}`,
     );
   }
+
   @SubscribeMessage('leave')
   async leaveChat(client: Socket, payload: { chatIndex: number }) {
     const user = await this.validateChatUser(
@@ -105,6 +113,7 @@ export class AppGateway
     client.emit('left', { status: 'SUCCESS' });
     this.logger.log(`Client ${user.username} left chat ${payload.chatIndex}`);
   }
+
   @SubscribeMessage('onMessage')
   async onMessage(
     client: Socket,
@@ -140,11 +149,12 @@ export class AppGateway
       throw new WsException('User has been muted from this chat');
     }
   }
+
   @SubscribeMessage('cancelQueue')
   async cancelQueue(client: Socket) {
-    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
-      inQueueClient.id === client.id
-    ));
+    const isExistsInQueue = this.gameQueue.findIndex(
+      (inQueueClient) => inQueueClient.id === client.id,
+    );
     if (isExistsInQueue !== -1) {
       this.gameQueue.splice(isExistsInQueue, 1);
     }
@@ -156,20 +166,22 @@ export class AppGateway
     );
     await this.usersService.statusChange(user.index, 'ONLINE');
   }
+
   @SubscribeMessage('quitGame')
   async quitGame(client: Socket, payload: { gameName: string }) {
     client.leave(payload.gameName);
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    this.logger.debug(`${user.nickname} quit game`)
+    this.logger.debug(`${user.nickname} quit game`);
     await this.usersService.statusChange(user.index, 'ONLINE');
   }
+
   @SubscribeMessage('matchQueue')
   async onMatchQueue(client: Socket) {
-    const isExistsInQueue = this.gameQueue.findIndex((inQueueClient) => (
-      inQueueClient.id === client.id
-    ));
+    const isExistsInQueue = this.gameQueue.findIndex(
+      (inQueueClient) => inQueueClient.id === client.id,
+    );
     if (isExistsInQueue !== -1) {
       this.gameQueue.splice(isExistsInQueue, 1);
       this.logger.log('Duplicate Queue Request');
@@ -178,7 +190,7 @@ export class AppGateway
     const requestUser = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    await this.usersService.statusChange(requestUser.index, 'INQUEUE')
+    await this.usersService.statusChange(requestUser.index, 'INQUEUE');
     if (this.gameQueue.length >= 2) {
       const gameName = String(`game_${v1()}`);
       const player1 = await this.getUserByJwt(
@@ -210,6 +222,7 @@ export class AppGateway
       await this.usersService.statusChange(player2.index, 'INGAME');
     }
   }
+
   @SubscribeMessage('sendKeyEvent')
   onKeyEvent(
     client: Socket,
@@ -221,6 +234,7 @@ export class AppGateway
       payload.keyState,
     );
   }
+
   @SubscribeMessage('matchResult')
   async matchResult(
     client: Socket,
@@ -234,6 +248,7 @@ export class AppGateway
     this.gameService.closeGame(payload.gameName);
     this.server.socketsLeave(payload.gameName);
   }
+
   @SubscribeMessage('matchRequest')
   async onMatchRequest(
     client: Socket,
@@ -254,6 +269,7 @@ export class AppGateway
     await this.usersService.statusChange(payload.receiveUserIndex, 'INQUEUE');
     await this.usersService.statusChange(sender.index, 'INQUEUE');
   }
+
   @SubscribeMessage('matchResponse')
   async onMatchAccepted(
     client: Socket,
@@ -308,12 +324,15 @@ export class AppGateway
       default:
         const sockets = await this.server.in(payload.gameName).fetchSockets();
         for (const socket of sockets) {
-          const user = await this.getUserByJwt(socket.handshake.headers.authorization);
+          const user = await this.getUserByJwt(
+            socket.handshake.headers.authorization,
+          );
           await this.usersService.statusChange(user.index, 'ONLINE');
         }
         throw new WsException('Bad Request');
     }
   }
+
   @SubscribeMessage('observeMatch')
   async observeMatch(client: Socket, payload: { matchInUserIndex: number }) {
     let gameName = '';
@@ -340,14 +359,17 @@ export class AppGateway
     );
     await this.usersService.statusChange(user.index, 'INGAME');
   }
+
   async getUserByJwt(jwtToken: string): Promise<User> {
     const jwtDecode = this.jwtService.verify(jwtToken);
     return await this.usersService.getUser(jwtDecode.username);
   }
+
   async getUserWithChatByJwt(jwtToken: string): Promise<User> {
     const jwtDecode = this.jwtService.verify(jwtToken);
     return await this.usersService.getUserWithChat(jwtDecode.username);
   }
+
   async validateChatUser(token: string, chatIndex: number): Promise<User> {
     let user: User;
     let chat: Chat;

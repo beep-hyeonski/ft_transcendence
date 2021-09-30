@@ -14,111 +14,113 @@ import { joinChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 
-const useStyles = makeStyles(() => createStyles({
-  root: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '80rem',
-    height: '45rem',
-    backgroundColor: '#282E4E',
-    borderRadius: '8px',
-    boxShadow: '0.5px 0.5px 2px white',
-  },
-  title: {
-    fontSize: '6rem',
-    color: '#F4F3FF',
-    marginTop: '1.5rem',
-    marginLeft: '2rem',
-    wordSpacing: '5px',
-    textShadow: '1px 1px 2px lightgray',
-    letterSpacing: '2px',
-  },
-  inputBox: {
-    position: 'absolute',
-    top: '58%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '90%',
-    height: '72%',
-    backgroundColor: 'white',
-    border: '1px solid #FFFFFF',
-    borderRadius: '8px',
-    boxShadow: '3px 3px 3px gray',
-  },
-  channelName: {
-    border: '2px solid black',
-    borderRadius: '10px',
-    marginTop: '4rem',
-    marginLeft: '5rem',
-    paddingLeft: '10px',
-    backgroundColor: 'white',
-    width: '60rem',
-    height: '5.5rem',
-    fontSize: '50px',
-    letterSpacing: '3px',
-    boxShadow: '1px 1px 1px gray',
-  },
-  channelPassword: {
-    border: '2px solid black',
-    marginLeft: '5rem',
-    marginTop: '1rem',
-    borderRadius: '10px',
-    paddingLeft: '10px',
-    backgroundColor: '#999999',
-    width: '60rem',
-    height: '5.5rem',
-    fontSize: '45px',
-    letterSpacing: '3px',
-    boxShadow: '1px 1px 1px gray',
-  },
-  radioGroup: {
-    marginTop: '4rem',
-    marginLeft: '50%',
-    width: '40rem',
-    transform: 'translate(-50%, -50%)',
-    display: 'flex',
-  },
-  radio: {
-    marginLeft: '4.5rem',
-    marginRight: '5.5rem',
-  },
-  radioText: {
-    fontSize: '30px',
-    textShadow: '1px 1px 1px lightgray',
-  },
-  createButton: {
-    float: 'right',
-    marginTop: '3rem',
-    marginRight: '4rem',
-    backgroundColor: '#282E4E',
-    color: '#F4F3FF',
-    width: 230,
-    height: 60,
-    fontSize: '30px',
-    letterSpacing: '2px',
-    borderRadius: '8px',
-    textTransform: 'none',
-    textShadow: '1px 1px 0.5px gray',
-    boxShadow: '1px 1px 0.5px gray',
-    '&:hover': {
-      backgroundColor: '#0F1535',
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '80rem',
+      height: '45rem',
+      backgroundColor: '#282E4E',
+      borderRadius: '8px',
+      boxShadow: '0.5px 0.5px 2px white',
     },
-  },
-  closeButtonLocation: {
-    position: 'absolute',
-    top: '0.3rem',
-    right: '0.5rem',
-  },
-  closeButton: {
-    color: '#f35353',
-    fontSize: '40px',
-    '&:hover': {
-      color: '#DA3A3A',
+    title: {
+      fontSize: '6rem',
+      color: '#F4F3FF',
+      marginTop: '1.5rem',
+      marginLeft: '2rem',
+      wordSpacing: '5px',
+      textShadow: '1px 1px 2px lightgray',
+      letterSpacing: '2px',
     },
-  },
-}));
+    inputBox: {
+      position: 'absolute',
+      top: '58%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      height: '72%',
+      backgroundColor: 'white',
+      border: '1px solid #FFFFFF',
+      borderRadius: '8px',
+      boxShadow: '3px 3px 3px gray',
+    },
+    channelName: {
+      border: '2px solid black',
+      borderRadius: '10px',
+      marginTop: '4rem',
+      marginLeft: '5rem',
+      paddingLeft: '10px',
+      backgroundColor: 'white',
+      width: '60rem',
+      height: '5.5rem',
+      fontSize: '50px',
+      letterSpacing: '3px',
+      boxShadow: '1px 1px 1px gray',
+    },
+    channelPassword: {
+      border: '2px solid black',
+      marginLeft: '5rem',
+      marginTop: '1rem',
+      borderRadius: '10px',
+      paddingLeft: '10px',
+      backgroundColor: '#999999',
+      width: '60rem',
+      height: '5.5rem',
+      fontSize: '45px',
+      letterSpacing: '3px',
+      boxShadow: '1px 1px 1px gray',
+    },
+    radioGroup: {
+      marginTop: '4rem',
+      marginLeft: '50%',
+      width: '40rem',
+      transform: 'translate(-50%, -50%)',
+      display: 'flex',
+    },
+    radio: {
+      marginLeft: '4.5rem',
+      marginRight: '5.5rem',
+    },
+    radioText: {
+      fontSize: '30px',
+      textShadow: '1px 1px 1px lightgray',
+    },
+    createButton: {
+      float: 'right',
+      marginTop: '3rem',
+      marginRight: '4rem',
+      backgroundColor: '#282E4E',
+      color: '#F4F3FF',
+      width: 230,
+      height: 60,
+      fontSize: '30px',
+      letterSpacing: '2px',
+      borderRadius: '8px',
+      textTransform: 'none',
+      textShadow: '1px 1px 0.5px gray',
+      boxShadow: '1px 1px 0.5px gray',
+      '&:hover': {
+        backgroundColor: '#0F1535',
+      },
+    },
+    closeButtonLocation: {
+      position: 'absolute',
+      top: '0.3rem',
+      right: '0.5rem',
+    },
+    closeButton: {
+      color: '#f35353',
+      fontSize: '40px',
+      '&:hover': {
+        color: '#DA3A3A',
+      },
+    },
+  }),
+);
 
 interface CreateProps {
   open: boolean;
@@ -143,7 +145,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
         password: '',
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.status]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,17 +176,22 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
       data.title = chatData.title;
     }
     try {
-      const res = await axios.patch(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`, data);
-      dispatch(joinChatRoom({
-        roomTitle: res.data.title,
-        roomIndex: res.data.index,
-        roomPassword: res.data.password,
-        roomStatus: res.data.status,
-        roomJoinedUsers: chatData.joinUsers,
-        roomAdmins: chatData.adminUsers,
-        roomMuted: chatData.mutedUsers,
-        roomOwner: chatData.ownerUser,
-      }));
+      const res = await axios.patch(
+        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`,
+        data,
+      );
+      dispatch(
+        joinChatRoom({
+          roomTitle: res.data.title,
+          roomIndex: res.data.index,
+          roomPassword: res.data.password,
+          roomStatus: res.data.status,
+          roomJoinedUsers: chatData.joinUsers,
+          roomAdmins: chatData.adminUsers,
+          roomMuted: chatData.mutedUsers,
+          roomOwner: chatData.ownerUser,
+        }),
+      );
       const userdata = await getUserme();
       dispatch(updateUser(userdata.data));
       setOpen(false);
@@ -195,7 +202,10 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
       });
     } catch (error: any) {
       console.log(error.response);
-      if (error.response.data.message === 'Valid Password Required, length more than 8') {
+      if (
+        error.response.data.message ===
+        'Valid Password Required, length more than 8'
+      ) {
         alert('비밀번호는 8자 이상이어야 합니다.');
       }
     }
@@ -225,12 +235,13 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
         }}
       >
         <div className={classes.root}>
-          <IconButton className={classes.closeButtonLocation} onClick={onClickCloseButton}>
+          <IconButton
+            className={classes.closeButtonLocation}
+            onClick={onClickCloseButton}
+          >
             <CancelIcon className={classes.closeButton} />
           </IconButton>
-          <div className={classes.title}>
-            Change Channel
-          </div>
+          <div className={classes.title}>Change Channel</div>
           <form className={classes.inputBox} onSubmit={clickChangeButton}>
             <InputBase
               className={classes.channelName}
@@ -239,26 +250,32 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
               value={form.title}
               onChange={onChange}
             />
-            <RadioGroup className={classes.radioGroup} row name="status" value={form.status} onChange={clickRadio}>
+            <RadioGroup
+              className={classes.radioGroup}
+              row
+              name="status"
+              value={form.status}
+              onChange={clickRadio}
+            >
               <FormControlLabel
                 className={classes.radio}
                 value="public"
                 control={<Radio color="primary" />}
-                label={(
+                label={
                   <Box component="div" className={classes.radioText}>
                     public
                   </Box>
-                )}
+                }
               />
               <FormControlLabel
                 className={classes.radio}
                 value="protected"
                 control={<Radio color="primary" />}
-                label={(
+                label={
                   <Box component="div" className={classes.radioText}>
                     protected
                   </Box>
-                )}
+                }
               />
             </RadioGroup>
             <InputBase

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { getManager, Repository, Transaction, TypeORMError } from 'typeorm';
+import { getManager, Repository, TypeORMError } from 'typeorm';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { Match } from './entities/match.entity';
 

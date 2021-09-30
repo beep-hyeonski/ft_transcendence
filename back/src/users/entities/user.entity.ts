@@ -11,7 +11,6 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chat/entities/chat.entity';
 import { Message } from 'src/chat/entities/message.entity';
-import { Match } from 'src/match/entities/match.entity';
 
 export enum UserStatus {
   ONLINE = 'online',

@@ -1,10 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { WsException } from '@nestjs/websockets';
-import { User, UserStatus } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { Server } from 'socket.io';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+
 interface IBallInfo {
   x: number;
   y: number;
@@ -14,10 +13,12 @@ interface IBallInfo {
   speed: number;
   color: string;
 }
+
 interface IFrameInfo {
   frameWidth: number;
   frameHeight: number;
 }
+
 interface IGameInfo {
   ballSpeed: number;
   stickMoveSpeed: number;
@@ -26,6 +27,7 @@ interface IGameInfo {
   player2: string;
   player2Nickname: string;
 }
+
 interface IPlayerInfo {
   x: number;
   y: number;
@@ -34,14 +36,17 @@ interface IPlayerInfo {
   score: number;
   color: string;
 }
+
 export enum BallSpeed {
   NORMAL = 5,
   HARD = 8,
 }
+
 export enum KeyState {
   upKey = 'upKey',
   downKey = 'downKey',
 }
+
 export class Game {
   frameInfo: IFrameInfo;
   gameInfo: IGameInfo;
@@ -53,7 +58,14 @@ export class Game {
   angle: number;
   direction: number;
   private gameService: GameService;
-  constructor(player1: string, player1Nickname: string, player2: string, player2Nickname: string, ballSpeed: BallSpeed) {
+
+  constructor(
+    player1: string,
+    player1Nickname: string,
+    player2: string,
+    player2Nickname: string,
+    ballSpeed: BallSpeed,
+  ) {
     this.gameService = new GameService();
     this.frameInfo = {
       frameWidth: 1400,
@@ -107,14 +119,18 @@ export class Game {
     this.ballInfo.velocityY = Math.sin(this.angle) * this.ballInfo.speed;
   }
 }
+
 @Injectable()
 export class GameService {
   constructor() {}
+
   gameList: Map<string, Game> = new Map<string, Game>();
   server: Server;
+
   attachServer(server: Server) {
     this.server = server;
   }
+
   gameSet(
     gameName: string,
     player1: User,
@@ -131,7 +147,8 @@ export class GameService {
     this.gameList.set(gameName, newGame);
     return newGame;
   }
-  collision(game: Game, playerNumber: 1 | 2): Boolean {
+
+  collision(game: Game, playerNumber: 1 | 2): boolean {
     const playerInfo: IPlayerInfo = game.playerInfo[playerNumber - 1];
     const playerTop = playerInfo.y;
     const playerBottom = playerInfo.y + playerInfo.stickHeight;
@@ -149,6 +166,7 @@ export class GameService {
       ballTop < playerBottom
     );
   }
+
   ballReset(game: Game) {
     game.ballInfo.x = game.frameInfo.frameWidth / 2;
     game.ballInfo.y = game.frameInfo.frameHeight / 2;
@@ -158,6 +176,7 @@ export class GameService {
       game.ballInfo.velocityY *= -1;
     }
   }
+
   applyEvent(gameName: string, sender: string, keyState: KeyState) {
     const game: Game = this.gameList.get(gameName);
     let playerNumber: number;

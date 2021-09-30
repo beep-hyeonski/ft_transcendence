@@ -65,7 +65,7 @@ function GameManager(): JSX.Element {
   const [answer, setAnswer] = useState('');
 
   useEffect(() => {
-    console.log(socket)
+    console.log(socket);
     socket?.on('matchRequest', (gamedata) => {
       setData({
         status: gamedata.status,
@@ -77,19 +77,19 @@ function GameManager(): JSX.Element {
     return () => {
       socket?.off('matchRequest');
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     socket?.on('cancelComplete', (payload) => {
-      if (payload.status === 'CANCELED'){
+      if (payload.status === 'CANCELED') {
         dispatch(waitGame());
       }
-    })
+    });
     return () => {
       socket?.off('cancleComplete');
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -105,7 +105,7 @@ function GameManager(): JSX.Element {
     return () => {
       socket?.off('matchReject');
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [answer]);
 
   useEffect(() => {
@@ -114,28 +114,37 @@ function GameManager(): JSX.Element {
 
   const clickCancleButton = () => {
     socket?.emit('cancelQueue', () => {});
-  }
+  };
 
   return (
     <>
       {gamestate !== 'WAIT' && <GameQueuing />}
-      {(gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') && answer !== 'MATCH_REJECT' && (
-        <>
-          <div className={classes.alram}>
-            <div className={classes.subDiv}>
-              <div className={classes.alramText}>
-                게임 큐를 기다리고 있습니다.
+      {(gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') &&
+        answer !== 'MATCH_REJECT' && (
+          <>
+            <div className={classes.alram}>
+              <div className={classes.subDiv}>
+                <div className={classes.alramText}>
+                  게임 큐를 기다리고 있습니다.
+                </div>
+                {gamestate === 'MATCHQUEUE' && (
+                  <Button
+                    className={classes.cancleButton}
+                    onClick={clickCancleButton}
+                  >
+                    x
+                  </Button>
+                )}
               </div>
-              { gamestate === 'MATCHQUEUE' && <Button className={classes.cancleButton} onClick={clickCancleButton}>x</Button> }
+              <CircularProgress />
             </div>
-            <CircularProgress />
-          </div>
-        </>
+          </>
+        )}
+      {(gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') &&
+        answer === 'MATCH_REJECT' && <RejectAlarm />}
+      {data.status === 'REQUEST_MATCH' && (
+        <MatchAlarm data={data} setData={setData} />
       )}
-      {(gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') && answer === 'MATCH_REJECT' && (
-        <RejectAlarm />
-      )}
-      {data.status === 'REQUEST_MATCH' && <MatchAlarm data={data} setData={setData} />}
     </>
   );
 }

@@ -2,52 +2,51 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import axios from 'axios';
 import ListItem from '@material-ui/core/ListItem';
 import { Menu, MenuItem } from '@material-ui/core';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useHistory } from 'react-router-dom';
-import { WbSunnyRounded, NightsStayRounded, AdbRounded } from '@material-ui/icons';
+import {
+  WbSunnyRounded,
+  NightsStayRounded,
+  AdbRounded,
+} from '@material-ui/icons';
 import DrawAvatar from './Avatar';
 
-const useStyles = makeStyles(() => createStyles({
-  usernameMargin: {
-    marginLeft: '10px',
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    usernameMargin: {
+      marginLeft: '10px',
+    },
+  }),
+);
 
 interface StatusIconProps {
-  status: string
+  status: string;
 }
 
 function StatusIcon({ status }: StatusIconProps): JSX.Element {
   if (status === 'offline') {
-    return (
-      <NightsStayRounded style={{ color: '#666666' }} />
-    );
+    return <NightsStayRounded style={{ color: '#666666' }} />;
   }
   if (status === 'ingame') {
-    return (
-      <AdbRounded style={{ color: '#DAADFF' }} />
-    );
+    return <AdbRounded style={{ color: '#DAADFF' }} />;
   }
-  return (
-    <WbSunnyRounded style={{ color: '#FFFA66' }} />
-  );
+  return <WbSunnyRounded style={{ color: '#FFFA66' }} />;
 }
 
 interface UserdataProps {
-  user : {
-    nickname: string,
-    avatar: string,
-    status: string,
-  }
+  user: {
+    nickname: string;
+    avatar: string;
+    status: string;
+  };
 }
 
 function FollowList({ user }: UserdataProps): JSX.Element {
   const classes = useStyles();
   const history = useHistory();
-  const [menuAnchor, setMenuAnchor] = React.useState<null | any>(null);
+  const [menuAnchor, setMenuAnchor] = useState<null | any>(null);
   const menu = Boolean(menuAnchor);
 
   const onClickFollowUser = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -74,14 +73,22 @@ function FollowList({ user }: UserdataProps): JSX.Element {
   };
 
   return (
-    <ListItem button key={user.nickname} onClick={onClickFollowUser} onContextMenu={rightClick}>
+    <ListItem
+      button
+      key={user.nickname}
+      onClick={onClickFollowUser}
+      onContextMenu={rightClick}
+    >
       <DrawAvatar
         type="sideBarImage"
         username={user.nickname}
         src={user.avatar}
         status={user.status}
       />
-      <ListItemText primary={user.nickname} className={classes.usernameMargin} />
+      <ListItemText
+        primary={user.nickname}
+        className={classes.usernameMargin}
+      />
       <StatusIcon status={user.status} />
       <Menu
         id="menu"

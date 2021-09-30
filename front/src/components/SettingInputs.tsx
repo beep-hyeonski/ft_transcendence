@@ -8,61 +8,63 @@ import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
 import { Box } from '@material-ui/core';
 
-const useStyles = makeStyles(() => createStyles({
-  root: {
-    position: 'absolute',
-    left: '65%',
-    top: '55%',
-    transform: 'translate(-50%, -50%)',
-    width: '600px',
-    height: '400px',
-    backgroundColor: 'inherit',
-    boxShadow: 'none',
-  },
-  nickName: {
-    border: '2px solid black',
-    borderRadius: '10px',
-    margin: '80px 20px 10px 30px',
-    paddingLeft: '10px',
-    backgroundColor: 'white',
-    width: '500px',
-    height: '60px',
-    fontSize: '24px',
-    letterSpacing: '1px',
-    boxShadow: '1px 1px 1px gray',
-  },
-  signUpButton: {
-    position: 'absolute',
-    left: '80%',
-    top: '80%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#282E4E',
-    color: '#F4F3FF',
-    width: 170,
-    height: 60,
-    fontSize: '20px',
-    letterSpacing: '2px',
-    borderRadius: '8px',
-    textTransform: 'none',
-    textShadow: '1px 1px 0.5px gray',
-    boxShadow: '1px 1px 0.5px gray',
-    '&:hover': {
-      backgroundColor: '#0F1535',
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      position: 'absolute',
+      left: '65%',
+      top: '55%',
+      transform: 'translate(-50%, -50%)',
+      width: '600px',
+      height: '400px',
+      backgroundColor: 'inherit',
+      boxShadow: 'none',
     },
-  },
-  twofaButton: {
-    paddingLeft: '10px',
-    paddingRight: '10px',
-    paddingTop: '5px',
-    paddingBottom: '5px',
-    borderRadius: '8px',
-    border: '2px solid black',
-    textShadow: '0.5px 0.5px 0.5px lightgray',
-    boxShadow: '1px 1px 0.5px gray',
-    margin: '40px 0px 0px 31px',
-    fontSize: '30px',
-  },
-}));
+    nickName: {
+      border: '2px solid black',
+      borderRadius: '10px',
+      margin: '80px 20px 10px 30px',
+      paddingLeft: '10px',
+      backgroundColor: 'white',
+      width: '500px',
+      height: '60px',
+      fontSize: '24px',
+      letterSpacing: '1px',
+      boxShadow: '1px 1px 1px gray',
+    },
+    signUpButton: {
+      position: 'absolute',
+      left: '80%',
+      top: '80%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: '#282E4E',
+      color: '#F4F3FF',
+      width: 170,
+      height: 60,
+      fontSize: '20px',
+      letterSpacing: '2px',
+      borderRadius: '8px',
+      textTransform: 'none',
+      textShadow: '1px 1px 0.5px gray',
+      boxShadow: '1px 1px 0.5px gray',
+      '&:hover': {
+        backgroundColor: '#0F1535',
+      },
+    },
+    twofaButton: {
+      paddingLeft: '10px',
+      paddingRight: '10px',
+      paddingTop: '5px',
+      paddingBottom: '5px',
+      borderRadius: '8px',
+      border: '2px solid black',
+      textShadow: '0.5px 0.5px 0.5px lightgray',
+      boxShadow: '1px 1px 0.5px gray',
+      margin: '40px 0px 0px 31px',
+      fontSize: '30px',
+    },
+  }),
+);
 
 interface UserSignUpProps {
   onSubmit: (form: { nickname: string; twofa: boolean }) => void;
@@ -72,8 +74,11 @@ interface UserSignUpProps {
 }
 
 function SignUpInputs({
-  onSubmit, buttonName, username, isTwofa,
-} : UserSignUpProps) {
+  onSubmit,
+  buttonName,
+  username,
+  isTwofa,
+}: UserSignUpProps) {
   const classes = useStyles();
 
   const [form, setForm] = useState({
@@ -117,16 +122,13 @@ function SignUpInputs({
           name="twofa"
           onChange={checkTwofa}
           control={<Checkbox color="primary" checked={form.twofa} />}
-          label={(
+          label={
             <Box component="div" fontSize={22}>
-              Two Factor Authentication
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;
+              Two Factor Authentication &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
             </Box>
-          )}
+          }
           labelPlacement="start"
         />
         <Button type="submit" className={classes.signUpButton} variant="text">

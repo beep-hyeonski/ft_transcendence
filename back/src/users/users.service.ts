@@ -123,7 +123,7 @@ export class UsersService {
       default:
         throw new WsException('Not Valid Status');
     }
-    const res = await this.userRepository.save(user)
+    const res = await this.userRepository.save(user);
     this.logger.debug(`${user.nickname} - ${status}`);
   }
 }

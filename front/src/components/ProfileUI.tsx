@@ -20,15 +20,18 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
 
   useEffect(() => {
     dispatch(changeSideBar({ type: FOLLOW }));
-    axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${id}`).then((res) => {
-      dispatch(changeUser(res.data));
-      setIsValid(true);
-    }).catch((err) => {
-      console.log(err);
-      if (err.response.status === 404) {
-        setIsValid(false);
-      }
-    });
+    axios
+      .get(`${String(process.env.REACT_APP_API_URL)}/users/${id}`)
+      .then((res) => {
+        dispatch(changeUser(res.data));
+        setIsValid(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response.status === 404) {
+          setIsValid(false);
+        }
+      });
   }, [dispatch, id]);
 
   return (

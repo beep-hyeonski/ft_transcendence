@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  makeStyles,
-} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles({
@@ -45,9 +43,7 @@ const RejectAlarm = () => {
     <>
       <Paper variant="outlined" className={classes.alram}>
         <div>
-          <div className={classes.alarmText}>
-            대결 요청이 거절되었습니다.
-          </div>
+          <div className={classes.alarmText}>대결 요청이 거절되었습니다.</div>
         </div>
       </Paper>
     </>

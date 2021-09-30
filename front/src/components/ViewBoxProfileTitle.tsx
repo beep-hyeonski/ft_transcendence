@@ -6,40 +6,42 @@ import SearchBar from './SearchBar';
 import ViewBoxContentsBox from './ViewBoxContentsBox';
 import { RootState } from '../modules';
 
-const useStyles = makeStyles(() => createStyles({
-  profileTitle: {
-    fontSize: '55px',
-    marginTop: '20px',
-    marginLeft: '30px',
-    color: '#F4F3FF',
-    textShadow: '1px 1px 1.5px lightgray',
-    letterSpacing: '2px',
-    wordSpacing: '5px',
-    textTransform: 'capitalize',
-  },
-  searchBar: {
-    position: 'absolute',
-    top: '5%',
-    left: '64%',
-    boxShadow: '1px 1px 1px lightgray',
-    borderRadius: '4px',
-  },
-  notFoundMessage: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    fontSize: '40px',
-    color: 'white',
-    transform: 'translate(-50%, -50%)',
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    profileTitle: {
+      fontSize: '55px',
+      marginTop: '20px',
+      marginLeft: '30px',
+      color: '#F4F3FF',
+      textShadow: '1px 1px 1.5px lightgray',
+      letterSpacing: '2px',
+      wordSpacing: '5px',
+      textTransform: 'capitalize',
+    },
+    searchBar: {
+      position: 'absolute',
+      top: '5%',
+      left: '64%',
+      boxShadow: '1px 1px 1px lightgray',
+      borderRadius: '4px',
+    },
+    notFoundMessage: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      fontSize: '40px',
+      color: 'white',
+      transform: 'translate(-50%, -50%)',
+    },
+  }),
+);
 
 interface UserDataProps {
-  changeId : (id: string) => void
-  isValid: boolean,
+  changeId: (id: string) => void;
+  isValid: boolean;
 }
 
-function ViewBoxProfileTitle({ changeId, isValid } : UserDataProps) {
+function ViewBoxProfileTitle({ changeId, isValid }: UserDataProps) {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
@@ -57,9 +59,7 @@ function ViewBoxProfileTitle({ changeId, isValid } : UserDataProps) {
   if (!isValid) {
     return (
       <div>
-        <div className={classes.profileTitle}>
-          User Not Found
-        </div>
+        <div className={classes.profileTitle}>User Not Found</div>
         <div className={classes.searchBar}>
           <SearchBar onSubmit={searchUser} />
         </div>
@@ -72,9 +72,7 @@ function ViewBoxProfileTitle({ changeId, isValid } : UserDataProps) {
   if (userdata.nickname === mydata.nickname) {
     return (
       <div>
-        <div className={classes.profileTitle}>
-          My Profile
-        </div>
+        <div className={classes.profileTitle}>My Profile</div>
         <div className={classes.searchBar}>
           <SearchBar onSubmit={searchUser} />
         </div>

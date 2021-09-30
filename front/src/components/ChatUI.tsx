@@ -20,9 +20,7 @@ function ChatUI(): JSX.Element {
   };
 
   if (chatIndex !== -1) {
-    return (
-      <ChatRoom />
-    );
+    return <ChatRoom />;
   }
 
   return (

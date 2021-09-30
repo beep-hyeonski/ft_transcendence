@@ -12,57 +12,59 @@ import { RootState } from '../modules';
 import checkToken from '../utils/checkToken';
 import { initSocket } from '../modules/socket';
 
-const useStyles = makeStyles(() => createStyles({
-  root: {
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    height: '650px',
-    width: '1000px',
-    backgroundColor: 'white',
-    border: '1px solid white',
-    borderRadius: '10px',
-    boxShadow: '3.5px 3.5px 3px gray',
-    textAlign: 'center',
-  },
-  explain: {
-    transform: 'translateY(120px)',
-    color: '#282E4E',
-    fontSize: '70px',
-    letterSpacing: '3px',
-    textShadow: '1px 1px 1px gray',
-  },
-  inputBar: {
-    transform: 'translateY(200px)',
-    width: '520px',
-    height: '70px',
-    fontSize: '40px',
-    border: '2px solid #282E4E',
-    borderRadius: '6px',
-    boxShadow: '1px 1px 0.5px gray',
-    paddingLeft: '5px',
-  },
-  submitButton: {
-    position: 'absolute',
-    top: '70%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#282E4E',
-    color: '#F4F3FF',
-    width: 200,
-    height: 60,
-    fontSize: '25px',
-    letterSpacing: '2px',
-    borderRadius: '8px',
-    textTransform: 'none',
-    textShadow: '1px 1px 0.5px gray',
-    boxShadow: '1px 1px 0.5px gray',
-    '&:hover': {
-      backgroundColor: '#0F1535',
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+      height: '650px',
+      width: '1000px',
+      backgroundColor: 'white',
+      border: '1px solid white',
+      borderRadius: '10px',
+      boxShadow: '3.5px 3.5px 3px gray',
+      textAlign: 'center',
     },
-  },
-}));
+    explain: {
+      transform: 'translateY(120px)',
+      color: '#282E4E',
+      fontSize: '70px',
+      letterSpacing: '3px',
+      textShadow: '1px 1px 1px gray',
+    },
+    inputBar: {
+      transform: 'translateY(200px)',
+      width: '520px',
+      height: '70px',
+      fontSize: '40px',
+      border: '2px solid #282E4E',
+      borderRadius: '6px',
+      boxShadow: '1px 1px 0.5px gray',
+      paddingLeft: '5px',
+    },
+    submitButton: {
+      position: 'absolute',
+      top: '70%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: '#282E4E',
+      color: '#F4F3FF',
+      width: 200,
+      height: 60,
+      fontSize: '25px',
+      letterSpacing: '2px',
+      borderRadius: '8px',
+      textTransform: 'none',
+      textShadow: '1px 1px 0.5px gray',
+      boxShadow: '1px 1px 0.5px gray',
+      '&:hover': {
+        backgroundColor: '#0F1535',
+      },
+    },
+  }),
+);
 
 function EmailVerifyPage() {
   const classes = useStyles();
@@ -75,7 +77,7 @@ function EmailVerifyPage() {
     if (isLoggedIn || !localStorage.getItem('p_auth')) {
       history.push('/');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history]);
 
   const [form, setForm] = useState({
@@ -98,7 +100,10 @@ function EmailVerifyPage() {
       TwoFAToken: form.verifyCode,
     };
     try {
-      const ret = await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/twofa`, twofaForm);
+      const ret = await axios.post(
+        `${String(process.env.REACT_APP_API_URL)}/auth/twofa`,
+        twofaForm,
+      );
       localStorage.setItem('p_auth', String(ret.data.jwt));
       await checkToken(dispatch);
       if (isLoggedIn) {
@@ -118,9 +123,7 @@ function EmailVerifyPage() {
   return (
     <Paper className={classes.root}>
       <form onSubmit={handleSubmit}>
-        <div className={classes.explain}>
-          Please check your email.
-        </div>
+        <div className={classes.explain}>Please check your email.</div>
         <InputBase
           className={classes.inputBar}
           placeholder="Enter your verification code."

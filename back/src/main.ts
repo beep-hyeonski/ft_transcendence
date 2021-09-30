@@ -1,6 +1,5 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { WsAdapter } from '@nestjs/platform-ws';
 import { AppModule } from './app.module';
 import { JwtExceptionFilter } from './filters/jwt-exception.filter';
 import { TypeOrmExceptionFilter } from './filters/orm-exception.filter';
@@ -19,7 +18,6 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new TypeOrmExceptionFilter());
   app.useGlobalFilters(new JwtExceptionFilter());
-  // app.useWebSocketAdapter(new WsAdapter(app));
   await app.listen(8000);
 }
 bootstrap();

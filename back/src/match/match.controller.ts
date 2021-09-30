@@ -20,8 +20,8 @@ export class MatchController {
   @ApiOperation({ summary: '매치 데이터 생성' })
   @ApiOkResponse({ description: '생성된 매치 데이터' })
   @Post()
-  createMatch(@Body() CreateMatchDto: CreateMatchDto) {
-    return this.matchService.createMatch(CreateMatchDto);
+  createMatch(@Body() createMatchDto: CreateMatchDto) {
+    return this.matchService.createMatch(createMatchDto);
   }
 
   @ApiOperation({ summary: '특정 유저 매치 데이터 조회' })

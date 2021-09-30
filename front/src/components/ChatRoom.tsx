@@ -122,7 +122,11 @@ export default function ChatRoom(): JSX.Element {
   useEffect(() => {
     try {
       (async () => {
-        const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/messages`);
+        const { data } = await axios.get(
+          `${String(process.env.REACT_APP_API_URL)}/chat/${
+            chatData.index
+          }/messages`,
+        );
         const msgs = data.map((message: any) => ({
           timestamp: message.createdAt,
           sendUser: {
@@ -165,7 +169,7 @@ export default function ChatRoom(): JSX.Element {
         chatIndex: chatData.index,
       });
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatData.index]);
 
   useEffect(() => {
@@ -178,7 +182,9 @@ export default function ChatRoom(): JSX.Element {
 
   // 내 정보 + 메세지
   const handleKeyPress = (e: any) => {
-    if (inputs === '') { return; }
+    if (inputs === '') {
+      return;
+    }
     const data = {
       chatIndex: chatData.index,
       message: inputs,
@@ -191,7 +197,9 @@ export default function ChatRoom(): JSX.Element {
   };
 
   const sendClick = () => {
-    if (inputs === '') { return; }
+    if (inputs === '') {
+      return;
+    }
     const data = {
       chatIndex: chatData.index,
       message: inputs,
@@ -213,7 +221,9 @@ export default function ChatRoom(): JSX.Element {
   const onClickMenuExit = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`);
+      await axios.post(
+        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`,
+      );
       dispatch(exitChatRoom());
       const { data } = await getUserme();
       dispatch(updateUser(data));
@@ -226,17 +236,21 @@ export default function ChatRoom(): JSX.Element {
   const onClickMenuUser = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`);
-      dispatch(joinChatRoom({
-        roomTitle: data.title,
-        roomIndex: data.index,
-        roomPassword: data.password,
-        roomStatus: data.status,
-        roomJoinedUsers: data.joinUsers,
-        roomAdmins: data.adminUsers,
-        roomMuted: data.mutedUsers,
-        roomOwner: data.ownerUser.nickname,
-      }));
+      const { data } = await axios.get(
+        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`,
+      );
+      dispatch(
+        joinChatRoom({
+          roomTitle: data.title,
+          roomIndex: data.index,
+          roomPassword: data.password,
+          roomStatus: data.status,
+          roomJoinedUsers: data.joinUsers,
+          roomAdmins: data.adminUsers,
+          roomMuted: data.mutedUsers,
+          roomOwner: data.ownerUser.nickname,
+        }),
+      );
       setOpenJoinedMenu(true);
       setMenuAnchor(null);
     } catch (error) {
@@ -253,7 +267,10 @@ export default function ChatRoom(): JSX.Element {
   return (
     <>
       <AppBar position="fixed" className={classes.titlebar}>
-        <IconButton className={classes.backButtonLocation} onClick={onClickBackButton}>
+        <IconButton
+          className={classes.backButtonLocation}
+          onClick={onClickBackButton}
+        >
           <ArrowBackIcon className={classes.backButton} />
         </IconButton>
         <IconButton
@@ -268,13 +285,13 @@ export default function ChatRoom(): JSX.Element {
           anchorEl={menuAnchor}
           onClose={() => setMenuAnchor(null)}
         >
-          {isOwner ? <MenuItem onClick={onClickMenuRoom}>채팅방 관리</MenuItem> : null}
+          {isOwner ? (
+            <MenuItem onClick={onClickMenuRoom}>채팅방 관리</MenuItem>
+          ) : null}
           <MenuItem onClick={onClickMenuUser}>유저 정보</MenuItem>
           <MenuItem onClick={onClickMenuExit}>나가기</MenuItem>
         </Menu>
-        <Typography className={classes.title}>
-          {chatData.title}
-        </Typography>
+        <Typography className={classes.title}>{chatData.title}</Typography>
       </AppBar>
       <div className={classes.messages}>
         <List>
@@ -300,7 +317,11 @@ export default function ChatRoom(): JSX.Element {
       >
         Send
       </Button>
-      <ChatUserMenu open={openJoinedMenu} setOpen={setOpenJoinedMenu} isOwner={isOwner} />
+      <ChatUserMenu
+        open={openJoinedMenu}
+        setOpen={setOpenJoinedMenu}
+        isOwner={isOwner}
+      />
       <ChatSettingMenu open={openSettingMenu} setOpen={setOpenSettingMenu} />
     </>
   );

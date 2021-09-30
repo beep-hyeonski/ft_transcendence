@@ -22,9 +22,10 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
     dispatch(loginCheck());
   } catch (err: any) {
     dispatch(deleteUser());
-    if (err.response.status !== 403) {
+    if (err?.response?.status !== 403) {
       localStorage.removeItem('p_auth');
     }
+    // 서버 꺼져있을 경우 에러 핸들링 필요
 
     dispatch(loginCheck());
   }

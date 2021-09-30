@@ -10,13 +10,15 @@ import axios from 'axios';
 import { RootState } from '../modules';
 import { waitGame } from '../modules/gamestate';
 
-const useStyles = makeStyles(() => createStyles({
-  canvas: {
-    backgroundColor: 'black',
-    width: '1400px',
-    height: '700px',
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    canvas: {
+      backgroundColor: 'black',
+      width: '1400px',
+      height: '700px',
+    },
+  }),
+);
 
 const keyState = {
   upKey: false,
@@ -29,9 +31,7 @@ function PongGame(): JSX.Element {
   const socket = useSelector((state: RootState) => state.socketModule);
   const mydata = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
-  const { gamedata } = useSelector(
-    (state: RootState) => state.gameDataMoudle,
-  );
+  const { gamedata } = useSelector((state: RootState) => state.gameDataMoudle);
   const [game, setGame] = useState(gamedata);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -92,7 +92,7 @@ function PongGame(): JSX.Element {
     window.addEventListener('keyup', getKeyUp);
 
     return () => {
-      dispatch(waitGame())
+      dispatch(waitGame());
       socket?.socket?.emit('quitGame', {
         gameName: gamedata.gameName,
       });
@@ -100,8 +100,8 @@ function PongGame(): JSX.Element {
       window.removeEventListener('keydown', getKeyDown);
       window.removeEventListener('keyup', getKeyUp);
       console.log('game end');
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -229,10 +229,7 @@ function PongGame(): JSX.Element {
       context.font = '60px Skia';
       context.fillText(
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        `${player1.score}      score      ${player2.score}`,
-        canvas.width / 2,
-        50,
-      );
+        `${player1.score}      score      ${player2.score}`, canvas.width / 2, 50);
     }
 
     // function resizeCanvas() {
@@ -338,7 +335,7 @@ function PongGame(): JSX.Element {
     }
     return () => {
       socket?.socket?.off('gameLoop');
-    }
+    };
 
     // return () => {
     //   dispatch(waitGame());
@@ -346,8 +343,16 @@ function PongGame(): JSX.Element {
     //   window.removeEventListener('keydown', getKeyDown);
     //   window.removeEventListener('keyup', getKeyUp);
     // };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game, history, socket, mydata, gamedata.gameName, gamedata.gameInfo, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    game,
+    history,
+    socket,
+    mydata,
+    gamedata.gameName,
+    gamedata.gameInfo,
+    dispatch,
+  ]);
 
   return <canvas ref={canvasRef} className={classes.canvas} />;
 }

@@ -49,9 +49,9 @@ type ChatState = {
   status: string;
   joinUsers: any[];
   password: string;
-  adminUsers: string[],
-  ownerUser: string,
-  mutedUsers: string[],
+  adminUsers: string[];
+  ownerUser: string;
+  mutedUsers: string[];
 };
 
 const initialState: ChatState = {

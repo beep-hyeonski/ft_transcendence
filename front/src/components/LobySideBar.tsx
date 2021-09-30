@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  createStyles,
-  makeStyles,
-} from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
@@ -14,56 +11,60 @@ import { RootState } from '../modules';
 
 const drawerWidth = 250;
 
-const useStyles = makeStyles(() => createStyles({
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    marginRight: '73.1px',
-    backgroundColor: '#3f446e',
-    color: '#F4F3FF',
-    width: drawerWidth,
-  },
-  usernameMargin: {
-    margin: '15px',
-  },
-  statusCircle: {
-    backgroundColor: '#FF0000',
-    color: '#FF0000',
-    width: '10px',
-    height: '10px',
-    borderRadius: '50%',
-  },
-  changeButton: {
-    margin: '7.5px',
-    backgroundColor: '#F4F3FF',
-    fontSize: 20,
-    color: '#282E4E',
-    width: 230,
-    height: 40,
-    textTransform: 'none',
-    textShadow: '0.5px 0.5px 0.5px gray',
-    boxShadow: '1px 1px 0.5px gray',
-    '&:hover': {
-      backgroundColor: '#e3e0ff',
+const useStyles = makeStyles(() =>
+  createStyles({
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0,
     },
-  },
-}));
+    drawerPaper: {
+      marginRight: '73.1px',
+      backgroundColor: '#3f446e',
+      color: '#F4F3FF',
+      width: drawerWidth,
+    },
+    usernameMargin: {
+      margin: '15px',
+    },
+    statusCircle: {
+      backgroundColor: '#FF0000',
+      color: '#FF0000',
+      width: '10px',
+      height: '10px',
+      borderRadius: '50%',
+    },
+    changeButton: {
+      margin: '7.5px',
+      backgroundColor: '#F4F3FF',
+      fontSize: 20,
+      color: '#282E4E',
+      width: 230,
+      height: 40,
+      textTransform: 'none',
+      textShadow: '0.5px 0.5px 0.5px gray',
+      boxShadow: '1px 1px 0.5px gray',
+      '&:hover': {
+        backgroundColor: '#e3e0ff',
+      },
+    },
+  }),
+);
 
 function LobySideBar() {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const [users, setUsers] = useState<any[]>([]);
-  const { index } = useSelector((state: RootState) => state.userModule)
+  const { index } = useSelector((state: RootState) => state.userModule);
 
   // TODO: 에러 분기 나눠주기
   useEffect(() => {
     (async () => {
       try {
         const data: any[] = await getUsers();
-        const onlineUsers = data.filter((user: any) => (user.index !== index && user.status !== "offline"));
+        const onlineUsers = data.filter(
+          (user: any) => user.index !== index && user.status !== 'offline',
+        );
         setUsers(onlineUsers);
       } catch (err: any) {
         console.log(err.response);
@@ -72,7 +73,7 @@ function LobySideBar() {
         history.push('/');
       }
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

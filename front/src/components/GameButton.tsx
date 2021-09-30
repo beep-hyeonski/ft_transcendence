@@ -28,7 +28,9 @@ const useStyles = makeStyles((theme) => ({
 function GameButton(): JSX.Element {
   const classes = useStyles();
   const socket = useSelector((state: RootState) => state.socketModule);
-  const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
+  const { gamestate } = useSelector(
+    (state: RootState) => state.gameStateMoudle,
+  );
   const dispatch = useDispatch();
 
   const clickGamestartButton = () => {
