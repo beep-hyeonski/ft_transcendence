@@ -20,6 +20,9 @@ interface DataProps {
   status?: string;
   created_at?: string;
   joinChannels?: [];
+  adminChannels?: [];
+  mutedChannels?: [];
+  ownerChannels?: [];
 }
 
 export const updateUser = (data: DataProps) => ({
@@ -49,6 +52,9 @@ type UserState = {
   status: string;
   created_at: string;
   joinChannels: [];
+  adminChannels?: [];
+  mutedChannels?: [];
+  ownerChannels?: [];
 };
 
 const initialState: UserState = {
@@ -69,6 +75,9 @@ const initialState: UserState = {
   status: '',
   created_at: '',
   joinChannels: [],
+  adminChannels: [],
+  mutedChannels: [],
+  ownerChannels: [],
 };
 
 export default function userModule(

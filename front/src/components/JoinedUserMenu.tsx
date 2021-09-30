@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
+import { changeSideBar, FOLLOW } from '../modules/sidebar';
 
 const useStyles = makeStyles(() => createStyles({
   menuIconLocation: {
@@ -30,13 +32,18 @@ interface UserdataProps {
 
 interface UserData {
   user: UserdataProps
+  isOwner: boolean
+  isManager: boolean
 }
 
-const JoinedUserMenu = ({ user }: UserData) => {
+const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   const onClickAddAdmin = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
@@ -84,16 +91,6 @@ const JoinedUserMenu = ({ user }: UserData) => {
     }
   };
 
-  // adminUsers: [{…}]
-  // createdAt: "2021-09-18T03:34:07.380Z"
-  // index: 2
-  // joinUsers: (3) [{…}, {…}, {…}]
-  // mutedUsers: [{…}]
-  // ownerUser: {index: 1, username: "joockim", nickname: "skamo", email: "joochan123123@gmail.com", avatar: "https://www.codeproject.com/KB/GDI-plus/ImageProcessing2/img.jpg", …}
-  // password: ""
-  // status: "public"
-  // title: "testChannel"
-
   const onClickMuteUser = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
@@ -140,11 +137,42 @@ const JoinedUserMenu = ({ user }: UserData) => {
     }
   };
 
+  const onClickMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setMenuAnchor(e.currentTarget);
+  };
+
+  useEffect(() => {
+    const adminUser = chatData.adminUsers.find((admin: any) => admin.nickname === user.nickname);
+    setIsAdmin(adminUser === undefined);
+    const mutedUser = chatData.mutedUsers.find((muted: any) => muted.nickname === user.nickname);
+    setIsMuted(mutedUser === undefined);
+  }, [chatData.adminUsers, chatData.mutedUsers, menuAnchor, user.nickname]);
+
+  function adminMenu() {
+    if (isAdmin) {
+      return <MenuItem onClick={onClickAddAdmin}>관리자 권한 부여 </MenuItem>
+    }
+    return <MenuItem onClick={onClickDeleteAdmin}>관리자 권한 해제</MenuItem>
+  }
+
+  function muteMenu() {
+    if (isMuted) {
+    return <MenuItem onClick={onClickMuteUser}>채팅 금지</MenuItem>;
+    }
+    return <MenuItem onClick={onClickUnMuteUser}>채팅 금지 해제</MenuItem>;
+  }
+
+  const onClickProfile = () => {
+    dispatch(changeSideBar({ type: FOLLOW }));
+    history.push(`/profile/${user.nickname}`);
+  };
+
   return (
     <>
       <IconButton
         className={classes.menuIconLocation}
-        onClick={(event: React.MouseEvent<HTMLElement>) => setMenuAnchor(event.currentTarget)}
+        onClick={onClickMenu}
       >
         <MenuIcon className={classes.menuIcon} />
       </IconButton>
@@ -153,10 +181,9 @@ const JoinedUserMenu = ({ user }: UserData) => {
         open={Boolean(menuAnchor)}
         onClose={() => setMenuAnchor(null)}
       >
-        <MenuItem onClick={onClickAddAdmin}>관리자 권한 부여 </MenuItem>
-        <MenuItem onClick={onClickDeleteAdmin}>관리자 권한 해제</MenuItem>
-        <MenuItem onClick={onClickMuteUser}>채팅 금지</MenuItem>
-        <MenuItem onClick={onClickUnMuteUser}>채팅 금지 해제</MenuItem>
+        <MenuItem onClick={onClickProfile}>프로필 보기</MenuItem>
+        {isOwner && chatData.ownerUser !== user.nickname ? adminMenu() : null}
+        {chatData.ownerUser !== user.nickname && isAdmin && isManager ? muteMenu() : null}
       </Menu>
     </>
   );

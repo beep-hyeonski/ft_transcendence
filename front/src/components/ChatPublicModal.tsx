@@ -186,7 +186,7 @@ function ChatPublicModal({ modal, setModal } : ModalProps) {
           >
             <GridList>
               {modal.joinUsers.map((user) => (
-                <ChatJoinedUser user={user} isInRoom={false} />
+                <ChatJoinedUser user={user} isInRoom={false} isOwner={false} isManager={false} />
               ))}
             </GridList>
           </Drawer>

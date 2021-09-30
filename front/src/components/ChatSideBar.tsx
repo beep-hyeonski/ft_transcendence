@@ -8,7 +8,7 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ChatJoinedList from './ChatJoinedList';
 import { RootState } from '../modules';
-import { getUserme } from '../utils/Requests';
+import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 
 const drawerWidth = 250;
@@ -62,12 +62,12 @@ function ChatSideBar(): JSX.Element {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getUserme().then((res) => {
+    getUsermeChat().then((res) => {
       dispatch(updateUser(res.data));
     }).catch((err) => {
       console.log(err.response);
     });
-  }, [dispatch]);
+  }, [dispatch])
 
   return (
     <Drawer

@@ -9,3 +9,8 @@ export async function getUsers(): Promise<any> {
   const users = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users`);
   return users.data;
 }
+
+export async function getUsermeChat(): Promise<any> {
+  const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/me/chat`);
+  return response.data;
+}

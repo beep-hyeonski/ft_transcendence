@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   Modal, Drawer, GridList, IconButton,
@@ -75,16 +75,24 @@ const useStyles = makeStyles(() => createStyles({
 interface ModalProps {
   open : boolean;
   setOpen : React.Dispatch<React.SetStateAction<boolean>>;
+  isOwner : boolean;
 }
 
-function ChatPublicModal({ open, setOpen }: ModalProps) {
+function ChatUserMenu({ open, setOpen, isOwner }: ModalProps) {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
+  const [isManager, setIsManager] = useState(false);
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setOpen(false);
   };
+
+  useEffect(() => {
+    const res = chatData.adminUsers.find((user: any) => user.nickname === mydata.nickname);
+    setIsManager(res !== undefined);
+  }, [chatData.adminUsers, mydata.nickname]);
 
   return (
     <div>
@@ -106,7 +114,7 @@ function ChatPublicModal({ open, setOpen }: ModalProps) {
           >
             <GridList>
               {chatData.joinUsers.map((user) => (
-                <ChatJoinedUser user={user} isInRoom={!false} />
+                <ChatJoinedUser user={user} isInRoom={!false} isOwner={isOwner} isManager={isManager} />
               ))}
             </GridList>
           </Drawer>
@@ -116,4 +124,4 @@ function ChatPublicModal({ open, setOpen }: ModalProps) {
   );
 }
 
-export default React.memo(ChatPublicModal);
+export default React.memo(ChatUserMenu);

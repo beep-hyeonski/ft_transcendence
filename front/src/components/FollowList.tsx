@@ -50,7 +50,8 @@ function FollowList({ user }: UserdataProps): JSX.Element {
   const [menuAnchor, setMenuAnchor] = React.useState<null | any>(null);
   const menu = Boolean(menuAnchor);
 
-  const onClickFollowUser = () => {
+  const onClickFollowUser = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
     history.push(`/profile/${user.nickname}`);
   };
 
@@ -68,6 +69,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
   const clickBlock = (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     console.log('Block');
+    console.log(user.nickname);
     setMenuAnchor(null);
   };
 

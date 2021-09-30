@@ -133,7 +133,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
   const [form, setForm] = useState({
     title: '',
     password: '',
-    status: 'public',
+    status: chatData.status,
   });
 
   useEffect(() => {
@@ -175,7 +175,6 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
     }
     try {
       const res = await axios.patch(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`, data);
-      console.log(res.data);
       dispatch(joinChatRoom({
         roomTitle: res.data.title,
         roomIndex: res.data.index,
@@ -192,10 +191,13 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
       setForm({
         title: '',
         password: '',
-        status: chatData.status,
+        status: res.data.status,
       });
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'Valid Password Required, length more than 8') {
+        alert('비밀번호는 8자 이상이어야 합니다.');
+      }
     }
   };
 

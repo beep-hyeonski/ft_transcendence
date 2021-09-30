@@ -144,7 +144,7 @@ function GameSpeedDialog(props: any) {
   );
 }
 
-function ViewBoxProfileImage() {
+function ViewBoxProfileImage(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
   const mydata = useSelector((state: RootState) => state.userModule);

@@ -9,14 +9,14 @@ import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
+import { useDispatch, useSelector } from 'react-redux';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import axios from 'axios';
 import { SettingsOutlined } from '@material-ui/icons';
-import { useDispatch, useSelector } from 'react-redux';
 import ChattingList from './ChattingList';
 import { RootState } from '../modules';
-import { exitChatRoom } from '../modules/chat';
+import { exitChatRoom, joinChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 import ChatUserMenu from './ChatUserMenu';
@@ -107,6 +107,8 @@ export default function ChatRoom(): JSX.Element {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
   const { socket } = useSelector((state: RootState) => state.socketModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
+  const [isOwner, setIsOwner] = useState(false);
   const dispatch = useDispatch();
 
   // setMsg => chat/{index}/messages
@@ -146,6 +148,11 @@ export default function ChatRoom(): JSX.Element {
           };
           setMsg((prev) => prev.concat(msg));
         });
+
+        socket?.on('exception', (payload) => {
+          if (payload.message === 'User has been muted from this chat')
+            alert('채팅 금지 상태입니다.');
+        });
       })();
     } catch (error) {
       console.log(error);
@@ -153,12 +160,17 @@ export default function ChatRoom(): JSX.Element {
 
     return () => {
       socket?.off('onMessage');
+      socket?.off('exception');
       socket?.emit('leave', {
         chatIndex: chatData.index,
       });
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatData.index]);
+
+  useEffect(() => {
+    setIsOwner(chatData.ownerUser === mydata.nickname);
+  }, [chatData.ownerUser, mydata.nickname]);
 
   const onChange = (e: any) => {
     setInputs(e.target.value);
@@ -195,7 +207,6 @@ export default function ChatRoom(): JSX.Element {
 
   const onClickSettingButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(chatData);
     setMenuAnchor(e.currentTarget);
   };
 
@@ -212,10 +223,25 @@ export default function ChatRoom(): JSX.Element {
     }
   };
 
-  const onClickMenuUser = (e: React.MouseEvent<HTMLLIElement>) => {
+  const onClickMenuUser = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
-    setOpenJoinedMenu(true);
-    setMenuAnchor(null);
+    try {
+      const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`);
+      dispatch(joinChatRoom({
+        roomTitle: data.title,
+        roomIndex: data.index,
+        roomPassword: data.password,
+        roomStatus: data.status,
+        roomJoinedUsers: data.joinUsers,
+        roomAdmins: data.adminUsers,
+        roomMuted: data.mutedUsers,
+        roomOwner: data.ownerUser.nickname,
+      }));
+      setOpenJoinedMenu(true);
+      setMenuAnchor(null);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onClickMenuRoom = (e: React.MouseEvent<HTMLLIElement>) => {
@@ -242,7 +268,7 @@ export default function ChatRoom(): JSX.Element {
           anchorEl={menuAnchor}
           onClose={() => setMenuAnchor(null)}
         >
-          <MenuItem onClick={onClickMenuRoom}>채팅방 관리</MenuItem>
+          {isOwner ? <MenuItem onClick={onClickMenuRoom}>채팅방 관리</MenuItem> : null}
           <MenuItem onClick={onClickMenuUser}>유저 정보</MenuItem>
           <MenuItem onClick={onClickMenuExit}>나가기</MenuItem>
         </Menu>
@@ -274,7 +300,7 @@ export default function ChatRoom(): JSX.Element {
       >
         Send
       </Button>
-      <ChatUserMenu open={openJoinedMenu} setOpen={setOpenJoinedMenu} />
+      <ChatUserMenu open={openJoinedMenu} setOpen={setOpenJoinedMenu} isOwner={isOwner} />
       <ChatSettingMenu open={openSettingMenu} setOpen={setOpenSettingMenu} />
     </>
   );

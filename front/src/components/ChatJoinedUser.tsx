@@ -49,9 +49,11 @@ interface UserdataProps {
 interface UserData {
   user: UserdataProps
   isInRoom: boolean
+  isOwner: boolean
+  isManager: boolean
 }
 
-const ChatJoinedUser = ({ user, isInRoom } : UserData) => {
+const ChatJoinedUser = ({ user, isInRoom, isOwner, isManager } : UserData) : JSX.Element => {
   const classes = useStyles();
 
   return (
@@ -60,7 +62,7 @@ const ChatJoinedUser = ({ user, isInRoom } : UserData) => {
       <div className={classes.username}>
         {user.nickname}
       </div>
-      {isInRoom ? <JoinedUserMenu user={user} /> : null}
+      {isInRoom ? <JoinedUserMenu user={user} isOwner={isOwner} isManager={isManager} /> : null}
     </div>
   );
 };
