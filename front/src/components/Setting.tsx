@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Avatar } from '@material-ui/core';
+import { Avatar, Tab, Tabs } from '@material-ui/core';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -9,6 +9,8 @@ import SettingInputs from './SettingInputs';
 import { updateUser } from '../modules/user';
 import { getUserme } from '../utils/Requests';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
+import SettingMyData from './SettingMyData';
+import SettingBlockedUsers from './SettingBlockedUsers';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -28,7 +30,7 @@ const useStyles = makeStyles(() =>
       width: '1000px',
       backgroundColor: 'white',
       border: '1px solid white',
-      borderRadius: '10px',
+      borderRadius: '0px 10px 10px 10px',
       boxShadow: '3.5px 3.5px 3px gray',
     },
     profileImage: {
@@ -60,6 +62,21 @@ const useStyles = makeStyles(() =>
       borderRadius: '4px',
       fontSize: '15px',
     },
+    tapBar: {
+      width: '20rem',
+      position: 'absolute',
+      top: '-4rem',
+      color: '#F4F3FF',
+      borderRadius: '8px 8px 0px 0px',
+      backgroundColor: '#282E4E',
+    },
+    tapElem: {
+      height: '4rem',
+      fontSize: '20px',
+      letterSpacing: '2px',
+      textTransform: 'none',
+      textShadow: '1px 1px 0.5px gray',
+    },
   }),
 );
 
@@ -67,6 +84,7 @@ function Setting() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     dispatch(changeSideBar({ type: FOLLOW }));
@@ -82,89 +100,20 @@ function Setting() {
       });
   }, [history, dispatch]);
 
-  const mydata = useSelector((state: RootState) => state.userModule);
-  const [image, setImage] = useState(mydata.avatar);
-
-  const changeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const file = event.target?.files?.[0];
-    const formData = new FormData();
-
-    if (file) {
-      formData.set('image', file);
-    }
-    try {
-      const ret = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/images`,
-        formData,
-      );
-      setImage(ret.data.image);
-    } catch (error) {
-      console.log(error);
-      localStorage.removeItem('p_auth');
-      alert('인증 정보가 유효하지 않습니다');
-      history.push('/');
-    }
-  };
-
-  const clickSaveButton = async (form: {
-    nickname: string;
-    twofa: boolean;
-  }) => {
-    if (
-      form.nickname !== '' &&
-      (form.nickname.length < 2 ||
-        form.nickname === 'me' ||
-        form.nickname.length > 10)
-    ) {
-      alert('닉네임은 2~10글자로 써야합니다.');
-      return;
-    }
-    const inputForm = {
-      nickname: form.nickname === '' ? mydata.nickname : form.nickname,
-      avatar: image,
-      useTwoFA: form.twofa,
-    };
-    try {
-      const ret = await axios.patch(
-        `${String(process.env.REACT_APP_API_URL)}/users/me`,
-        inputForm,
-      );
-      dispatch(updateUser(ret.data));
-      alert('저장되었습니다.');
-    } catch (error: any) {
-      if (error.response.data.message === 'Duplicated Nickname') {
-        alert('이미 사용중인 닉네임입니다');
-      } else {
-        localStorage.removeItem('p_auth');
-        alert('인증 정보가 유효하지 않습니다');
-        history.push('/');
-      }
-    }
-  };
-
   return (
     <>
       <div className={classes.divStyle}>
-        <div className={classes.title}>Setting</div>
-        <Avatar className={classes.profileImage} src={image} />
-        <label className={classes.changeLabel} htmlFor="file">
-          Change Image
-        </label>
-        <input
-          style={{ display: 'none' }}
-          id="file"
-          type="file"
-          name="profileImage"
-          onChange={changeImage}
-          accept=".jpg, .jpeg, .png, .gif"
-        />
-        <SettingInputs
-          onSubmit={clickSaveButton}
-          buttonName="Save"
-          username={mydata.nickname}
-          isTwofa={mydata.useTwoFA}
-        />
+        <div className={classes.tapBar}>
+          <Tabs
+            value={value}
+            variant="fullWidth"
+          >
+            <Tab className={classes.tapElem} label="Setting" />
+            <Tab className={classes.tapElem} label="Block Users" />
+          </Tabs>
+        </div>
+        <SettingBlockedUsers />
+        {/* <SettingMyData /> */}
       </div>
     </>
   );

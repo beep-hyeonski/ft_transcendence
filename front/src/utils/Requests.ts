@@ -20,3 +20,10 @@ export async function getUsermeChat(): Promise<any> {
   );
   return response.data;
 }
+
+export async function getBlock(): Promise<any> {
+  const response = await axios.get(
+    `${String(process.env.REACT_APP_API_URL)}/block`,
+  );
+  return response.data;
+}
