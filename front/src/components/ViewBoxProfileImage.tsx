@@ -5,18 +5,9 @@ import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  List,
-  ListItem,
-  ListItemText,
-} from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
-import { pvpQueueGame, ingGame } from '../modules/gamestate';
-import { setGameData } from '../modules/gamedata';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -76,7 +67,7 @@ const useStyles = makeStyles(() =>
         backgroundColor: '#cc6b80',
       },
     },
-    pvpButton: {
+    BlockButton: {
       position: 'absolute',
       top: '85%',
       left: '18%',
@@ -92,12 +83,12 @@ const useStyles = makeStyles(() =>
         backgroundColor: '#1c244f',
       },
     },
-    obButton: {
+    UnBlockButton: {
       position: 'absolute',
       top: '85%',
       left: '18%',
       transform: 'translate(-50%, -50%)',
-      backgroundColor: '#3F446E',
+      backgroundColor: '#CE6F84',
       color: '#F4F3FF',
       width: 230,
       height: 50,
@@ -105,46 +96,11 @@ const useStyles = makeStyles(() =>
       textShadow: '1px 1px 0.5px gray',
       boxShadow: '1px 1px 1px gray',
       '&:hover': {
-        backgroundColor: '#1c244f',
+        backgroundColor: '#cc6b80',
       },
     },
   }),
 );
-
-function GameSpeedDialog(props: any) {
-  const { onClose, open } = props;
-  const userdata = useSelector((state: RootState) => state.profileModule);
-  const socket = useSelector((state: RootState) => state.socketModule);
-  const dispatch = useDispatch();
-
-  const handleClose = () => {
-    onClose();
-  };
-
-  const handleListItemClick = (value: string) => {
-    console.log(value);
-    onClose(value);
-    socket?.socket?.emit('matchRequest', {
-      receiveUserIndex: userdata.index,
-      ballSpeed: value,
-    });
-    dispatch(pvpQueueGame());
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>SELECT GAME SPEED</DialogTitle>
-      <List>
-        <ListItem button onClick={() => handleListItemClick('NORMAL')}>
-          <ListItemText primary="NORMAL" />
-        </ListItem>
-        <ListItem button onClick={() => handleListItemClick('FAST')}>
-          <ListItemText primary="FAST" />
-        </ListItem>
-      </List>
-    </Dialog>
-  );
-}
 
 function ViewBoxProfileImage(): JSX.Element {
   const classes = useStyles();
@@ -152,23 +108,7 @@ function ViewBoxProfileImage(): JSX.Element {
   const mydata = useSelector((state: RootState) => state.userModule);
   const userdata = useSelector((state: RootState) => state.profileModule);
   const [follow, setFollow] = useState(false);
-  const [open, setOpen] = useState(false);
-  const { gamestate } = useSelector(
-    (state: RootState) => state.gameStateMoudle,
-  );
-  const { socket } = useSelector((state: RootState) => state.socketModule);
-
-  const pvpRequestButton = () => {
-    if (gamestate !== 'WAIT') {
-      alert('이미 게임 중이거나 게임 큐 대기중입니다.');
-      return;
-    }
-    setOpen(true);
-  };
-
-  const dialogClose = () => {
-    setOpen(false);
-  };
+  const [block, setBlock] = useState(false);
 
   useEffect(() => {
     const isFollow =
@@ -176,61 +116,74 @@ function ViewBoxProfileImage(): JSX.Element {
         (value: any) => value.nickname === userdata.nickname,
       ) !== undefined;
     setFollow(isFollow);
-  }, [mydata.followings, userdata.nickname]);
+    const isBlock = mydata.blockings.find(
+      (value: any) => value.nickname === userdata.nickname,
+    ) !== undefined;
+    setBlock(isBlock);
+  }, [mydata.blockings, mydata.followings, userdata.nickname]);
 
-  const clickFollowButton = () => {
-    const followForm = {
-      followedUser: userdata.username,
-    };
-    setFollow(true);
-    axios
-      .post(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm)
-      .then(
-        (res) => {
-          dispatch(updateUser(res.data));
-        },
-        (err) => {
-          console.log(err.response);
-          setFollow(false);
-        },
-      );
-  };
-
-  const clickUnfollowButton = () => {
-    const followForm = {
-      data: {
-        followedUser: userdata.username,
-      },
-    };
-    setFollow(false);
-    axios
-      .delete(`${String(process.env.REACT_APP_API_URL)}/follow`, followForm)
-      .then(
-        (res) => {
-          dispatch(updateUser(res.data));
-        },
-        (err) => {
-          console.log(err.response);
-          setFollow(true);
-        },
-      );
-  };
-
-  const observeButton = () => {
-    const callback = (payload: any) => {
-      if (payload.status === 'GAME_START') {
-        dispatch(setGameData(payload));
-        dispatch(ingGame());
+  const clickFollowButton = async () => {
+    if (block) {
+      try {
+        const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/block`, { data: { blockedUser: userdata.username } });
+        dispatch(updateUser(res.data));
+        setBlock(false);
+      } catch (err: any) {
+        console.log(err.response);
+        setBlock(true);
       }
-    };
-    socket?.on('matchComplete', callback);
-    socket?.emit('observeMatch', {
-      // number
-      matchInUserIndex: userdata.index,
-    });
-    return () => {
-      socket?.off('matchComplete');
-    };
+    }
+    try {
+      const res = await axios.post(`${String(process.env.REACT_APP_API_URL)}/follow`, { followedUser: userdata.username });
+      dispatch(updateUser(res.data));
+      setFollow(true);
+    } catch (err: any) {
+      console.log(err.response);
+      setFollow(false);
+    }
+  };
+
+  const clickUnfollowButton = async () => {
+    try {
+      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, { data: { followedUser: userdata.username } });
+      dispatch(updateUser(res.data));
+      setFollow(false);
+    } catch (err: any) {
+      console.log(err.response);
+      setFollow(true);
+    }
+  };
+
+  const BlockButton = async () => {
+    if (follow) {
+      try {
+        const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, { data: { followedUser: userdata.username } });
+        dispatch(updateUser(res.data));
+        setFollow(false);
+      } catch (err: any) {
+        console.log(err.response);
+        setFollow(true);
+      }
+    }
+    try {
+      const res = await axios.post(`${String(process.env.REACT_APP_API_URL)}/block`, { blockedUser: userdata.username });
+      dispatch(updateUser(res.data));
+      setBlock(true);
+    } catch (err: any) {
+      console.log(err.response);
+      setBlock(false);
+    }
+  };
+
+  const UnBlockButton = async () => {
+    try {
+      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/block`, { data: { blockedUser: userdata.username } });
+      dispatch(updateUser(res.data));
+      setBlock(false);
+    } catch (err: any) {
+      console.log(err.response);
+      setBlock(true);
+    }
   };
 
   return (
@@ -254,25 +207,24 @@ function ViewBoxProfileImage(): JSX.Element {
           Follow
         </Button>
       )}
-      {userdata.nickname !== mydata.nickname && userdata.status === 'online' && (
+      {userdata.nickname !== mydata.nickname && !block && (
         <Button
-          className={classes.pvpButton}
+          className={classes.BlockButton}
           variant="contained"
-          onClick={pvpRequestButton}
+          onClick={BlockButton}
         >
-          PVP 신청
+          Block
         </Button>
       )}
-      {userdata.nickname !== mydata.nickname && userdata.status === 'ingame' && (
+      {userdata.nickname !== mydata.nickname && block && (
         <Button
-          className={classes.obButton}
+          className={classes.UnBlockButton}
           variant="contained"
-          onClick={observeButton}
+          onClick={UnBlockButton}
         >
-          관전하기
+          Unblock
         </Button>
       )}
-      <GameSpeedDialog open={open} onClose={dialogClose} />
     </>
   );
 }

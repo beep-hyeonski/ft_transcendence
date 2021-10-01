@@ -3,6 +3,7 @@ const GAMEWAIT = 'gamestate/WAIT' as const;
 const MATCHGAMEQUEUE = 'gamestate/MATCHQUEUE' as const;
 const PVPGAMEQUEUE = 'gamestate/PVPQUEUE' as const;
 const GAMEING = 'gamestate/ING' as const;
+const SETTING_GAME = 'gamestate/SETTING' as const;
 
 export const waitGame = () => ({
   type: GAMEWAIT,
@@ -20,18 +21,29 @@ export const ingGame = () => ({
   type: GAMEING,
 });
 
+export const settingGame = (status: boolean, userIndex = -1) => ({
+  type: SETTING_GAME,
+  dialog: status,
+  receiveUserIndex: userIndex,
+});
+
 type GameState = {
   gamestate: string;
+  dialog: boolean;
+  receiveUserIndex: number;
 };
 
 type GameStateAction =
   | ReturnType<typeof waitGame>
   | ReturnType<typeof matchQueueGame>
   | ReturnType<typeof pvpQueueGame>
-  | ReturnType<typeof ingGame>;
+  | ReturnType<typeof ingGame>
+  | ReturnType<typeof settingGame>;
 
 const initialState: GameState = {
   gamestate: 'WAIT',
+  dialog: false,
+  receiveUserIndex: -1,
 };
 
 export default function gameStateMoudle(
@@ -47,6 +59,8 @@ export default function gameStateMoudle(
       return { ...state, gamestate: 'PVPQUEUE' };
     case GAMEING:
       return { ...state, gamestate: 'ING' };
+    case SETTING_GAME:
+      return { ...state, dialog: action.dialog, receiveUserIndex: action.receiveUserIndex };
     default:
       return state;
   }

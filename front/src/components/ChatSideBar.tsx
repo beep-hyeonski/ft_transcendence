@@ -92,4 +92,4 @@ function ChatSideBar(): JSX.Element {
   );
 }
 
-export default ChatSideBar;
+export default React.memo(ChatSideBar);

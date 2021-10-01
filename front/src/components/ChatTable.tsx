@@ -69,7 +69,6 @@ function ChatTable({ create }: ChatTableProps) {
   useEffect(() => {
     getChats()
       .then((res) => {
-        console.log(res);
         setChats(
           res.filter(
             (chat: ChatInfoProps) =>

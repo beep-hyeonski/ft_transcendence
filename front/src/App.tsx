@@ -23,6 +23,7 @@ import checkToken from './utils/checkToken';
 import { initSocket } from './modules/socket';
 import GameManager from './components/GameManager';
 import PongGame from './components/PongGame';
+import GameSpeedDialog from './components/GameSpeedDialog';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
@@ -31,17 +32,15 @@ function App(): JSX.Element {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    (async () => {
-      await checkToken(dispatch);
-      if (authState.isLoggedIn) {
-        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
-          extraHeaders: {
-            Authorization: `${String(authState.token)}`,
-          },
-        });
-        dispatch(initSocket(socket));
-      }
-    })();
+    checkToken(dispatch);
+    if (authState.isLoggedIn) {
+      const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
+        extraHeaders: {
+          Authorization: `${String(authState.token)}`,
+        },
+      });
+      dispatch(initSocket(socket));
+    }
   }, [authState.isLoggedIn, authState.token, dispatch]);
 
   return (
@@ -57,6 +56,7 @@ function App(): JSX.Element {
         {authState.isLoggedIn ? (
           <>
             <GameManager />
+            <GameSpeedDialog />
             <Route path="/" component={SideMenu} />
             <Route path="/" exact component={MainUI} />
             <Route path="/chat" exact component={ChatUI} />
