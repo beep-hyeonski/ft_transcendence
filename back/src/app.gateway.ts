@@ -22,7 +22,6 @@ import { CreateMatchDto } from './match/dto/create-match.dto';
 import { MatchService } from './match/match.service';
 import { v1 } from 'uuid';
 import { GameService, BallSpeed, Game, KeyState } from './game/game.service';
-import { Interval } from '@nestjs/schedule';
 
 @UseFilters(WebsocketExceptionFilter)
 @WebSocketGateway(8001, { cors: true })
@@ -266,7 +265,16 @@ export class AppGateway
         status: 'MATCH_REJECT',
         message: 'User Is Busy',
       });
+      return;
+    }
 
+    if (receiver.blockings.find((blockedUser) => (
+      blockedUser.index === sender.index
+    ))) {
+      client.emit('matchReject', {
+        status: 'MATCH_REJECT',
+        message: 'Blocked',
+      });
       return;
     }
 
