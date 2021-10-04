@@ -30,7 +30,7 @@ type SidebarAction =
 // TODO: 초기 값 설정 해주는 방식 생각하기
 const initialState: SidebarState = {
   data: {
-    type: MAIN,
+    type: '',
   },
 };
 

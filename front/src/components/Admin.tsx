@@ -1,0 +1,79 @@
+import React, { useEffect } from 'react';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import { useDispatch } from 'react-redux';
+import { Tab, Tabs } from '@material-ui/core';
+import { deleteSideData } from '../modules/sidebar';
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      position: 'absolute',
+      top: '50%',
+      left: '47%',
+      transform: 'translate(-50%, -50%)',
+      width: '80rem',
+      height: '50rem',
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      boxShadow: '3.5px 3.5px 3px gray',
+    },
+    tabBar: {
+      position: 'absolute',
+      width: '20rem',
+      top: '-4rem',
+      color: '#F4F3FF',
+      borderRadius: '8px 8px 0px 0px',
+      backgroundColor: '#282E4E',
+    },
+    tapElem: {
+      height: '4rem',
+      fontSize: '20px',
+      letterSpacing: '2px',
+      textTransform: 'none',
+      textShadow: '1px 1px 0.5px gray',
+    },
+    indicator: {
+      backgroundColor: '#FF00E4',
+    },
+  }),
+);
+
+function Admin() {
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const [value, setValue] = React.useState(1);
+
+  useEffect(() => {
+    dispatch(deleteSideData());
+  }, [dispatch]);
+
+  const changeTab = (event: any, newValue: number) => {
+    setValue(newValue);
+  };
+
+  return (
+    <>
+      <Paper className={classes.root}>
+        <div className={classes.tabBar}>
+          <Tabs
+            value={value}
+            variant="fullWidth"
+            onChange={changeTab}
+            classes={{
+              indicator: classes.indicator,
+            }}
+          >
+            <Tab value={1} className={classes.tapElem} label="Channels" />
+            <Tab value={2} className={classes.tapElem} label="Users" />
+          </Tabs>
+        </div>
+        <div>
+          test
+        </div>
+      </Paper>
+    </>
+  );
+}
+
+export default Admin;

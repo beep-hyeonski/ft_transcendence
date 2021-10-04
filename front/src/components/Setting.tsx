@@ -74,6 +74,9 @@ const useStyles = makeStyles(() =>
       textTransform: 'none',
       textShadow: '1px 1px 0.5px gray',
     },
+    indicator: {
+      backgroundColor: '#FF00E4',
+    },
   }),
 );
 
@@ -109,6 +112,9 @@ function Setting() {
             value={value}
             variant="fullWidth"
             onChange={changeTab}
+            classes={{
+              indicator: classes.indicator,
+            }}
           >
             <Tab value={1} className={classes.tapElem} label="Setting" />
             <Tab value={2} className={classes.tapElem} label="Block Users" />
