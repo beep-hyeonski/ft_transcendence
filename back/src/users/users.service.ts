@@ -35,6 +35,7 @@ export class UsersService {
         'adminChannels',
         'joinChannels',
         'mutedChannels',
+        'bannedChannels',
       ],
       where: { username: username },
     });
@@ -51,6 +52,7 @@ export class UsersService {
         'adminChannels',
         'joinChannels',
         'mutedChannels',
+        'bannedChannels',
       ],
       where: { username: username },
     });

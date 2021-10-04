@@ -90,11 +90,11 @@ export class AppGateway
       payload.chatIndex,
     );
 
-    // if (
-    //   user.bannedChannels &&
-    //   user.bannedChannels.find((chat) => chat.index === payload.chatIndex)
-    // )
-    //   throw new WsException('User has been banned from the chat');
+    if (
+      user.bannedChannels &&
+      user.bannedChannels.find((chat) => chat.index === payload.chatIndex)
+    )
+      throw new WsException('User has been banned from the chat');
 
     client.join(String(payload.chatIndex));
     client.emit('joined', { status: 'SUCCESS' });
@@ -120,6 +120,7 @@ export class AppGateway
     payload: { chatIndex: number; message: string },
   ) {
     const roomName = String(payload.chatIndex);
+    // Ban도 같이 처리되고 있음
     const user = await this.validateChatUser(
       client.handshake.headers.authorization,
       payload.chatIndex,

@@ -133,36 +133,36 @@ export class ChatController {
     );
   }
 
-  // @ApiOperation({ summary: 'Ban User 등록' })
-  // @ApiCreatedResponse({
-  //   description: 'User를 ban한 채팅 정보',
-  // })
-  // @Post(':chatIndex/ban')
-  // async registerBanUser(
-  //   @Req() req: any,
-  //   @Param('chatIndex') chatIndex: number,
-  //   @Body('username') username: string,
-  // ) {
-  //   return await this.chatService.registerBanUser(
-  //     req.user,
-  //     chatIndex,
-  //     username,
-  //   );
-  // }
+  @ApiOperation({ summary: 'Ban User 등록' })
+  @ApiCreatedResponse({
+    description: 'User를 ban한 채팅 정보',
+  })
+  @Post(':chatIndex/ban')
+  async registerBanUser(
+    @Req() req: any,
+    @Param('chatIndex') chatIndex: number,
+    @Body('nickname') nickname: string,
+  ) {
+    return await this.chatService.registerBanUser(
+      req.user,
+      chatIndex,
+      nickname,
+    );
+  }
 
-  // @ApiOperation({ summary: 'Ban User 해제' })
-  // @Delete(':chatIndex/ban')
-  // async unRegisterBanUser(
-  //   @Req() req: any,
-  //   @Param('chatIndex') chatIndex: number,
-  //   @Body('username') username: string,
-  // ) {
-  //   return await this.chatService.unRegisterBanUser(
-  //     req.user,
-  //     chatIndex,
-  //     username,
-  //   );
-  // }
+  @ApiOperation({ summary: 'Ban User 해제' })
+  @Delete(':chatIndex/ban')
+  async unRegisterBanUser(
+    @Req() req: any,
+    @Param('chatIndex') chatIndex: number,
+    @Body('nickname') nickname: string,
+  ) {
+    return await this.chatService.unRegisterBanUser(
+      req.user,
+      chatIndex,
+      nickname,
+    );
+  }
 
   @ApiOperation({ summary: '채팅방에 전송 된 메시지 리스트' })
   @Get(':chatIndex/messages')
