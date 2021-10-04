@@ -10,11 +10,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
     color: '#F4F3FF',
-    position: 'absolute',
-    left: '38%',
-    top: '48%',
     fontSize: '25px',
-    transform: 'translate(-50%, -50%)',
     backgroundColor: '#282E4E',
     '&:hover': {
       backgroundColor: '#1C244F',
