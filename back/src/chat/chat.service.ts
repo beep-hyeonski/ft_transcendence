@@ -161,7 +161,10 @@ export class ChatService {
       throw new BadRequestException('Already joined user');
     }
 
-    if (chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index))
+    if (
+      chat.bannedUsers &&
+      chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
+    )
       throw new BadRequestException('User Banned');
 
     if (chat.status === ChatStatus.PROTECTED) {
