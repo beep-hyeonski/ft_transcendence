@@ -149,7 +149,7 @@ export class ChatService {
     password: string,
   ) {
     const chat = await this.chatRepository.findOneOrFail({
-      relations: ['joinUsers'],
+      relations: ['joinUsers', 'bannedUsers'],
       where: { index: chatIndex },
     });
 
