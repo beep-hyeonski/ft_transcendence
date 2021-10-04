@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayloadDto } from 'src/auth/dto/jwt-payload.dto';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { Chat, ChatStatus } from './entities/chat.entity';
@@ -140,7 +140,7 @@ export class ChatService {
 
   async leaveChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
     const chat = await this.chatRepository.findOneOrFail({
-      relations: ['joinUsers'],
+      relations: ['ownerUser', 'adminUsers', 'joinUsers'],
       where: { index: chatIndex },
     });
 
@@ -152,12 +152,47 @@ export class ChatService {
       throw new BadRequestException('User Not Entered this chat');
     }
 
-    chat.joinUsers = chat.joinUsers.filter(
-      (joinUser) => joinUser.index !== user.index,
-    );
-    await this.chatRepository.save(chat);
+    if (chat.joinUsers.length === 1) {
+      await getConnection()
+        .createQueryBuilder()
+        .relation(Chat, 'joinUsers')
+        .of(chat)
+        .remove(user);
+      await getConnection()
+        .createQueryBuilder()
+        .relation(Chat, 'adminUsers')
+        .of(chat)
+        .remove(user);
+      await getConnection()
+        .createQueryBuilder()
+        .relation(Chat, 'mutedUsers')
+        .of(chat)
+        .remove(user);
+      await getConnection()
+        .createQueryBuilder()
+        .relation(Chat, 'bannedUsers')
+        .of(chat)
+        .remove(user);
+      await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(Chat)
+        .where('index = :index', { index: chat.index })
+        .execute();
+    } else {
+      chat.joinUsers = chat.joinUsers.filter(
+        (joinUser) => joinUser.index !== user.index,
+      );
+      chat.adminUsers = chat.adminUsers.filter(
+        (adminUser) => adminUser.index !== user.index,
+      );
+      if (chat.ownerUser.index === user.index) {
+        chat.ownerUser = chat.joinUsers[0];
+        chat.adminUsers.push(chat.ownerUser);
+      }
 
-    return chat;
+      return await this.chatRepository.save(chat);
+    }
   }
 
   async registerAdmin(
