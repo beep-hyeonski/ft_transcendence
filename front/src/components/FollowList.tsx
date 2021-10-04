@@ -140,8 +140,8 @@ function FollowList({ user }: UserdataProps): JSX.Element {
         onClose={onClose}
       >
         <MenuItem onClick={clickDM}>DM</MenuItem>
-        {user.status === 'online' && <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>}
-        {user.status === 'ingame' && <MenuItem onClick={clickObserve}>관전하기</MenuItem>}
+        {gamestate === 'WAIT' && user.status === 'online' && <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>}
+        {gamestate === 'WAIT' && user.status === 'ingame' && <MenuItem onClick={clickObserve}>관전하기</MenuItem>}
       </Menu>
     </ListItem>
   );
