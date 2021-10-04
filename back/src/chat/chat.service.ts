@@ -11,6 +11,7 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { Chat, ChatStatus } from './entities/chat.entity';
 import { Message } from './entities/message.entity';
+import { hash, isHashValid } from '../utils/encrypt';
 
 @Injectable()
 export class ChatService {
@@ -46,8 +47,18 @@ export class ChatService {
       where: { index: jwtPayloadDto.sub },
     });
 
-    if (createChatDto.password && createChatDto.status !== ChatStatus.PROTECTED)
-      throw new BadRequestException('Invalid Chat Status');
+    if (
+      createChatDto.status === ChatStatus.PROTECTED &&
+      !createChatDto.password
+    ) {
+      throw new BadRequestException('Password Required');
+    }
+
+    if (createChatDto.password) {
+      if (createChatDto.status !== ChatStatus.PROTECTED)
+        throw new BadRequestException('Invalid Chat Status');
+      createChatDto.password = await hash(createChatDto.password);
+    }
 
     const createChat = new Chat();
 
@@ -80,10 +91,14 @@ export class ChatService {
     if (
       chat.status === ChatStatus.PUBLIC &&
       updateChatDto.status === ChatStatus.PROTECTED &&
-      (!updateChatDto.password || updateChatDto.password.length < 8)
+      (!updateChatDto.password ||
+        !(
+          updateChatDto.password.length >= 8 &&
+          updateChatDto.password.length <= 20
+        ))
     ) {
       throw new BadRequestException(
-        'Valid Password Required, length more than 8',
+        'Valid 8 ~ 20 Characters of Password Required',
       );
     }
     if (
@@ -91,11 +106,21 @@ export class ChatService {
       updateChatDto.status === ChatStatus.PROTECTED &&
       updateChatDto.password
     ) {
-      if (updateChatDto.password !== '' && updateChatDto.password.length < 8) {
+      if (
+        updateChatDto.password !== '' &&
+        !(
+          updateChatDto.password.length >= 8 &&
+          updateChatDto.password.length <= 20
+        )
+      ) {
         throw new BadRequestException(
-          'Valid Password Required, length more than 8',
+          'Valid 8 ~ 20 Characters of Password Required',
         );
       }
+    }
+
+    if (updateChatDto.password) {
+      updateChatDto.password = await hash(updateChatDto.password);
     }
 
     for (const fieldName in updateChatDto) {
@@ -118,7 +143,11 @@ export class ChatService {
     return await this.chatRepository.delete(chat);
   }
 
-  async joinChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
+  async joinChat(
+    jwtPayloadDto: JwtPayloadDto,
+    chatIndex: number,
+    password: string,
+  ) {
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['joinUsers'],
       where: { index: chatIndex },
@@ -130,6 +159,15 @@ export class ChatService {
 
     if (chat.joinUsers.find((joinUser) => joinUser.index === user.index)) {
       throw new BadRequestException('Already joined user');
+    }
+
+    if (chat.status === ChatStatus.PROTECTED) {
+      if (!password) {
+        throw new BadRequestException('Password Required');
+      }
+      if (!(await isHashValid(password, chat.password))) {
+        throw new BadRequestException('Invalid Password');
+      }
     }
 
     chat.joinUsers.push(user);
