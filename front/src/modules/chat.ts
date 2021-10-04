@@ -5,9 +5,9 @@ const EXIT_CHAT_ROOM = 'chat/EXIT_CHAT_ROOM' as const;
 interface ChatRoomProps {
   roomTitle: string;
   roomIndex: number;
-  roomPassword: string;
   roomStatus: string;
   roomJoinedUsers: any[];
+  roomBannedUsers: any[];
   roomAdmins: any[];
   roomMuted: any[];
   roomOwner: string;
@@ -16,9 +16,9 @@ interface ChatRoomProps {
 export const joinChatRoom = ({
   roomTitle,
   roomIndex,
-  roomPassword,
   roomStatus,
   roomJoinedUsers,
+  roomBannedUsers,
   roomAdmins,
   roomOwner,
   roomMuted,
@@ -28,7 +28,7 @@ export const joinChatRoom = ({
   title: roomTitle,
   status: roomStatus,
   joinUsers: roomJoinedUsers,
-  password: roomPassword,
+  bannedUsers: roomBannedUsers,
   adminUsers: roomAdmins,
   ownerUser: roomOwner,
   mutedUsers: roomMuted,
@@ -48,7 +48,7 @@ type ChatState = {
   title: string;
   status: string;
   joinUsers: any[];
-  password: string;
+  bannedUsers: any[];
   adminUsers: string[];
   ownerUser: string;
   mutedUsers: string[];
@@ -60,7 +60,7 @@ const initialState: ChatState = {
   title: '',
   status: '',
   joinUsers: [],
-  password: '',
+  bannedUsers: [],
   adminUsers: [],
   ownerUser: '',
   mutedUsers: [],
@@ -77,8 +77,8 @@ export default function chatModule(
         title: action.title,
         index: action.index,
         joinUsers: action.joinUsers,
-        password: action.password,
         adminUsers: action.adminUsers,
+        bannedUsers: action.bannedUsers,
         ownerUser: action.ownerUser,
         mutedUsers: action.mutedUsers,
         status: action.status,

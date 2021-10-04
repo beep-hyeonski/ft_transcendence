@@ -58,9 +58,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         joinChatRoom({
           roomIndex: data.index,
           roomTitle: data.title,
-          roomPassword: data.password,
           roomStatus: data.status,
           roomJoinedUsers: data.joinUsers,
+          roomBannedUsers: chatData.bannedUsers,
           roomAdmins: data.adminUsers,
           roomMuted: chatData.mutedUsers,
           roomOwner: chatData.ownerUser,
@@ -83,9 +83,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         joinChatRoom({
           roomIndex: data.index,
           roomTitle: data.title,
-          roomPassword: data.password,
           roomStatus: data.status,
           roomJoinedUsers: data.joinUsers,
+          roomBannedUsers: chatData.bannedUsers,
           roomAdmins: data.adminUsers,
           roomMuted: chatData.mutedUsers,
           roomOwner: chatData.ownerUser,
@@ -108,9 +108,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         joinChatRoom({
           roomIndex: data.index,
           roomTitle: data.title,
-          roomPassword: data.password,
           roomStatus: data.status,
           roomJoinedUsers: data.joinUsers,
+          roomBannedUsers: chatData.bannedUsers,
           roomAdmins: data.adminUsers,
           roomMuted: data.mutedUsers,
           roomOwner: chatData.ownerUser,
@@ -133,9 +133,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         joinChatRoom({
           roomIndex: data.index,
           roomTitle: data.title,
-          roomPassword: data.password,
           roomStatus: data.status,
           roomJoinedUsers: data.joinUsers,
+          roomBannedUsers: chatData.bannedUsers,
           roomAdmins: data.adminUsers,
           roomMuted: data.mutedUsers,
           roomOwner: chatData.ownerUser,
@@ -153,11 +153,11 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   };
 
   useEffect(() => {
-    const adminUser = chatData.adminUsers.find(
+    const adminUser = chatData.adminUsers?.find(
       (admin: any) => admin.nickname === user.nickname,
     );
     setIsAdmin(adminUser === undefined);
-    const mutedUser = chatData.mutedUsers.find(
+    const mutedUser = chatData.mutedUsers?.find(
       (muted: any) => muted.nickname === user.nickname,
     );
     setIsMuted(mutedUser === undefined);
@@ -182,6 +182,28 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
     history.push(`/profile/${user.nickname}`);
   };
 
+  const onClickBan = async (e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/ban`,
+      {nickname: user.nickname}
+      )
+      console.log(data);
+      dispatch(joinChatRoom({
+        roomTitle: data.title,
+        roomIndex: data.index,
+        roomStatus: data.status,
+        roomJoinedUsers: data.joinUsers,
+        roomBannedUsers: data.bannedUsers,
+        roomAdmins: data.adminUsers,
+        roomMuted: data.mutedUsers,
+        roomOwner: data.ownerUser.nickname,
+      }));
+    } catch (error: any) {
+      console.log(error.response);
+    }
+  };
+
   return (
     <>
       <IconButton className={classes.menuIconLocation} onClick={onClickMenu}>
@@ -197,6 +219,8 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         {chatData.ownerUser !== user.nickname && isAdmin && isManager
           ? muteMenu()
           : null}
+        {isOwner && chatData.ownerUser !== user.nickname && isAdmin && isManager ?
+        <MenuItem onClick={onClickBan}>유저 추방</MenuItem> : null}
       </Menu>
     </>
   );

@@ -8,6 +8,7 @@ import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
 import { getBlock, getUserme } from '../utils/Requests';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
+import BlockedUserElem from './BlockedUserElem';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -25,7 +26,9 @@ const useStyles = makeStyles(() =>
       left: '50%',
       width: '95%',
       height: '80%',
-      backgroundColor: 'green',
+      border: '2px solid black',
+      borderRadius: '10px',
+		  backgroundColor: '#F4F3FF',
     },
   }),
 );
@@ -36,11 +39,11 @@ function SettingBlockedUsers() {
 
   useEffect(() => {
     getBlock().then((res) => {
-      console.log(res);
+      dispatch(updateUser(res.data));
     }).catch((err) => {
-      console.log(err);
+      console.log(err.response);
     });
-  });
+  }, [dispatch]);
 
   const mydata = useSelector((state: RootState) => state.userModule);
 
@@ -48,7 +51,11 @@ function SettingBlockedUsers() {
     <>
 			<div className={classes.title}>Blocked Users</div>
       <div className={classes.contentBox}>
-        test
+        <GridList>
+          {mydata.blockings.map((user: any) => (
+            <BlockedUserElem key={user.index} user={user} />
+          ))}
+        </GridList>
       </div>
     </>
   );

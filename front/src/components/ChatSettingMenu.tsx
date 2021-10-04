@@ -184,7 +184,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
         joinChatRoom({
           roomTitle: res.data.title,
           roomIndex: res.data.index,
-          roomPassword: res.data.password,
+          roomBannedUsers: chatData.bannedUsers,
           roomStatus: res.data.status,
           roomJoinedUsers: chatData.joinUsers,
           roomAdmins: chatData.adminUsers,

@@ -17,10 +17,11 @@ import { SettingsOutlined } from '@material-ui/icons';
 import ChattingList from './ChattingList';
 import { RootState } from '../modules';
 import { exitChatRoom, joinChatRoom } from '../modules/chat';
-import { getUserme } from '../utils/Requests';
+import { getUserme, getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 import ChatUserMenu from './ChatUserMenu';
 import ChatSettingMenu from './ChatSettingMenu';
+import ChatBannedUserMenu from './ChatBannedUserMenu';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -111,13 +112,13 @@ export default function ChatRoom(): JSX.Element {
   const [isOwner, setIsOwner] = useState(false);
   const dispatch = useDispatch();
 
-  // setMsg => chat/{index}/messages
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [inputs, setInputs] = useState('');
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const menu = Boolean(menuAnchor);
   const [openJoinedMenu, setOpenJoinedMenu] = useState(false);
   const [openSettingMenu, setOpenSettingMenu] = useState(false);
+  const [openBannedMenu, setOpenBannedMenu] = useState(false);
 
   useEffect(() => {
     try {
@@ -135,7 +136,14 @@ export default function ChatRoom(): JSX.Element {
           },
           messageContent: message.messageContent,
         }));
-        setMsg(() => msgs);
+        setMsg(() =>
+          msgs.filter(
+            (message: MessageProps) =>
+              !mydata.blockings.find(
+                (block: any) => block.nickname === message.sendUser.nickname,
+              ),
+          ),
+        );
 
         socket?.emit('join', {
           chatIndex: chatData.index,
@@ -150,12 +158,28 @@ export default function ChatRoom(): JSX.Element {
             },
             messageContent: message,
           };
-          setMsg((prev) => prev.concat(msg));
+          if (
+            !mydata.blockings.find(
+              (block: any) => block.nickname === msg.sendUser.nickname,
+            )
+          )
+            setMsg((prev) => prev.concat(msg));
         });
 
-        socket?.on('exception', (payload) => {
+        socket?.on('exception', async (payload) => {
+          console.log(payload);
           if (payload.message === 'User has been muted from this chat')
             alert('채팅 금지 상태입니다.');
+          if (payload.message === 'User Not Joined in the Chat Socket') {
+            alert('채팅방에서 추방되었습니다.');
+            dispatch(exitChatRoom());
+          }
+          if (payload.message === 'User Banned from the Chat') {
+            alert('채팅방에서 추방되었습니다.');
+            const res = await getUsermeChat();
+            dispatch(updateUser(res));
+            dispatch(exitChatRoom());
+          }
         });
       })();
     } catch (error) {
@@ -243,10 +267,10 @@ export default function ChatRoom(): JSX.Element {
         joinChatRoom({
           roomTitle: data.title,
           roomIndex: data.index,
-          roomPassword: data.password,
           roomStatus: data.status,
           roomJoinedUsers: data.joinUsers,
           roomAdmins: data.adminUsers,
+          roomBannedUsers: data.bannedUsers,
           roomMuted: data.mutedUsers,
           roomOwner: data.ownerUser.nickname,
         }),
@@ -264,6 +288,11 @@ export default function ChatRoom(): JSX.Element {
     setMenuAnchor(null);
   };
 
+  const onClickBannedUser = (e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault();
+    setOpenBannedMenu(true);
+    setMenuAnchor(null);
+  };
   return (
     <>
       <AppBar position="fixed" className={classes.titlebar}>
@@ -289,6 +318,9 @@ export default function ChatRoom(): JSX.Element {
             <MenuItem onClick={onClickMenuRoom}>채팅방 관리</MenuItem>
           ) : null}
           <MenuItem onClick={onClickMenuUser}>유저 정보</MenuItem>
+          {isOwner ? (
+            <MenuItem onClick={onClickBannedUser}>추방 유저 관리</MenuItem>
+          ) : null}
           <MenuItem onClick={onClickMenuExit}>나가기</MenuItem>
         </Menu>
         <Typography className={classes.title}>{chatData.title}</Typography>
@@ -323,6 +355,7 @@ export default function ChatRoom(): JSX.Element {
         isOwner={isOwner}
       />
       <ChatSettingMenu open={openSettingMenu} setOpen={setOpenSettingMenu} />
+      <ChatBannedUserMenu open={openBannedMenu} setOpen={setOpenBannedMenu} />
     </>
   );
 }
