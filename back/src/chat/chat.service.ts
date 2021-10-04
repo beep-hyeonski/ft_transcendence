@@ -362,6 +362,7 @@ export class ChatService {
       throw new BadRequestException('User is not in the chat');
 
     chat.bannedUsers.push(user);
+    chat.joinUsers.filter((joinUser) => joinUser.index !== user.index);
     await this.chatRepository.save(chat);
 
     return chat;

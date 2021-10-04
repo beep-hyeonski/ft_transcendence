@@ -388,6 +388,11 @@ export class AppGateway
         throw new WsException('Chat Not Found');
       else throw e;
     }
+    if (
+      chat.bannedUsers &&
+      chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
+    )
+      throw new WsException('User Banned from the Chat');
     if (!chat.joinUsers.find((joinUser) => joinUser.index === user.index))
       throw new WsException('User Not Joined in the Chat');
     return user;
