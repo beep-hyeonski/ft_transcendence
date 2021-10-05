@@ -34,3 +34,10 @@ export async function getChats(): Promise<any> {
   );
   return response.data;
 }
+
+export async function getDM(name: string): Promise<any> {
+  const response = await axios.get(
+    `${String(process.env.REACT_APP_API_URL)}/dm/${name}`,
+  );
+  return response.data;
+}

@@ -12,7 +12,18 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function ChattingList({ data }: any): JSX.Element {
+interface ChattingListProps {
+  data: {
+    messageContent: string;
+    sendUser: {
+      nickname: string;
+      avatar: string;
+    };
+    timestamp: string;
+  }
+}
+
+function ChattingList({ data }: ChattingListProps): JSX.Element {
   const classes = useStyles();
 
   return (
