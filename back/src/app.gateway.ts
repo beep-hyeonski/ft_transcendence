@@ -23,6 +23,7 @@ import { MatchService } from './match/match.service';
 import { v1 } from 'uuid';
 import { GameService, BallSpeed, Game, KeyState } from './game/game.service';
 import { Interval } from '@nestjs/schedule';
+import { DM } from './dm/entities/dm.entity';
 
 @UseFilters(WebsocketExceptionFilter)
 @WebSocketGateway(8001, { cors: true })
@@ -36,6 +37,7 @@ export class AppGateway
     private matchService: MatchService,
     private gameService: GameService,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
+    @InjectRepository(DM) private dmRepository: Repository<DM>,
   ) {}
 
   @WebSocketServer()
@@ -148,6 +150,40 @@ export class AppGateway
       });
     } else {
       throw new WsException('User has been muted from this chat');
+    }
+  }
+
+  @SubscribeMessage('onDM')
+  async onDM(
+    client: Socket,
+    payload: { receiveUser: string; message: string },
+  ) {
+    const user = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    const receiveUser = await this.usersService.getUserByNickname(
+      payload.receiveUser,
+    );
+
+    if (
+      receiveUser.blockings &&
+      receiveUser.blockings.find((block) => block.index === user.index)
+    )
+      throw new WsException('User has been blocked');
+    else {
+      const dm = new DM();
+      dm.message = payload.message;
+      dm.sendUser = user;
+      dm.receiveUser = receiveUser;
+      this.dmRepository.save(dm);
+
+      const receiveClient = this.wsClients.get(receiveUser.index);
+      if (receiveClient) {
+        receiveClient.emit('onDM', {
+          sendUser: user.nickname,
+          message: payload.message,
+        });
+      }
     }
   }
 
