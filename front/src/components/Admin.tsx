@@ -4,6 +4,8 @@ import Paper from '@material-ui/core/Paper';
 import { useDispatch } from 'react-redux';
 import { Tab, Tabs } from '@material-ui/core';
 import { deleteSideData } from '../modules/sidebar';
+import AdminChannels from './AdminChannels';
+import AdminUsers from './AdminUsers';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,7 +41,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function Admin() {
+function Admin(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [value, setValue] = React.useState(1);
@@ -68,9 +70,8 @@ function Admin() {
             <Tab value={2} className={classes.tapElem} label="Users" />
           </Tabs>
         </div>
-        <div>
-          test
-        </div>
+        {value === 1 && <AdminChannels />}
+        {value === 2 && <AdminUsers />}
       </Paper>
     </>
   );

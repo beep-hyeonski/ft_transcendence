@@ -80,7 +80,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function Setting() {
+function Setting(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import List from '@material-ui/core/List';
 import { Drawer } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
+import { getChats } from '../utils/Requests';
 import ChatRoomList from './ChatRoomList';
 import ChatPublicModal from './ChatPublicModal';
 import ChatProtectedModal from './ChatProtectedModal';
@@ -30,13 +30,6 @@ const useStyles = makeStyles(() =>
     },
   }),
 );
-
-async function getChats() {
-  const response = await axios.get(
-    `${String(process.env.REACT_APP_API_URL)}/chat`,
-  );
-  return response.data;
-}
 
 interface ChatTableProps {
   create: boolean;
