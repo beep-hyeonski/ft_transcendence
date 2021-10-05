@@ -198,27 +198,21 @@ export class ChatService {
     }
 
     if (chat.joinUsers.length === 1) {
-      await getConnection()
-        .createQueryBuilder()
-        .relation(Chat, 'joinUsers')
-        .of(chat)
-        .remove(user);
-      await getConnection()
-        .createQueryBuilder()
-        .relation(Chat, 'adminUsers')
-        .of(chat)
-        .remove(user);
-      await getConnection()
-        .createQueryBuilder()
-        .relation(Chat, 'mutedUsers')
-        .of(chat)
-        .remove(user);
-      await getConnection()
-        .createQueryBuilder()
-        .relation(Chat, 'bannedUsers')
-        .of(chat)
-        .remove(user);
-      await getConnection()
+      const relations = [
+        'joinUsers',
+        'adminUsers',
+        'mutedUsers',
+        'bannedUsers',
+      ];
+      for (const relation of relations) {
+        await this.chatRepository
+          .createQueryBuilder()
+          .relation(Chat, relation)
+          .of(chat)
+          .remove(user);
+      }
+
+      await this.chatRepository
         .createQueryBuilder()
         .delete()
         .from(Chat)
