@@ -4,8 +4,18 @@ import { ListItem } from '@material-ui/core';
 
 const useStyles = makeStyles(() =>
   createStyles({
+    root: {
+      width: '97%',
+      height: '8rem',
+      marginTop: '10px',
+      borderRadius: '10px',
+      border: '1px solid lightgray',
+      boxShadow: '1px 1px 1px gray',
+      transform: 'translate(-50%, 0)',
+      left: '50%',
+    },
     title: {
-      fontSize: '10rem',
+      fontSize: '8rem',
     },
   }),
 );
@@ -37,6 +47,7 @@ function AdminChannelsElem({ roomdata, setModal }: Roomdata): JSX.Element {
       button
       key={roomdata.index}
       onClick={onClick}
+      className={classes.root}
     >
       <div className={classes.title}>{roomdata.title}</div>
     </ListItem>
