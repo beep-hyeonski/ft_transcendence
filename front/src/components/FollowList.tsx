@@ -16,8 +16,6 @@ import DrawAvatar from './Avatar';
 import { ingGame, settingGame } from '../modules/gamestate';
 import { RootState } from '../modules';
 import { setGameData } from '../modules/gamedata';
-import { getDM } from '../utils/Requests';
-import { joinDM } from '../modules/dm';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -72,19 +70,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
 
   const clickDM = (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
-    console.log('DM');
-    getDM(user.nickname).then((res) => {
-      console.log(res);
-      const data = {
-        message: res.data,
-        index: user.index,
-        username: user.nickname,
-        userAvatar: user.avatar,
-      };
-      dispatch(joinDM(data));
-    }).catch((err) => {
-      console.log(err.response);
-    });
+    history.push(`/dm/${user.nickname}`);
     setMenuAnchor(null);
     e.stopPropagation();
   };

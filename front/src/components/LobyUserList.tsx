@@ -68,7 +68,7 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
 
   const clickDM = (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
-    console.log('DM');
+    history.push(`/dm/${user.nickname}`);
     setMenuAnchor(null);
     e.stopPropagation();
   };

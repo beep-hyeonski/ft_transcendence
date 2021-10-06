@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -63,11 +63,12 @@ function ChatSideBar(): JSX.Element {
   useEffect(() => {
     getUsermeChat()
       .then((res) => {
-        dispatch(updateUser(res.data));
+        dispatch(updateUser(res));
       })
       .catch((err) => {
         console.log(err.response);
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   return (

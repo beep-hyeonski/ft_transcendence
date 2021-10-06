@@ -121,8 +121,8 @@ export default function ChatRoom(): JSX.Element {
   const [openBannedMenu, setOpenBannedMenu] = useState(false);
 
   useEffect(() => {
-    try {
-      (async () => {
+    (async () => {
+      try{
         const { data } = await axios.get(
           `${String(process.env.REACT_APP_API_URL)}/chat/${
             chatData.index
@@ -144,47 +144,49 @@ export default function ChatRoom(): JSX.Element {
               ),
           ),
         );
+      } catch (error: any) {
+        console.log(error.response);
+        alert('접근할 수 없습니다');
+        dispatch(exitChatRoom());
+      }
+    })();
+    socket?.emit('join', {
+      chatIndex: chatData.index,
+    });
 
-        socket?.emit('join', {
-          chatIndex: chatData.index,
-        });
+    socket?.on('onMessage', ({ sendUser, message }) => {
+      console.log(sendUser, message);
+      const msg = {
+        timestamp: new Date().toUTCString(),
+        sendUser: {
+          nickname: sendUser.nickname,
+          avatar: sendUser.avatar,
+        },
+        messageContent: message,
+      };
+      if (
+        !mydata.blockings.find(
+          (block: any) => block.nickname === msg.sendUser.nickname,
+        )
+      )
+        setMsg((prev) => prev.concat(msg));
+    });
 
-        socket?.on('onMessage', ({ sendUser, message }) => {
-          const msg = {
-            timestamp: new Date().toUTCString(),
-            sendUser: {
-              nickname: sendUser.nickname,
-              avatar: sendUser.avatar,
-            },
-            messageContent: message,
-          };
-          if (
-            !mydata.blockings.find(
-              (block: any) => block.nickname === msg.sendUser.nickname,
-            )
-          )
-            setMsg((prev) => prev.concat(msg));
-        });
-
-        socket?.on('exception', async (payload) => {
-          console.log(payload);
-          if (payload.message === 'User has been muted from this chat')
-            alert('채팅 금지 상태입니다.');
-          if (payload.message === 'User Not Joined in the Chat Socket') {
-            alert('채팅방에서 추방되었습니다.');
-            dispatch(exitChatRoom());
-          }
-          if (payload.message === 'User Banned from the Chat') {
-            alert('채팅방에서 추방되었습니다.');
-            const res = await getUsermeChat();
-            dispatch(updateUser(res));
-            dispatch(exitChatRoom());
-          }
-        });
-      })();
-    } catch (error) {
-      console.log(error);
-    }
+    socket?.on('exception', async (payload) => {
+      console.log(payload);
+      if (payload.message === 'User has been muted from this chat')
+        alert('채팅 금지 상태입니다.');
+      if (payload.message === 'User Not Joined in the Chat Socket') {
+        alert('채팅방에서 추방되었습니다.');
+        dispatch(exitChatRoom());
+      }
+      if (payload.message === 'User Banned from the Chat') {
+        alert('채팅방에서 추방되었습니다.');
+        const res = await getUsermeChat();
+        dispatch(updateUser(res));
+        dispatch(exitChatRoom());
+      }
+    });
 
     return () => {
       socket?.off('onMessage');

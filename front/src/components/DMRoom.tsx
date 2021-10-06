@@ -12,10 +12,11 @@ import SendIcon from '@material-ui/icons/Send';
 import { useDispatch, useSelector } from 'react-redux';
 import { IconButton } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { useHistory } from 'react-router-dom';
+import { useHistory, RouteComponentProps } from 'react-router-dom';
 import axios from 'axios';
 import ChattingList from './ChattingList';
 import { RootState } from '../modules';
+import { deleteSideData } from '../modules/sidebar';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -35,7 +36,7 @@ const useStyles = makeStyles(() => ({
     marginLeft: '20px',
     paddingLeft: '10px',
     backgroundColor: 'white',
-    width: '70%',
+    width: '80%',
     height: '33px',
     fontSize: '20px',
     letterSpacing: '1px',
@@ -48,7 +49,7 @@ const useStyles = makeStyles(() => ({
     color: '#F4F3FF',
     width: '1rem',
     marginTop: '30px',
-    marginLeft: '7rem',
+    marginLeft: '4rem',
     whiteSpace: 'nowrap',
   },
   titlebar: {
@@ -80,80 +81,65 @@ interface MessageProps {
   messageContent: string;
 }
 
-export default function DMRoom(): JSX.Element {
+interface DMProps {
+	nickname: string;
+};
+
+export default function DMRoom({ match }: RouteComponentProps<DMProps>): JSX.Element {
   const classes = useStyles();
-  const chatData = useSelector((state: RootState) => state.chatModule);
   const { socket } = useSelector((state: RootState) => state.socketModule);
-  const mydata = useSelector((state: RootState) => state.userModule);
-  const dispatch = useDispatch();
+	const { nickname } = match.params;
 	const history = useHistory();
+	const dispatch = useDispatch();
 
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [inputs, setInputs] = useState('');
 
   useEffect(() => {
-    try {
-      (async () => {
-        const { data } = await axios.get(
-          `${String(process.env.REACT_APP_API_URL)}/chat/${
-            chatData.index
-          }/messages`,
-        );
-        const msgs = data.map((message: any) => ({
-          timestamp: message.createdAt,
-          sendUser: {
-            nickname: message.sendUser.nickname,
-            avatar: message.sendUser.avatar,
-          },
-          messageContent: message.messageContent,
-        }));
-        setMsg(() =>
-          msgs.filter(
-            (message: MessageProps) =>
-              !mydata.blockings.find(
-                (block: any) => block.nickname === message.sendUser.nickname,
-              ),
-          ),
-        );
+		dispatch(deleteSideData());
+		(async () => {
+			try {
+				const { data } = await axios.get(
+					`${String(process.env.REACT_APP_API_URL)}/dm/${nickname}`
+				);
+				const msgs = data.map((message: any) => ({
+					timestamp: message.createdAt,
+					sendUser: {
+						nickname: message.sendUser.nickname,
+						avatar: message.sendUser.avatar,
+					},
+					messageContent: message.message,
+				}));
+				setMsg(msgs);
+			} catch (error: any) {
+				console.log(error.response);
+				alert('접근할 수 없습니다');
+				history.goBack();
+			}
+		})();
 
-        socket?.emit('join', {
-          chatIndex: chatData.index,
-        });
+		socket?.on('onDM', ({ sendUser, message }) => {
+			const msg = {
+				timestamp: new Date().toUTCString(),
+				sendUser: {
+					nickname: sendUser.nickname,
+					avatar: sendUser.avatar,
+				},
+				messageContent: message,
+			};
+			setMsg((prev) => prev.concat(msg));
+		});
 
-        socket?.on('onMessage', ({ sendUser, message }) => {
-          const msg = {
-            timestamp: new Date().toUTCString(),
-            sendUser: {
-              nickname: sendUser.nickname,
-              avatar: sendUser.avatar,
-            },
-            messageContent: message,
-          };
-          if (
-            !mydata.blockings.find(
-              (block: any) => block.nickname === msg.sendUser.nickname,
-            )
-          )
-            setMsg((prev) => prev.concat(msg));
-        });
-
-        socket?.on('exception', (payload) => {
-          console.log(payload);
-        });
-      })();
-    } catch (error) {
-      console.log(error);
-    }
+		socket?.on('exception', (payload) => {
+			console.log(payload);
+		});
 
     return () => {
-      socket?.off('onMessage');
-      socket?.off('exception');
-      socket?.emit('leave', {
-        chatIndex: chatData.index,
-      });
+			socket?.off('onDM');
+			socket?.off('exception');
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatData.index]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nickname, dispatch]);
 
   const onChange = (e: any) => {
     setInputs(e.target.value);
@@ -164,13 +150,13 @@ export default function DMRoom(): JSX.Element {
     if (inputs === '') {
       return;
     }
-    const data = {
-      chatIndex: chatData.index,
-      message: inputs,
-    };
+		const data = {
+			receiveUser: nickname,
+			message: inputs,
+		}
     if (e.key === 'Enter') {
       // socket으로 input 넘겨주기
-      socket?.emit('onMessage', data);
+			socket?.emit('onDM', data);
       setInputs('');
     }
   };
@@ -179,11 +165,11 @@ export default function DMRoom(): JSX.Element {
     if (inputs === '') {
       return;
     }
-    const data = {
-      chatIndex: chatData.index,
-      message: inputs,
-    };
-    socket?.emit('onMessage', data);
+		const data = {
+			receiveUser: nickname,
+			message: inputs,
+		}
+		socket?.emit('onDM', data);
     setInputs('');
   };
 
@@ -201,12 +187,12 @@ export default function DMRoom(): JSX.Element {
         >
           <ArrowBackIcon className={classes.backButton} />
         </IconButton>
-        <Typography className={classes.title}>{chatData.title}</Typography>
+        <Typography className={classes.title}>{nickname}</Typography>
       </AppBar>
       <div className={classes.messages}>
         <List>
           {messages.map((data) => (
-            <ChattingList data={data} />
+            <ChattingList key={data.timestamp} data={data} />
           ))}
         </List>
       </div>

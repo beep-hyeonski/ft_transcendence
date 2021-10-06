@@ -69,7 +69,7 @@ function App(): JSX.Element {
             <Route path="/setting" exact component={Setting} />
             <Route path="/game" exact component={PongGame} />
             <Route path="/admin" exact component={Admin} />
-            <Route path="/direct_message" exact component={DMRoom} />
+            <Route path="/dm/:nickname" exact component={DMRoom} />
           </>
         ) : (
           <LoginPage />
