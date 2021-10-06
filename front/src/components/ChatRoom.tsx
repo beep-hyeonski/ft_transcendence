@@ -32,7 +32,7 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column-reverse',
-    overflowY: 'auto',
+    overflow: 'auto',
   },
   chatInput: {
     border: '2px solid black',

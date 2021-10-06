@@ -41,3 +41,10 @@ export async function getDM(name: string): Promise<any> {
   );
   return response.data;
 }
+
+export async function getChatInfo(index: number) {
+  const response = await axios.get(
+    `${String(process.env.REACT_APP_API_URL)}/chat/${index}`,
+  );
+  return response.data;
+}

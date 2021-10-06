@@ -14,11 +14,8 @@ const useStyles = makeStyles(() =>
       top: '50%',
       left: '47%',
       transform: 'translate(-50%, -50%)',
-      width: '80rem',
-      height: '50rem',
-      backgroundColor: 'white',
-      borderRadius: '10px',
-      boxShadow: '3.5px 3.5px 3px gray',
+      width: '80%',
+      height: '80%',
     },
     tabBar: {
       position: 'absolute',
@@ -37,6 +34,14 @@ const useStyles = makeStyles(() =>
     },
     indicator: {
       backgroundColor: '#FF00E4',
+    },
+    insidePaper: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      boxShadow: '3.5px 3.5px 3px gray',
+      overflow: 'auto',
     },
   }),
 );
@@ -70,8 +75,10 @@ function Admin(): JSX.Element {
             <Tab value={2} className={classes.tapElem} label="Users" />
           </Tabs>
         </div>
-        {value === 1 && <AdminChannels />}
-        {value === 2 && <AdminUsers />}
+        <Paper className={classes.insidePaper}>
+          {value === 1 && <AdminChannels />}
+          {value === 2 && <AdminUsers />}
+        </Paper>
       </Paper>
     </>
   );
