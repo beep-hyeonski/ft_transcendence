@@ -177,13 +177,19 @@ export class AppGateway
       dm.receiveUser = receiveUser;
       this.dmRepository.save(dm);
 
+      const sendPayload = {
+        sendUser: {
+          nickname: user.nickname,
+          avatar: user.avatar,
+        },
+        message: payload.message,
+      };
+
       const receiveClient = this.wsClients.get(receiveUser.index);
       if (receiveClient) {
-        receiveClient.emit('onDM', {
-          sendUser: user.nickname,
-          message: payload.message,
-        });
+        receiveClient.emit('onDM', sendPayload);
       }
+      client.emit('onDM', sendPayload);
     }
   }
 
