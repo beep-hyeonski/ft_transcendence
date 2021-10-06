@@ -13,16 +13,19 @@ export class DmService {
   ) {}
 
   async getDMByNickname(jwtPayloadDto: JwtPayloadDto, nickname: string) {
+    const otherUser = await this.userRepository.findOneOrFail({
+      where: { nickname },
+    });
     const dms = await this.dmRepository.find({
       relations: ['sendUser', 'receiveUser'],
       order: { createdAt: 'ASC' },
     });
     return dms.filter(
       (dm) =>
-        dm.sendUser.index === jwtPayloadDto.sub ||
-        dm.sendUser.nickname === nickname ||
-        dm.receiveUser.index === jwtPayloadDto.sub ||
-        dm.receiveUser.nickname === nickname,
+        (dm.sendUser.index === jwtPayloadDto.sub &&
+          dm.receiveUser.index === otherUser.index) ||
+        (dm.sendUser.index === otherUser.index &&
+          dm.receiveUser.index === jwtPayloadDto.sub),
     );
   }
 }
