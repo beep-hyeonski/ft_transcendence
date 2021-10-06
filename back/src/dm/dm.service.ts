@@ -15,6 +15,7 @@ export class DmService {
   async getDMByNickname(jwtPayloadDto: JwtPayloadDto, nickname: string) {
     const dms = await this.dmRepository.find({
       relations: ['sendUser', 'receiveUser'],
+      order: { createdAt: 'ASC' },
     });
     return dms.filter(
       (dm) =>
