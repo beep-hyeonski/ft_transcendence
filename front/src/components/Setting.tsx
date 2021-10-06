@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Avatar, Tab, Tabs } from '@material-ui/core';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
+import { Tab, Tabs } from '@material-ui/core';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { RootState } from '../modules';
-import SettingInputs from './SettingInputs';
 import { updateUser } from '../modules/user';
 import { getUserme } from '../utils/Requests';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
@@ -77,14 +74,17 @@ const useStyles = makeStyles(() =>
       textTransform: 'none',
       textShadow: '1px 1px 0.5px gray',
     },
+    indicator: {
+      backgroundColor: '#FF00E4',
+    },
   }),
 );
 
-function Setting() {
+function Setting(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(1);
 
   useEffect(() => {
     dispatch(changeSideBar({ type: FOLLOW }));
@@ -100,6 +100,10 @@ function Setting() {
       });
   }, [history, dispatch]);
 
+  const changeTab = (event: any, newValue: number) => {
+    setValue(newValue);
+  };
+
   return (
     <>
       <div className={classes.divStyle}>
@@ -107,13 +111,17 @@ function Setting() {
           <Tabs
             value={value}
             variant="fullWidth"
+            onChange={changeTab}
+            classes={{
+              indicator: classes.indicator,
+            }}
           >
-            <Tab className={classes.tapElem} label="Setting" />
-            <Tab className={classes.tapElem} label="Block Users" />
+            <Tab value={1} className={classes.tapElem} label="Setting" />
+            <Tab value={2} className={classes.tapElem} label="Block Users" />
           </Tabs>
         </div>
-        <SettingBlockedUsers />
-        {/* <SettingMyData /> */}
+        {value === 1 && <SettingMyData />}
+        {value === 2 && <SettingBlockedUsers />}
       </div>
     </>
   );

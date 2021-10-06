@@ -17,6 +17,8 @@ import { Match } from './match/entities/match.entity';
 import { MatchModule } from './match/match.module';
 import { GameModule } from './game/game.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { DmModule } from './dm/dm.module';
+import { DM } from './dm/entities/dm.entity';
 
 @Module({
   imports: [
@@ -30,10 +32,10 @@ import { ScheduleModule } from '@nestjs/schedule';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
-      entities: [User, Chat, Message, Match],
+      entities: [User, Chat, Message, Match, DM],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Message]),
+    TypeOrmModule.forFeature([Message, DM]),
     UsersModule,
     AuthModule,
     FollowModule,
@@ -42,6 +44,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MatchModule,
     GameModule,
     ScheduleModule.forRoot(),
+    DmModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],

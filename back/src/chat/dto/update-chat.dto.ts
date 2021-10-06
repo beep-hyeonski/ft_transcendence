@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { ChatStatus } from '../entities/chat.entity';
 
 export class UpdateChatDto {
@@ -20,6 +26,9 @@ export class UpdateChatDto {
   })
   @IsOptional()
   @IsString()
+  @MinLength(8, {
+    message: 'Invaid Password Length',
+  })
   @MaxLength(20, {
     message: 'Invaid Password Length',
   })

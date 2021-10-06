@@ -14,6 +14,7 @@ function SideMenu(): JSX.Element {
       {sidebarStatus.data.type === MAIN && <LobySideBar />}
       {sidebarStatus.data.type === CHAT && <ChatSideBar />}
       {sidebarStatus.data.type === FOLLOW && <ProfileSideBar />}
+      {sidebarStatus.data.type === '' && null}
       <NavBar />
     </>
   );

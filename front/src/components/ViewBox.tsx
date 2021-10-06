@@ -17,13 +17,6 @@ const useStyles = makeStyles(() =>
       borderRadius: '10px',
       boxShadow: '3.5px 3.5px 3px gray',
     },
-    searchBar: {
-      position: 'absolute',
-      top: '10%',
-      left: '64%',
-      boxShadow: '1px 1px 1px lightgray',
-      borderRadius: '4px',
-    },
   }),
 );
 

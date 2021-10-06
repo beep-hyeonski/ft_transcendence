@@ -6,11 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayloadDto } from 'src/auth/dto/jwt-payload.dto';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { Chat, ChatStatus } from './entities/chat.entity';
 import { Message } from './entities/message.entity';
+import { hash, isHashValid } from '../utils/encrypt';
 
 @Injectable()
 export class ChatService {
@@ -46,8 +47,18 @@ export class ChatService {
       where: { index: jwtPayloadDto.sub },
     });
 
-    if (createChatDto.password && createChatDto.status !== ChatStatus.PROTECTED)
-      throw new BadRequestException('Invalid Chat Status');
+    if (
+      createChatDto.status === ChatStatus.PROTECTED &&
+      !createChatDto.password
+    ) {
+      throw new BadRequestException('Password Required');
+    }
+
+    if (createChatDto.password) {
+      if (createChatDto.status !== ChatStatus.PROTECTED)
+        throw new BadRequestException('Invalid Chat Status');
+      createChatDto.password = await hash(createChatDto.password);
+    }
 
     const createChat = new Chat();
 
@@ -80,10 +91,14 @@ export class ChatService {
     if (
       chat.status === ChatStatus.PUBLIC &&
       updateChatDto.status === ChatStatus.PROTECTED &&
-      (!updateChatDto.password || updateChatDto.password.length < 8)
+      (!updateChatDto.password ||
+        !(
+          updateChatDto.password.length >= 8 &&
+          updateChatDto.password.length <= 20
+        ))
     ) {
       throw new BadRequestException(
-        'Valid Password Required, length more than 8',
+        'Valid 8 ~ 20 Characters of Password Required',
       );
     }
     if (
@@ -91,11 +106,21 @@ export class ChatService {
       updateChatDto.status === ChatStatus.PROTECTED &&
       updateChatDto.password
     ) {
-      if (updateChatDto.password !== '' && updateChatDto.password.length < 8) {
+      if (
+        updateChatDto.password !== '' &&
+        !(
+          updateChatDto.password.length >= 8 &&
+          updateChatDto.password.length <= 20
+        )
+      ) {
         throw new BadRequestException(
-          'Valid Password Required, length more than 8',
+          'Valid 8 ~ 20 Characters of Password Required',
         );
       }
+    }
+
+    if (updateChatDto.password) {
+      updateChatDto.password = await hash(updateChatDto.password);
     }
 
     for (const fieldName in updateChatDto) {
@@ -118,9 +143,13 @@ export class ChatService {
     return await this.chatRepository.delete(chat);
   }
 
-  async joinChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
+  async joinChat(
+    jwtPayloadDto: JwtPayloadDto,
+    chatIndex: number,
+    password: string,
+  ) {
     const chat = await this.chatRepository.findOneOrFail({
-      relations: ['joinUsers'],
+      relations: ['joinUsers', 'bannedUsers'],
       where: { index: chatIndex },
     });
 
@@ -132,6 +161,22 @@ export class ChatService {
       throw new BadRequestException('Already joined user');
     }
 
+    if (
+      chat.bannedUsers &&
+      chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
+    )
+      throw new BadRequestException('User Banned');
+
+    if (chat.status === ChatStatus.PROTECTED) {
+      if (!password) {
+        throw new BadRequestException('Password Required');
+      }
+      console.log(password, chat.password);
+      if (!(await isHashValid(password, chat.password))) {
+        throw new BadRequestException('Invalid Password');
+      }
+    }
+
     chat.joinUsers.push(user);
     await this.chatRepository.save(chat);
 
@@ -140,7 +185,7 @@ export class ChatService {
 
   async leaveChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
     const chat = await this.chatRepository.findOneOrFail({
-      relations: ['joinUsers'],
+      relations: ['ownerUser', 'adminUsers', 'joinUsers'],
       where: { index: chatIndex },
     });
 
@@ -152,12 +197,41 @@ export class ChatService {
       throw new BadRequestException('User Not Entered this chat');
     }
 
-    chat.joinUsers = chat.joinUsers.filter(
-      (joinUser) => joinUser.index !== user.index,
-    );
-    await this.chatRepository.save(chat);
+    if (chat.joinUsers.length === 1) {
+      const relations = [
+        'joinUsers',
+        'adminUsers',
+        'mutedUsers',
+        'bannedUsers',
+      ];
+      for (const relation of relations) {
+        await this.chatRepository
+          .createQueryBuilder()
+          .relation(Chat, relation)
+          .of(chat)
+          .remove(user);
+      }
 
-    return chat;
+      await this.chatRepository
+        .createQueryBuilder()
+        .delete()
+        .from(Chat)
+        .where('index = :index', { index: chat.index })
+        .execute();
+    } else {
+      chat.joinUsers = chat.joinUsers.filter(
+        (joinUser) => joinUser.index !== user.index,
+      );
+      chat.adminUsers = chat.adminUsers.filter(
+        (adminUser) => adminUser.index !== user.index,
+      );
+      if (chat.ownerUser.index === user.index) {
+        chat.ownerUser = chat.joinUsers[0];
+        chat.adminUsers.push(chat.ownerUser);
+      }
+
+      return await this.chatRepository.save(chat);
+    }
   }
 
   async registerAdmin(
@@ -327,6 +401,9 @@ export class ChatService {
       throw new BadRequestException('User is not in the chat');
 
     chat.bannedUsers.push(user);
+    chat.joinUsers = chat.joinUsers.filter(
+      (joinUser) => joinUser.index !== user.index,
+    );
     await this.chatRepository.save(chat);
 
     return chat;

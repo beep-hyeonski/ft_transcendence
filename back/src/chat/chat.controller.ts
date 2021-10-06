@@ -69,8 +69,12 @@ export class ChatController {
 
   @ApiOperation({ summary: '채팅방 입장' })
   @Post(':chatIndex/join')
-  async joinChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
-    return await this.chatService.joinChat(req.user, chatIndex);
+  async joinChat(
+    @Req() req: any,
+    @Param('chatIndex') chatIndex: number,
+    @Body('password') password: string,
+  ) {
+    return await this.chatService.joinChat(req.user, chatIndex, password);
   }
 
   @ApiOperation({ summary: '채팅방 퇴장' })

@@ -56,7 +56,7 @@ interface Roomdata {
       status: string;
       title: string;
       joinUsers: never[];
-      password: string;
+      bannedUsers: never[],
       mutedUsers: never[];
       adminUsers: never[];
       ownerUser: string;
@@ -78,14 +78,13 @@ function ChatRoomList({ roomdata, setModal }: Roomdata) {
     event.preventDefault();
     try {
       const res = await getChatInfo(roomdata.index);
-      console.log(res);
       setModal({
         index: res.index,
         open: true,
         status: roomdata.status,
         title: res.title,
-        password: res.password,
         joinUsers: res.joinUsers,
+        bannedUsers: res.bannedUsers,
         mutedUsers: res.mutedUsers,
         adminUsers: res.adminUsers,
         ownerUser: res.ownerUser.nickname,

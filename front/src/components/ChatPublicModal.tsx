@@ -82,7 +82,7 @@ interface ModalProps {
     status: string;
     title: string;
     joinUsers: never[];
-    password: string;
+    bannedUsers: never[],
     mutedUsers: never[];
     adminUsers: never[];
     ownerUser: string;
@@ -94,7 +94,7 @@ interface ModalProps {
       status: string;
       title: string;
       joinUsers: never[];
-      password: string;
+      bannedUsers: never[],
       mutedUsers: never[];
       adminUsers: never[];
       ownerUser: string;
@@ -114,7 +114,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
       status: '',
       title: '',
       joinUsers: [],
-      password: '',
+      bannedUsers: [],
       mutedUsers: [],
       adminUsers: [],
       ownerUser: '',
@@ -135,18 +135,19 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
           roomTitle: modal.title,
           roomIndex: modal.index,
           roomJoinedUsers: modal.joinUsers,
-          roomPassword: modal.password,
           roomStatus: modal.status,
+          roomBannedUsers: modal.bannedUsers,
           roomAdmins: modal.adminUsers,
           roomOwner: modal.ownerUser,
           roomMuted: modal.mutedUsers,
         }),
       );
-
       const { data } = await getUserme();
       dispatch(updateUser(data));
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log(error.response);
+      if (error.response.data.message === 'User Banned')
+        alert('채팅방에 참여할 수 없습니다.');
     }
 
     // 참여중인 채팅방일 경우 이동만. 아닐 경우 추가 후 이동
@@ -156,7 +157,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
       status: '',
       title: '',
       joinUsers: [],
-      password: '',
+      bannedUsers: [],
       mutedUsers: [],
       adminUsers: [],
       ownerUser: '',
@@ -173,8 +174,8 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
             open: false,
             status: '',
             title: '',
+            bannedUsers: [],
             joinUsers: [],
-            password: '',
             mutedUsers: [],
             adminUsers: [],
             ownerUser: '',

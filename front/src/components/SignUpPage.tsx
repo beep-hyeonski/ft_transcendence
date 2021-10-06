@@ -81,9 +81,8 @@ function SignUpPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history]);
 
-  // https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg
   const [image, setImage] = useState(
-    'https://cdn.topstarnews.net/news/photo/201810/494999_155091_4219.jpg',
+    'https://www.google.com/imgres?imgurl=https%3A%2F%2Fcdn-lostark.game.onstove.com%2F2021%2Fevent%2F210324_landing%2Fimages%2Fm%2Fmokoko_01.gif&imgrefurl=https%3A%2F%2Flostark.game.onstove.com%2FPromotion%2FCollaboration%2F210324&tbnid=qY-K2B9aiqi3pM&vet=12ahUKEwiZrrX8kbDzAhWLwIsBHWl1DqEQMygGegUIARDZAQ..i&docid=1FhuBCigzzRcyM&w=360&h=360&q=%EB%AA%A8%EC%BD%94%EC%BD%94%20gif&ved=2ahUKEwiZrrX8kbDzAhWLwIsBHWl1DqEQMygGegUIARDZAQ',
   );
 
   const clickSignUpButton = async (form: {
@@ -157,9 +156,6 @@ function SignUpPage() {
     );
     setImage(ret.data.image);
   };
-
-  // style={{ display: 'none' }}
-  // jpg, jpeg, png, gif
 
   return (
     <div className={classes.divStyle}>

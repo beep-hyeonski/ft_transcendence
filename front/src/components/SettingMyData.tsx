@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
 import axios from 'axios';
@@ -7,8 +7,6 @@ import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import SettingInputs from './SettingInputs';
 import { updateUser } from '../modules/user';
-import { getUserme } from '../utils/Requests';
-import { changeSideBar, FOLLOW } from '../modules/sidebar';
 
 const useStyles = makeStyles(() =>
   createStyles({

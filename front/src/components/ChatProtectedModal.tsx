@@ -75,8 +75,8 @@ interface ModalProps {
     status: string;
     title: string;
     joinUsers: never[];
-    password: string;
     mutedUsers: never[];
+    bannedUsers: never[],
     adminUsers: never[];
     ownerUser: string;
   };
@@ -87,7 +87,7 @@ interface ModalProps {
       status: string;
       title: string;
       joinUsers: never[];
-      password: string;
+      bannedUsers: never[],
       mutedUsers: never[];
       adminUsers: never[];
       ownerUser: string;
@@ -108,7 +108,7 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
       status: '',
       title: '',
       joinUsers: [],
-      password: '',
+      bannedUsers: [],
       mutedUsers: [],
       adminUsers: [],
       ownerUser: '',
@@ -117,41 +117,46 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
 
   const onClickJoinButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if (modal.password === password) {
-      try {
-        await axios.post(
-          `${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`,
-        );
-        dispatch(
-          joinChatRoom({
-            roomTitle: modal.title,
-            roomIndex: modal.index,
-            roomJoinedUsers: modal.joinUsers,
-            roomPassword: modal.password,
-            roomStatus: modal.status,
-            roomAdmins: modal.adminUsers,
-            roomOwner: modal.ownerUser,
-            roomMuted: modal.mutedUsers,
-          }),
-        );
+    console.log(password);
+    try {
+      await axios.post(
+        `${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`,
+        {password},
+      );
+      dispatch(
+        joinChatRoom({
+          roomTitle: modal.title,
+          roomIndex: modal.index,
+          roomJoinedUsers: modal.joinUsers,
+          roomStatus: modal.status,
+          roomBannedUsers: modal.bannedUsers,
+          roomAdmins: modal.adminUsers,
+          roomOwner: modal.ownerUser,
+          roomMuted: modal.mutedUsers,
+        }),
+      );
 
-        const { data } = await getUserme();
-        dispatch(updateUser(data));
-      } catch (error) {
-        console.log(error);
+      const { data } = await getUserme();
+      dispatch(updateUser(data));
+    } catch (error: any) {
+      console.log(error.response);
+      if (error.response.data.message === 'User Banned')
+        alert('채팅방에 참여할 수 없습니다.');
+      if (error.response.data.message === 'Password Required' ||
+        error.response.data.message === 'Invalid Password') {
+        setPassword('');
+        alert('Wrong password');
+        return;
       }
-    } else {
-      setPassword('');
-      alert('Wrong password');
-      return;
     }
+    setPassword('');
     setModal({
       index: -1,
       open: false,
       status: '',
       title: '',
       joinUsers: [],
-      password: '',
+      bannedUsers: [],
       mutedUsers: [],
       adminUsers: [],
       ownerUser: '',
@@ -174,7 +179,7 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
             status: '',
             title: '',
             joinUsers: [],
-            password: '',
+            bannedUsers: [],
             mutedUsers: [],
             adminUsers: [],
             ownerUser: '',

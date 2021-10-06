@@ -30,9 +30,9 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
       dispatch(joinChatRoom({
         roomTitle: data.title,
         roomIndex: data.index,
-        roomPassword: data.password,
         roomStatus: data.status,
         roomJoinedUsers: data.joinUsers,
+        roomBannedUsers: data.bannedUsers,
         roomAdmins: data.adminUsers,
         roomMuted: data.mutedUsers,
         roomOwner: data.ownerUser.nickname,

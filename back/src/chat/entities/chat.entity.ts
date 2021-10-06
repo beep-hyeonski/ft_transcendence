@@ -140,7 +140,7 @@ export class Chat extends BaseEntity {
   })
   @Column({
     type: 'varchar',
-    length: 20,
+    length: 100,
     nullable: true,
   })
   password: string;

@@ -23,6 +23,7 @@ import { MatchService } from './match/match.service';
 import { v1 } from 'uuid';
 import { GameService, BallSpeed, Game, KeyState } from './game/game.service';
 import { Interval } from '@nestjs/schedule';
+import { DM } from './dm/entities/dm.entity';
 
 @UseFilters(WebsocketExceptionFilter)
 @WebSocketGateway(8001, { cors: true })
@@ -36,6 +37,7 @@ export class AppGateway
     private matchService: MatchService,
     private gameService: GameService,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
+    @InjectRepository(DM) private dmRepository: Repository<DM>,
   ) {}
 
   @WebSocketServer()
@@ -148,6 +150,46 @@ export class AppGateway
       });
     } else {
       throw new WsException('User has been muted from this chat');
+    }
+  }
+
+  @SubscribeMessage('onDM')
+  async onDM(
+    client: Socket,
+    payload: { receiveUser: string; message: string },
+  ) {
+    const user = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    const receiveUser = await this.usersService.getUserByNickname(
+      payload.receiveUser,
+    );
+
+    if (
+      receiveUser.blockings &&
+      receiveUser.blockings.find((block) => block.index === user.index)
+    )
+      throw new WsException('User has been blocked');
+    else {
+      const dm = new DM();
+      dm.message = payload.message;
+      dm.sendUser = user;
+      dm.receiveUser = receiveUser;
+      this.dmRepository.save(dm);
+
+      const sendPayload = {
+        sendUser: {
+          nickname: user.nickname,
+          avatar: user.avatar,
+        },
+        message: payload.message,
+      };
+
+      const receiveClient = this.wsClients.get(receiveUser.index);
+      if (receiveClient) {
+        receiveClient.emit('onDM', sendPayload);
+      }
+      client.emit('onDM', sendPayload);
     }
   }
 
@@ -388,6 +430,11 @@ export class AppGateway
         throw new WsException('Chat Not Found');
       else throw e;
     }
+    if (
+      chat.bannedUsers &&
+      chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
+    )
+      throw new WsException('User Banned from the Chat');
     if (!chat.joinUsers.find((joinUser) => joinUser.index === user.index))
       throw new WsException('User Not Joined in the Chat');
     return user;
