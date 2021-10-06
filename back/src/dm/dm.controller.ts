@@ -10,7 +10,7 @@ export class DmController {
   constructor(private readonly dmService: DmService) {}
 
   @Get(':nickname')
-  async getDMByNickname(@Req() req: any, @Param() nickname: string) {
+  async getDMByNickname(@Req() req: any, @Param('nickname') nickname: string) {
     return await this.dmService.getDMByNickname(req.user, nickname);
   }
 }
