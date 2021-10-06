@@ -14,8 +14,8 @@ const useStyles = makeStyles(() =>
   createStyles({
     canvas: {
       backgroundColor: 'black',
-      width: '1400px',
-      height: '700px',
+      width: '1400',
+      height: '700',
     },
   }),
 );
@@ -130,8 +130,8 @@ function PongGame(): JSX.Element {
     }
 
     const canvas = canvasRef.current;
-    canvas.width = game.frameInfo.frameWidth - 5;
-    canvas.height = game.frameInfo.frameHeight - 5;
+    canvas.width = game.frameInfo.frameWidth;
+    canvas.height = game.frameInfo.frameHeight;
     const context = canvas.getContext('2d');
 
     if (context == null) {

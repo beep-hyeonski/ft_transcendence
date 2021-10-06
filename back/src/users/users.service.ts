@@ -44,6 +44,24 @@ export class UsersService {
     return user;
   }
 
+  async getUserByIndex(index: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      relations: [
+        'followings',
+        'blockings',
+        'ownerChannels',
+        'adminChannels',
+        'joinChannels',
+        'mutedChannels',
+        'bannedChannels',
+      ],
+      where: { index },
+    });
+
+    if (!user) throw new NotFoundException('User Not Found');
+    return user;
+  }
+
   async getUserWithChat(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
       relations: [

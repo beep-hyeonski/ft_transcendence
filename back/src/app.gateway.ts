@@ -12,7 +12,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { ChatService } from './chat/chat.service';
 import { UsersService } from './users/users.service';
-import { User } from './users/entities/user.entity';
+import { User, UserStatus } from './users/entities/user.entity';
 import { WebsocketExceptionFilter } from './filters/websocket-exception.filter';
 import { Chat } from './chat/entities/chat.entity';
 import { EntityNotFoundError, Repository } from 'typeorm';
@@ -22,7 +22,6 @@ import { CreateMatchDto } from './match/dto/create-match.dto';
 import { MatchService } from './match/match.service';
 import { v1 } from 'uuid';
 import { GameService, BallSpeed, Game, KeyState } from './game/game.service';
-import { Interval } from '@nestjs/schedule';
 import { DM } from './dm/entities/dm.entity';
 
 @UseFilters(WebsocketExceptionFilter)
@@ -300,6 +299,27 @@ export class AppGateway
     const sender = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
+
+    const receiver = await this.usersService.getUserByIndex(payload.receiveUserIndex);
+
+    if (receiver.status !== UserStatus.ONLINE) {
+      client.emit('matchReject', {
+        status: 'MATCH_REJECT',
+        message: 'User Is Busy',
+      });
+      return;
+    }
+
+    if (receiver.blockings.find((blockedUser) => (
+      blockedUser.index === sender.index
+    ))) {
+      client.emit('matchReject', {
+        status: 'MATCH_REJECT',
+        message: 'Blocked',
+      });
+      return;
+    }
+
     const gameName = String(`game_${v1()}`);
     client.join(gameName);
     this.wsClients.get(payload.receiveUserIndex).emit('matchRequest', {
@@ -335,12 +355,27 @@ export class AppGateway
           client.handshake.headers.authorization,
         );
         client.join(payload.gameName);
-        const game: Game = this.gameService.gameSet(
-          payload.gameName,
-          player1,
-          player2,
-          BallSpeed.NORMAL,
-        );
+        let game: Game;
+        switch (payload.ballSpeed) {
+          case 'NORMAL':
+            game = this.gameService.gameSet(
+              payload.gameName,
+              player1,
+              player2,
+              BallSpeed.NORMAL,
+            );
+            break;
+          case 'FAST':
+            game = this.gameService.gameSet(
+              payload.gameName,
+              player1,
+              player2,
+              BallSpeed.FAST,
+            );
+            break;
+          default:
+            throw new WsException('Not Valid Ball Speed');
+        }
         this.server.to(payload.gameName).emit('matchComplete', {
           status: 'GAME_START',
           gameName: payload.gameName,
@@ -360,6 +395,7 @@ export class AppGateway
         );
         this.wsClients.get(payload.sendUserIndex).emit('matchReject', {
           status: 'MATCH_REJECT',
+          message: 'Request has been rejected',
         });
         await this.usersService.statusChange(receiveUser.index, 'ONLINE');
         await this.usersService.statusChange(payload.sendUserIndex, 'ONLINE');

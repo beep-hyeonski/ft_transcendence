@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import { RootState } from '../modules';
@@ -36,15 +36,13 @@ interface MatchHistoryListProps {
     loserScore: number;
     winner: any;
     winnerScore: string;
-    createdAt: string;
+    createdAt: Date;
   };
 }
 
 function MatchHistoryList({ history }: MatchHistoryListProps) {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);
-  const day = history.createdAt.split('T');
-  const time = day[1].split('.');
 
   return (
     <div className={classes.root}>
@@ -66,7 +64,7 @@ function MatchHistoryList({ history }: MatchHistoryListProps) {
         <div className={classes.userBox2}>{history.loser.nickname}</div>
       )}
       <div className={classes.timestamp}>
-        ({day[0]} {time[0]})
+        ({history.createdAt.toLocaleString()})
       </div>
     </div>
   );

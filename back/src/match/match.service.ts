@@ -15,6 +15,9 @@ export class MatchService {
   async getMatches() {
     return await this.matchRepository.find({
       relations: ['winner', 'loser'],
+      order: {
+        'createdAt': 'DESC',
+      },
     });
   }
 
@@ -69,6 +72,9 @@ export class MatchService {
     return await this.matchRepository.find({
       where: [{ winner: user.index }, { loser: user.index }],
       relations: ['winner', 'loser'],
+      order: {
+        'createdAt': 'DESC',
+      },
     });
   }
 }

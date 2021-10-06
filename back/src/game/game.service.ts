@@ -38,8 +38,8 @@ interface IPlayerInfo {
 }
 
 export enum BallSpeed {
-  NORMAL = 5,
-  HARD = 8,
+  NORMAL = 10,
+  FAST = 20,
 }
 
 export enum KeyState {
@@ -81,7 +81,7 @@ export class Game {
     };
     this.playerInfo.push({
       x: 0,
-      y: this.frameInfo.frameHeight / 2 - 150,
+      y: this.frameInfo.frameHeight / 2 - 75,
       stickWidth: 30,
       stickHeight: this.frameInfo.frameHeight / 5,
       score: 0,
@@ -89,11 +89,11 @@ export class Game {
     });
     this.playerInfo.push({
       x: this.frameInfo.frameWidth - 30,
-      y: this.frameInfo.frameHeight / 2 - 150,
+      y: this.frameInfo.frameHeight / 2 - 75,
       stickWidth: 30,
       stickHeight: this.frameInfo.frameHeight / 5,
       score: 0,
-      color: 'red',
+      color: 'blue',
     });
     this.ballInfo = {
       x: this.frameInfo.frameWidth / 2,
@@ -109,7 +109,7 @@ export class Game {
       (this.frameInfo.frameWidth / 2 + this.frameInfo.frameHeight / 2 / 2);
     this.collidePoint /=
       this.frameInfo.frameWidth / 2 + this.frameInfo.frameHeight / 2 / 2;
-    this.angle = (Math.PI / 4) * this.collidePoint;
+    this.angle = Math.random() * (Math.PI / 4) * this.collidePoint;
     this.direction =
       this.ballInfo.x + this.ballInfo.radius < this.frameInfo.frameWidth / 2
         ? 1
@@ -170,7 +170,7 @@ export class GameService {
   ballReset(game: Game) {
     game.ballInfo.x = game.frameInfo.frameWidth / 2;
     game.ballInfo.y = game.frameInfo.frameHeight / 2;
-    game.ballInfo.velocityY = Math.floor(Math.random() * 4);
+    game.ballInfo.velocityY = Math.floor(Math.random() * 4.0);
     game.ballInfo.velocityX *= -1;
     if (game.ballInfo.velocityY % 2 === 0) {
       game.ballInfo.velocityY *= -1;

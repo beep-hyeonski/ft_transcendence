@@ -60,7 +60,7 @@ function ViewBoxProfileInfo() {
   const classes = useStyles();
 
   const userdata = useSelector((state: RootState) => state.profileModule);
-  const [recode, setRecode] = useState([]);
+  const [record, setRecord] = useState([]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -69,7 +69,12 @@ function ViewBoxProfileInfo() {
         `${String(process.env.REACT_APP_API_URL)}/match/${userdata.username}`,
       )
       .then((res) => {
-        setRecode(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        res.data = res.data.map((match: any) => ({
+          ...match,
+          createdAt: new Date(match.createdAt),
+        }))
+        setRecord(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -92,7 +97,7 @@ function ViewBoxProfileInfo() {
       </div>
       <div className={classes.historyBox}>
         <div className={classes.historyBoxTitle}>Match history</div>
-        {recode.slice(recode.length - 6, recode.length).map((data: any) => (
+        {record.slice(record.length - 6, record.length).map((data: any) => (
           <MatchHistoryList key={data.index} history={data} />
         ))}
       </div>
