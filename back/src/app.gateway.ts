@@ -37,6 +37,7 @@ export class AppGateway
     private gameService: GameService,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
     @InjectRepository(DM) private dmRepository: Repository<DM>,
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
   @WebSocketServer()
@@ -301,7 +302,9 @@ export class AppGateway
       client.handshake.headers.authorization,
     );
 
-    const receiver = await this.usersService.getUserByIndex(payload.receiveUserIndex);
+    const receiver = await this.usersService.getUserByIndex(
+      payload.receiveUserIndex,
+    );
 
     if (receiver.status !== UserStatus.ONLINE) {
       client.emit('matchReject', {
@@ -311,9 +314,11 @@ export class AppGateway
       return;
     }
 
-    if (receiver.blockings.find((blockedUser) => (
-      blockedUser.index === sender.index
-    ))) {
+    if (
+      receiver.blockings.find(
+        (blockedUser) => blockedUser.index === sender.index,
+      )
+    ) {
       client.emit('matchReject', {
         status: 'MATCH_REJECT',
         message: 'Blocked',
@@ -447,7 +452,11 @@ export class AppGateway
 
   async getUserWithChatByJwt(jwtToken: string): Promise<User> {
     const jwtDecode = this.jwtService.verify(jwtToken);
-    return await this.usersService.getUserWithChat(jwtDecode.username);
+
+    return await this.userRepository.findOne({
+      where: { index: jwtDecode.sub },
+      relations: ['joinChannels', 'mutedChannels', 'bannedChannels'],
+    });
   }
 
   async validateChatUser(token: string, chatIndex: number): Promise<User> {

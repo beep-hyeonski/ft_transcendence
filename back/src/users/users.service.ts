@@ -28,15 +28,7 @@ export class UsersService {
 
   async getUser(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      relations: [
-        'followings',
-        'blockings',
-        // 'ownerChannels',
-        // 'adminChannels',
-        // 'joinChannels',
-        // 'mutedChannels',
-        // 'bannedChannels',
-      ],
+      relations: ['followings', 'blockings'],
       where: { username: username },
     });
 
@@ -49,11 +41,11 @@ export class UsersService {
       relations: [
         'followings',
         'blockings',
-        'ownerChannels',
-        'adminChannels',
-        'joinChannels',
-        'mutedChannels',
-        'bannedChannels',
+        // 'ownerChannels',
+        // 'adminChannels',
+        // 'joinChannels',
+        // 'mutedChannels',
+        // 'bannedChannels',
       ],
       where: { index },
     });
@@ -64,14 +56,7 @@ export class UsersService {
 
   async getUserWithChat(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      relations: [
-        // 'blockings',
-        'ownerChannels',
-        'adminChannels',
-        'joinChannels',
-        'mutedChannels',
-        'bannedChannels',
-      ],
+      relations: ['joinChannels'],
       where: { username: username },
     });
 
