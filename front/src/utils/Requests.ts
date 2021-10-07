@@ -1,10 +1,10 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
-export const getUserme = async (): Promise<AxiosResponse<any>> => {
+export const getUserme = async (): Promise<any> => {
   const response = await axios.get(
     `${String(process.env.REACT_APP_API_URL)}/users/me`,
   );
-  return response;
+  return response.data;
 };
 
 export async function getUsers(): Promise<any> {

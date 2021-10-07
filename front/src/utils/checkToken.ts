@@ -17,7 +17,7 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
     axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
     const response = await getUserme();
     dispatch(loginSuccess(token));
-    dispatch(updateUser(response.data));
+    dispatch(updateUser(response));
 
     dispatch(loginCheck());
   } catch (err: any) {

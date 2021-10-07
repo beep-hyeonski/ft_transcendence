@@ -193,7 +193,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
         }),
       );
       const userdata = await getUserme();
-      dispatch(updateUser(userdata.data));
+      dispatch(updateUser(userdata));
       setOpen(false);
       setForm({
         title: '',

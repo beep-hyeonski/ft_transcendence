@@ -90,7 +90,7 @@ function Setting(): JSX.Element {
     dispatch(changeSideBar({ type: FOLLOW }));
     getUserme()
       .then((res) => {
-        dispatch(updateUser(res.data));
+        dispatch(updateUser(res));
       })
       .catch((err) => {
         console.log(err);
