@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Modal, Drawer, GridList, IconButton, List } from '@material-ui/core';
+import { Modal, Button, IconButton, List } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { getChatInfo } from '../utils/Requests';
@@ -30,10 +30,10 @@ const useStyles = makeStyles(() =>
     paper: {
 			position: 'absolute',
 			transform: 'translate(-50%, -50%)',
-			top: '55%',
+			top: '50%',
 			left: '50%',
 			width: '95%',
-			height: '80%',
+			height: '70%',
 			backgroundColor: '#F4F3FF',
 			display: 'flex',
     },
@@ -60,6 +60,21 @@ const useStyles = makeStyles(() =>
 			overflow: 'auto',
 			borderLeft: '2px solid gray',
 		},
+    button: {
+      position: 'absolute',
+      top: '88%',
+      right: '2rem',
+      width: '20rem',
+      height: '4.5rem',
+      fontSize: '25px',
+      color: '#F4F3FF',
+      backgroundColor: '#CE6F84',
+      '&:hover': {
+        backgroundColor: '#cc6b80',
+      },
+      boxShadow: '1px 1px 1px gray',
+      textShadow: '1px 1px 0.5px gray',
+    },
   }),
 );
 
@@ -140,6 +155,18 @@ function AdminChannelModal({ chatModal, setModal }: AdminChannelModalProps) {
 		setModal({ open: false, chatIndex: -1 });
   };
 
+  const onClickDeleteButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log('click delete');
+    try {
+      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`);
+      console.log(res);
+    } catch (err: any) {
+      console.log(err.response);
+    }
+    setModal({ open: false, chatIndex: -1 });
+  };
+
   return (
     <div>
       <Modal
@@ -170,6 +197,14 @@ function AdminChannelModal({ chatModal, setModal }: AdminChannelModalProps) {
 							</List>
 						</div>
 					</div>
+          <Button
+            variant="contained"
+            size="large"
+            className={classes.button}
+            onClick={onClickDeleteButton}
+          >
+            Delete Channel
+          </Button>
         </div>
       </Modal>
     </div>

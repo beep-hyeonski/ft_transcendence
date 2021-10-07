@@ -23,7 +23,7 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const clickTest = async (e: React.MouseEvent<HTMLDivElement>) => {
+  const clickButton = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     try {
       const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${index}`);
@@ -46,7 +46,7 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
     <ListItem
       button
       key={index}
-      onClick={clickTest}
+      onClick={clickButton}
     >
       <ChatBubbleOutlineRounded style={{ fontSize: 40 }} />
       <ListItemText primary={title} className={classes.usernameMargin} />

@@ -17,7 +17,7 @@ import { SettingsOutlined } from '@material-ui/icons';
 import ChattingList from './ChattingList';
 import { RootState } from '../modules';
 import { exitChatRoom, joinChatRoom } from '../modules/chat';
-import { getUserme, getUsermeChat } from '../utils/Requests';
+import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 import ChatUserMenu from './ChatUserMenu';
 import ChatSettingMenu from './ChatSettingMenu';
@@ -186,6 +186,10 @@ export default function ChatRoom(): JSX.Element {
         dispatch(updateUser(res));
         dispatch(exitChatRoom());
       }
+      if (payload.message === 'User Not Joined in the Chat') {
+        alert('채팅방에 입장된 상태가 아닙니다. 새로고침 후 다시 시도해 주세요');
+        dispatch(exitChatRoom());
+      }
     });
 
     return () => {
@@ -251,7 +255,7 @@ export default function ChatRoom(): JSX.Element {
         `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`,
       );
       dispatch(exitChatRoom());
-      const { data } = await getUserme();
+      const { data } = await getUsermeChat();
       dispatch(updateUser(data));
       setMenuAnchor(null);
     } catch (err) {

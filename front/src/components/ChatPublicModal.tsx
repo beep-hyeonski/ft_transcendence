@@ -6,7 +6,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import axios from 'axios';
 import ChatJoinedUser from './ChatJoinedUser';
 import { joinChatRoom } from '../modules/chat';
-import { getUserme } from '../utils/Requests';
+import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 
 const useStyles = makeStyles(() =>
@@ -142,7 +142,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
           roomMuted: modal.mutedUsers,
         }),
       );
-      const { data } = await getUserme();
+      const { data } = await getUsermeChat();
       dispatch(updateUser(data));
     } catch (error: any) {
       console.log(error.response);
