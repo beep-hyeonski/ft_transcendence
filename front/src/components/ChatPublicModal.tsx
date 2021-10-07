@@ -142,7 +142,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
           roomMuted: modal.mutedUsers,
         }),
       );
-      const { data } = await getUsermeChat();
+      const data = await getUsermeChat();
       dispatch(updateUser(data));
     } catch (error: any) {
       console.log(error.response);

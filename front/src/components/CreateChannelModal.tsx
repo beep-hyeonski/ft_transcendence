@@ -195,7 +195,7 @@ function CreateChannelModal({ create, setCreate }: CreateProps) {
     try {
       await createChannel(form);
       setCreate(false);
-      const { data } = await getUsermeChat();
+      const data = await getUsermeChat();
       dispatch(updateUser(data));
     } catch (error: any) {
       console.log(error.response);

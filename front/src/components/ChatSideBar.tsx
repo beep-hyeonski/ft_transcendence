@@ -64,6 +64,7 @@ function ChatSideBar(): JSX.Element {
   useEffect(() => {
     getUsermeChat()
       .then((res) => {
+        console.log(res);
         dispatch(updateUser(res));
       })
       .catch((err) => {
