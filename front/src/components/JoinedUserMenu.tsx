@@ -188,7 +188,6 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       const { data } = await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/ban`,
       {nickname: user.nickname}
       )
-      console.log(data);
       dispatch(joinChatRoom({
         roomTitle: data.title,
         roomIndex: data.index,
