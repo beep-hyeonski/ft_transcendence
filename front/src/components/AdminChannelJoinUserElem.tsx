@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
 import AdminJoinUserMenu from './AdminJoinUserMenu';
@@ -28,6 +28,19 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
+interface ChatDataProps {
+  index: number;
+  title: string;
+  status: string;
+  joinUsers: any[];
+  bannedUsers: any[];
+  adminUsers: string[];
+  ownerUser: {
+    nickname: string;
+  }
+  mutedUsers: string[];
+};
+
 interface UserdataProps {
   avatar: string,
   index: number,
@@ -36,11 +49,18 @@ interface UserdataProps {
 }
 
 interface UserData {
-  user: UserdataProps
+  user: UserdataProps;
+  chatData: ChatDataProps;
+  setChatData: React.Dispatch<React.SetStateAction<ChatDataProps>>;
 }
 
-const AdminChannelJoinUserElem = ({ user } : UserData) : JSX.Element => {
+const AdminChannelJoinUserElem = ({ user, chatData, setChatData } : UserData) : JSX.Element => {
   const classes = useStyles();
+  const [isOwner, setIsOwner] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsOwner(chatData.ownerUser.nickname === user.nickname);
+  }, [chatData.ownerUser, user.nickname]);
 
   return (
     <div className={classes.root}>
@@ -48,7 +68,12 @@ const AdminChannelJoinUserElem = ({ user } : UserData) : JSX.Element => {
       <div className={classes.username}>
         {user.nickname}
       </div>
-			<AdminJoinUserMenu user={user} />
+			<AdminJoinUserMenu
+        user={user}
+        isOwner={isOwner}
+        chatData={chatData}
+        setChatData={setChatData}
+        />
     </div>
   );
 };

@@ -85,7 +85,9 @@ interface ChatDataProps {
   joinUsers: any[];
   bannedUsers: any[];
   adminUsers: string[];
-  ownerUser: string;
+  ownerUser: {
+    nickname: string;
+  }
   mutedUsers: string[];
 };
 
@@ -129,7 +131,9 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
 			joinUsers: [],
 			bannedUsers: [],
 			adminUsers: [],
-			ownerUser: '',
+			ownerUser: {
+        nickname: '',
+      },
 			mutedUsers: [],
 		}
 	);
@@ -137,7 +141,6 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
 	useEffect(() => {
 		if (chatModal.open) {
 			getChatInfo(chatModal.chatIndex).then((res) => {
-				console.log(res);
 				setChatData(res);
 			}).catch((err) => {
 				console.log(err.response);
@@ -202,7 +205,11 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
 						<div className={classes.userList}>
 							<List>
 								{chatData.joinUsers.map((user) => (
-									<AdminChannelJoinUserElem user={user} />
+									<AdminChannelJoinUserElem
+                    user={user}
+                    chatData={chatData}
+                    setChatData={setChatData}
+                  />
 								))}
 							</List>
 						</div>

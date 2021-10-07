@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
-import JoinedUserMenu from './JoinedUserMenu';
 import AdminUserMenu from './AdminUserMenu';
 
 const useStyles = makeStyles(() => createStyles({

@@ -353,6 +353,7 @@ export default function ChatRoom(): JSX.Element {
       <input
         name="message"
         type="text"
+        autoComplete="off"
         className={classes.chatInput}
         onChange={onChange}
         onKeyPress={handleKeyPress}
