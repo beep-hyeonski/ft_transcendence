@@ -8,9 +8,9 @@ const useStyles = makeStyles(() =>
     menuIconLocation: {
       width: '1rem',
       height: '1rem',
+			marginLeft: '26%',
+			marginTop: '2.6vh',
 			position: 'absolute',
-			right: '10%',
-			marginTop: '2.5vh',
     },
     menuIcon: {
       fontSize: '2rem',
@@ -30,7 +30,7 @@ interface UserData {
   user: UserdataProps;
 }
 
-const AdminJoinUserMenu = ({ user }: UserData) => {
+const AdminUserMenu = ({ user }: UserData) => {
   const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
 
@@ -43,7 +43,7 @@ const AdminJoinUserMenu = ({ user }: UserData) => {
 		e.preventDefault();
 		console.log('test');
 		console.log(user);
-    setMenuAnchor(null);
+		setMenuAnchor(null);
 	};
 
   return (
@@ -62,4 +62,4 @@ const AdminJoinUserMenu = ({ user }: UserData) => {
   );
 };
 
-export default React.memo(AdminJoinUserMenu);
+export default React.memo(AdminUserMenu);
