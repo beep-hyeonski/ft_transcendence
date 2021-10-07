@@ -19,6 +19,12 @@ export enum UserStatus {
   INGAME = 'ingame',
 }
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+  OWNER = 'owner',
+}
+
 @Entity()
 export class User extends BaseEntity {
   @ApiProperty({
@@ -239,6 +245,17 @@ export class User extends BaseEntity {
     default: UserStatus.ONLINE,
   })
   status: UserStatus;
+
+  @ApiProperty({
+    example: 'admin',
+    description: '유저의 역할, owner/admin/user',
+  })
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
 
   @ApiProperty({
     example: '2021-03-18 00:00:00',

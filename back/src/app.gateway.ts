@@ -48,6 +48,7 @@ export class AppGateway
 
   afterInit() {
     this.gameService.attachServer(this.server);
+    this.chatService.attachServer(this.server);
     this.logger.log(`Socket Server Initialized`);
   }
 

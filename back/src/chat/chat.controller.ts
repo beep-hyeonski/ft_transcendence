@@ -170,7 +170,7 @@ export class ChatController {
 
   @ApiOperation({ summary: '채팅방에 전송 된 메시지 리스트' })
   @Get(':chatIndex/messages')
-  async getMessages(@Param('chatIndex') chatIndex: number) {
-    return await this.chatService.getMessages(chatIndex);
+  async getMessages(@Param('chatIndex') chatIndex: number, @Req() req: any) {
+    return await this.chatService.getMessages(req.user, chatIndex);
   }
 }

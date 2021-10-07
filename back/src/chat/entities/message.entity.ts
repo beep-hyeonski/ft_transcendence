@@ -24,7 +24,7 @@ export class Message extends BaseEntity {
     example: '1',
     description: '메시지가 전송 된 채팅방 Index',
   })
-  @ManyToOne(() => Chat)
+  @ManyToOne(() => Chat, { onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'chat_index',
     referencedColumnName: 'index',
