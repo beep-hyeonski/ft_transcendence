@@ -190,11 +190,23 @@ export default function ChatRoom(): JSX.Element {
         alert('채팅방에 입장된 상태가 아닙니다. 새로고침 후 다시 시도해 주세요');
         dispatch(exitChatRoom());
       }
+      if (payload.message === 'Chat Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+        getUsermeChat().then((res) => dispatch(updateUser(res)));
+        dispatch(exitChatRoom());
+      }
     });
+
+    socket?.on('deleteChat', () => {
+      alert('존재하지 않는 채팅방입니다.');
+      getUsermeChat().then((res) => dispatch(updateUser(res)));
+      dispatch(exitChatRoom());
+    })
 
     return () => {
       socket?.off('onMessage');
       socket?.off('exception');
+      socket?.off('deleteChat');
       socket?.emit('leave', {
         chatIndex: chatData.index,
       });
@@ -255,7 +267,7 @@ export default function ChatRoom(): JSX.Element {
         `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`,
       );
       dispatch(exitChatRoom());
-      const { data } = await getUsermeChat();
+      const data = await getUsermeChat();
       dispatch(updateUser(data));
       setMenuAnchor(null);
     } catch (err) {

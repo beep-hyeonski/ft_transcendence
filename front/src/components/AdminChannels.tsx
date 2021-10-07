@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { List, Paper } from '@material-ui/core';
+import { List } from '@material-ui/core';
 import { getChats } from '../utils/Requests';
 import AdminChannelsElem from './AdminChannelsElem';
 import AdminChannelModal from './AdminChannelModal';
@@ -46,7 +46,7 @@ function AdminUsers(): JSX.Element {
           />
         ))}
       </List>
-      <AdminChannelModal chatModal={modalOpen} setModal={setModalOpen} />
+      <AdminChannelModal chatModal={modalOpen} setModal={setModalOpen} setChats={setChats} />
     </div>
   );
 }

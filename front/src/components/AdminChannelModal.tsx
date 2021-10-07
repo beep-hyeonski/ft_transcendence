@@ -4,7 +4,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Modal, Button, IconButton, List } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
-import { getChatInfo } from '../utils/Requests';
+import { getChatInfo, getChats } from '../utils/Requests';
 import ChattingList from './ChattingList';
 import AdminChannelJoinUserElem from './AdminChannelJoinUserElem';
 
@@ -78,17 +78,6 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-interface AdminChannelModalProps {
-	chatModal: {
-    open: boolean;
-    chatIndex: number;
-	}
-	setModal: React.Dispatch<React.SetStateAction<{
-    open: boolean;
-    chatIndex: number;
-  }>>;
-};
-
 interface ChatDataProps {
   index: number;
   title: string;
@@ -109,7 +98,26 @@ interface MessageProps {
   messageContent: string;
 }
 
-function AdminChannelModal({ chatModal, setModal }: AdminChannelModalProps) {
+interface ChatInfoProps {
+  index: number;
+  status: string;
+  title: string;
+  joinUsers: any[];
+}
+
+interface AdminChannelModalProps {
+  chatModal: {
+    open: boolean;
+    chatIndex: number;
+  }
+  setModal: React.Dispatch<React.SetStateAction<{
+    open: boolean;
+    chatIndex: number;
+  }>>;
+  setChats: React.Dispatch<React.SetStateAction<ChatInfoProps[]>>;
+};
+
+function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalProps) {
   const classes = useStyles();
   const dispatch = useDispatch();
 	const [messages, setMsg] = useState<MessageProps[]>([]);
@@ -148,7 +156,7 @@ function AdminChannelModal({ chatModal, setModal }: AdminChannelModalProps) {
 				}
 			})();
 		}
-	}, [chatModal.chatIndex, chatModal.open]);
+	}, [chatModal.chatIndex, chatModal.open, setChats]);
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -161,6 +169,8 @@ function AdminChannelModal({ chatModal, setModal }: AdminChannelModalProps) {
     try {
       const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`);
       console.log(res);
+      const newChats = await getChats();
+      setChats(newChats);
     } catch (err: any) {
       console.log(err.response);
     }
