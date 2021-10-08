@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { ingGame, waitGame } from '../modules/gamestate';
-import { setGameData } from '../modules/gamedata';
+import { setGameData, IGameDataProps } from '../modules/gamedata';
 
 const useStyles = makeStyles({
   alram: {
@@ -131,7 +131,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
       },
     });
 
-    const callback = (payload: any) => {
+    const callback = (payload: IGameDataProps) => {
       if (payload.status === 'GAME_START') {
         dispatch(setGameData(payload));
         dispatch(ingGame());

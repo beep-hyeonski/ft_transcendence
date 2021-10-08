@@ -4,9 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles({
 	rule: {
 	  backgroundColor: 'white',
-	//   position: 'absolute',
-	//   left: '21%',
-	//   top: '18%',
 	  width: '520px',
 	  height: '240px',
 	  display: 'flex',

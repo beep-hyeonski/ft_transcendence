@@ -14,7 +14,7 @@ import DrawAvatar from './Avatar';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
 import { ingGame, settingGame } from '../modules/gamestate';
 import { RootState } from '../modules';
-import { setGameData } from '../modules/gamedata';
+import { setGameData, IGameDataProps } from '../modules/gamedata';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -88,7 +88,7 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
     e.preventDefault();
     setMenuAnchor(null);
     e.stopPropagation();
-    const callback = (payload: any) => {
+    const callback = (payload: IGameDataProps) => {
       if (payload.status === 'GAME_START') {
         dispatch(setGameData(payload));
         dispatch(ingGame());

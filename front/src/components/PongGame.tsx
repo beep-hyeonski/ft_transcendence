@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { RootState } from '../modules';
 import { waitGame } from '../modules/gamestate';
+import { IGameDataProps } from '../modules/gamedata';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -24,6 +25,50 @@ const keyState = {
   upKey: false,
   downKey: false,
 };
+
+
+// interface IBallInfo {
+//   x: number;
+//   y: number;
+//   radius: number;
+//   velocityX: number;
+//   velocityY: number;
+//   speed: number;
+//   color: string;
+// }
+
+// interface IFrameInfo {
+//   frameWidth: number;
+//   frameHeight: number;
+// }
+
+// interface IGameInfo {
+//   ballSpeed: number;
+//   stickMoveSpeed: number;
+//   player1: string;
+//   player1Nickname: string;
+//   player2: string;
+//   player2Nickname: string;
+// }
+
+// interface IPlayerInfo {
+//   x: number;
+//   y: number;
+//   stickWidth: number;
+//   stickHeight: number;
+//   score: number;
+//   color: string;
+// }
+
+// interface ILoopGameDataProps {
+//   status: string;
+//   gameName: string;
+//   ballInfo: IBallInfo;
+//   frameInfo: IFrameInfo;
+//   gameInfo: IGameInfo;
+//   player1Info: IPlayerInfo;
+//   player2Info: IPlayerInfo;
+// }
 
 function PongGame(): JSX.Element {
   const classes = useStyles();
@@ -49,7 +94,6 @@ function PongGame(): JSX.Element {
     ctx.fillRect(x, y, w, h);
   };
 
-  // context.arc(300, 300, 15, 0, Math.PI * 2, false);
   const drawBall = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -96,10 +140,8 @@ function PongGame(): JSX.Element {
       socket?.socket?.emit('quitGame', {
         gameName: gamedata.gameName,
       });
-      // socket?.socket?.off('gameLoop');
       window.removeEventListener('keydown', getKeyDown);
       window.removeEventListener('keyup', getKeyUp);
-      console.log('game end');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -109,8 +151,7 @@ function PongGame(): JSX.Element {
       throw new Error('PongGame: canvasRef is null');
     }
 
-    const callback = (gameData: any) => {
-      // console.log(gameData);
+    const callback = (gameData: IGameDataProps) => {
       setGame(gameData);
     };
 
@@ -121,7 +162,6 @@ function PongGame(): JSX.Element {
       // 새로고침 누른 사람은 메인으로 나가지는데 상대방은 계속 게임 진행함
       // 이때 남아있는 상대가 플레이어1이면 전적이 남는데 플레이어2라면 전적 안남음..
       // 이긴 사람이 전적남기게 하도록 고쳐도 팅긴사람이 이겨버리면 ?
-      console.log('no game no no no');
       dispatch(waitGame());
       history.push('/');
       return () => {
@@ -139,34 +179,8 @@ function PongGame(): JSX.Element {
     }
 
     const ball = game.ballInfo;
-
-    // let collidePoint1 = ball.y - (canvas.width / 2 + canvas.height / 2 / 2);
-    // collidePoint1 /= canvas.width / 2 + canvas.height / 2 / 2;
-    // const angle1 = (Math.PI / 4) * collidePoint1;
-    // const direction1 = ball.x + ball.radius < canvas.width / 2 ? 1 : -1;
-    // ball.velocityX = Math.cos(angle1) * ball.speed * direction1;
-    // ball.velocityY = Math.sin(angle1) * ball.speed;
-
     const player1 = game.player1Info;
     const player2 = game.player2Info;
-
-    // const user1 = {
-    //   x: 0,
-    //   y: canvas.height / 2 - 150,
-    //   w: 30,
-    //   h: canvas.height / 5,
-    //   score: 0,
-    //   color: 'blue',
-    // };
-
-    // const user2 = {
-    //   x: canvas.width - 30,
-    //   y: canvas.height / 2 - 150,
-    //   w: 30,
-    //   h: canvas.height / 5,
-    //   score: 0,
-    //   color: 'red',
-    // };
 
     function drawPong() {
       if (keyState.upKey === true) {
@@ -175,10 +189,6 @@ function PongGame(): JSX.Element {
           gameName: gamedata.gameName,
           keyState: 'upKey',
         });
-        // user2.y -= game.gameInfo.stickMoveSpeed;
-        // if (user2.y < 0) {
-        //   user2.y = 0;
-        // }
       }
       if (keyState.downKey === true) {
         socket?.socket?.emit('sendKeyEvent', {
@@ -186,10 +196,6 @@ function PongGame(): JSX.Element {
           gameName: gamedata.gameName,
           keyState: 'downKey',
         });
-        // user2.y += stickMoveSpeed;
-        // if (user2.y + canvas.height / 5 > canvas.height) {
-        //   user2.y = canvas.height - canvas.height / 5;
-        // }
       }
       if (context === null) {
         return;
@@ -228,72 +234,9 @@ function PongGame(): JSX.Element {
       context.textAlign = 'center';
       context.font = '60px Skia';
       context.fillText(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        `${player1.score}      score      ${player2.score}`, canvas.width / 2, 50);
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      `${player1.score}      score      ${player2.score}`, canvas.width / 2, 50);
     }
-
-    // function resizeCanvas() {
-    //   canvas.width = window.innerWidth - 5;
-    //   canvas.height = window.innerHeight - 5;
-    //   user1.x = 0;
-    //   user1.y = canvas.height / 2 - 150;
-    //   user1.w = 30;
-    //   user1.h = canvas.height / 3;
-    //   user2.x = canvas.width - 30;
-    //   user2.y = canvas.height / 2 - 150;
-    //   user2.w = 30;
-    //   user2.h = canvas.height / 3;
-    //   drawPong();
-    // }
-
-    // function getKeyDown(evt: KeyboardEvent) {
-    //   switch (evt.code) {
-    //     case 'ArrowUp':
-    //       keyState.upKey = true;
-    //       break;
-    //     case 'ArrowDown':
-    //       keyState.downKey = true;
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // }
-
-    // function getKeyUp(evt: KeyboardEvent) {
-    //   switch (evt.code) {
-    //     case 'ArrowUp':
-    //       keyState.upKey = false;
-    //       break;
-    //     case 'ArrowDown':
-    //       keyState.downKey = false;
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // }
-    // window.addEventListener('keydown', getKeyDown);
-    // window.addEventListener('keyup', getKeyUp);
-    // window.addEventListener('resize', resizeCanvas);
-
-    // const myVar = setInterval(drawPong, 300);
-    // const stopVar = setInterval(() => {
-    //   if (player1.score >= 3 || player2.score >= 3) {
-    //     if (game.gameInfo.player1 === mydata.username) {
-    //       socket?.socket?.emit('matchResult', {
-    //         gameName: game.gameName,
-    //         createMatchDto: {
-    //           player1Index: mydata.index,
-    //           player2Index: 2,
-    //           player1Score: player1.score,
-    //           player2Score: player2.score,
-    //         },
-    //       });
-    //     }
-    //     clearInterval(myVar);
-    //     clearInterval(stopVar);
-    //     history.push('/');
-    //   }
-    // }, 100);
 
     drawPong();
     if (player1.score >= 3 || player2.score >= 3) {
@@ -315,20 +258,6 @@ function PongGame(): JSX.Element {
             console.log(err);
           }
         })();
-        // // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        // axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${gamedata.gameInfo.player2Nickname}`).then((res) => {
-        //   socket?.socket?.emit('matchResult', {
-        //     gameName: gamedata.gameName,
-        //     createMatchDto: {
-        //       player1Index: mydata.index,
-        //       player2Index: res.data.index,
-        //       player1Score: player1.score,
-        //       player2Score: player2.score,
-        //     },
-        //   });
-        // }).catch((err) => {
-        //   console.log(err);
-        // });
       }
       dispatch(waitGame());
       history.push('/');
@@ -336,13 +265,6 @@ function PongGame(): JSX.Element {
     return () => {
       socket?.socket?.off('gameLoop');
     };
-
-    // return () => {
-    //   dispatch(waitGame());
-    //   socket?.socket?.off('gameLoop');
-    //   window.removeEventListener('keydown', getKeyDown);
-    //   window.removeEventListener('keyup', getKeyUp);
-    // };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     game,

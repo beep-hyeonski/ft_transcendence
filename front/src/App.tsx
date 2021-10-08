@@ -57,8 +57,6 @@ function App(): JSX.Element {
       <Route path="/">
         {authState.isLoggedIn ? (
           <>
-            <GameManager />
-            <GameSpeedDialog />
             <Route path="/" component={SideMenu} />
             <Route path="/" exact component={MainUI} />
             <Route path="/chat" exact component={ChatUI} />
@@ -70,6 +68,8 @@ function App(): JSX.Element {
             <Route path="/game" exact component={PongGame} />
             <Route path="/admin" exact component={Admin} />
             <Route path="/dm/:nickname" exact component={DMRoom} />
+            <GameManager />
+            <GameSpeedDialog />
           </>
         ) : (
           <LoginPage />
