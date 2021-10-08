@@ -1,9 +1,14 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserStatus } from './entities/user.entity';
+import { User, UserRole, UserStatus } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import {
   LoginStatus,
@@ -130,5 +135,25 @@ export class UsersService {
     }
     const res = await this.userRepository.save(user);
     this.logger.debug(`${user.nickname} - ${status}`);
+  }
+
+  async banUser(user: User, username: string) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('You are not admin');
+    }
+
+    const targetUser = await this.getUser(username);
+    targetUser.isBanned = true;
+    await this.userRepository.save(targetUser);
+  }
+
+  async unbanUser(user: User, username: string) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('You are not admin');
+    }
+
+    const targetUser = await this.getUser(username);
+    targetUser.isBanned = false;
+    await this.userRepository.save(targetUser);
   }
 }

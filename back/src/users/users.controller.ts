@@ -6,6 +6,8 @@ import {
   Patch,
   UseGuards,
   Req,
+  Post,
+  Delete,
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -63,5 +65,19 @@ export class UsersController {
   @Get(':nickname')
   getUser(@Param('nickname') nickname: string) {
     return this.usersService.getUserByNickname(nickname);
+  }
+
+  @ApiOperation({ summary: 'user ban 등록' })
+  @Post('ban/:username')
+  @UseGuards(JwtAuthGuard)
+  async banUser(@Req() req: any, @Param('username') username: string) {
+    return await this.usersService.banUser(req.userData, username);
+  }
+
+  @ApiOperation({ summary: 'user ban 해제' })
+  @Delete('ban/:username')
+  @UseGuards(JwtAuthGuard)
+  async unbanUser(@Req() req: any, @Param('username') username: string) {
+    return await this.usersService.unbanUser(req.userData, username);
   }
 }
