@@ -50,6 +50,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       where: { index: request.user.sub },
     });
 
+    if (request.userData && request.userData.isBanned)
+      throw new ForbiddenException('User is banned');
+
     // Permission 데이터가 없는 경우 GENERAL 및 ADMIN 권한으로 설정
     if (!permissions) {
       if (
