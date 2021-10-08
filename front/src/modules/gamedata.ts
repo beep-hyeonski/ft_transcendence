@@ -70,8 +70,8 @@ const initialState: GameData = {
       color: 'yellow',
     },
     frameInfo: {
-      frameWidth: 1400,
-      frameHeight: 700,
+      frameWidth: 0,
+      frameHeight: 0,
     },
     gameInfo: {
       ballSpeed: 0,

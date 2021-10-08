@@ -157,16 +157,13 @@ function PongGame(): JSX.Element {
 
     socket?.socket?.on('gameLoop', callback);
 
-    if (!game.frameInfo) {
+    if (game.frameInfo.frameHeight === 0) {
       // 게임 하다가 새로고침 눌렀을 때 처리
       // 새로고침 누른 사람은 메인으로 나가지는데 상대방은 계속 게임 진행함
       // 이때 남아있는 상대가 플레이어1이면 전적이 남는데 플레이어2라면 전적 안남음..
       // 이긴 사람이 전적남기게 하도록 고쳐도 팅긴사람이 이겨버리면 ?
       dispatch(waitGame());
       history.push('/');
-      return () => {
-        socket?.socket?.off('gameLoop');
-      };
     }
 
     const canvas = canvasRef.current;
