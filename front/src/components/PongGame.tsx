@@ -147,8 +147,12 @@ function PongGame(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (canvasRef.current == null) {
-      throw new Error('PongGame: canvasRef is null');
+    if (canvasRef.current === null) {
+      alert("게임을 실행할 수 없습니다(canvas is null). 관리자에게 문의하세요.");
+      dispatch(waitGame());
+      history.push('/');
+      return () => {
+      };
     }
 
     const callback = (gameData: IGameDataProps) => {
@@ -171,8 +175,12 @@ function PongGame(): JSX.Element {
     canvas.height = game.frameInfo.frameHeight;
     const context = canvas.getContext('2d');
 
-    if (context == null) {
-      throw new Error('PongGame: context is null');
+    if (!context) {
+      alert("게임을 실행할 수 없습니다(context is null). 관리자에게 문의하세요.");
+      dispatch(waitGame());
+      history.push('/');
+      return () => {
+      };
     }
 
     const ball = game.ballInfo;

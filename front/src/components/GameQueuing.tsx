@@ -44,14 +44,15 @@ function GameQueuing(): JSX.Element {
     if (gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') {
       socket?.socket?.on('matchComplete', callback);
     }
+    if (gamestate === 'ING') {
+      history.push('/game');
+    }
     return () => {
       socket?.socket?.off('matchComplete');
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, gamestate, dispatch]);
-
-  if (gamestate === 'ING') {
-    history.push('/game');
-  }
+  
   return <></>;
 }
 
