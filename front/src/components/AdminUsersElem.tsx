@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
 import AdminUserMenu from './AdminUserMenu';
@@ -32,14 +32,21 @@ interface UserdataProps {
   avatar: string,
   index: number,
   nickname: string,
+  username: string,
   status: string,
+  role: string,
+}
+
+interface AdminUsersProps {
+  nickname: string;
 }
 
 interface UserData {
-  user: UserdataProps
+  user: UserdataProps;
+  setUsers: React.Dispatch<React.SetStateAction<UserdataProps[]>>;
 }
 
-const AdminUsersElem = ({ user } : UserData) : JSX.Element => {
+const AdminUsersElem = ({ user, setUsers } : UserData) : JSX.Element => {
   const classes = useStyles();
 
   return (
@@ -48,7 +55,10 @@ const AdminUsersElem = ({ user } : UserData) : JSX.Element => {
       <div className={classes.username}>
         {user.nickname}
       </div>
-      <AdminUserMenu user={user} />
+      <AdminUserMenu
+        user={user}
+        setUsers={setUsers}
+      />
     </div>
   );
 };

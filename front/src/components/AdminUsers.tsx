@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { GridList, List } from '@material-ui/core';
+import { GridList } from '@material-ui/core';
 import { getUsers } from '../utils/Requests';
 import AdminUsersElem from './AdminUsersElem';
 
@@ -23,7 +23,13 @@ interface UserdataProps {
   avatar: string,
   index: number,
   nickname: string,
+  username: string,
   status: string,
+  role: string,
+}
+
+interface AdminUsersProps {
+  nickname: string;
 }
 
 function AdminUsers(): JSX.Element {
@@ -32,7 +38,6 @@ function AdminUsers(): JSX.Element {
 
   useEffect(() => {
     getUsers().then((res) => {
-      console.log(res);
       setUsers(res);
     }).catch((err) => {
       console.log(err);
@@ -43,7 +48,11 @@ function AdminUsers(): JSX.Element {
     <div className={classes.root}>
       <GridList>
         {users.map((user) => (
-          <AdminUsersElem user={user} />
+          <AdminUsersElem
+            key={user.index}
+            user={user}
+            setUsers={setUsers}
+          />
         ))}
       </GridList>
     </div>

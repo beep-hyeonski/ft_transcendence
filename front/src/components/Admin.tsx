@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
+import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Tab, Tabs } from '@material-ui/core';
 import { deleteSideData } from '../modules/sidebar';
 import AdminChannels from './AdminChannels';
 import AdminUsers from './AdminUsers';
+import { getUserme } from '../utils/Requests';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -49,7 +51,18 @@ const useStyles = makeStyles(() =>
 function Admin(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
   const [value, setValue] = React.useState(1);
+
+  useEffect(() => {
+    (async() => {
+      const response = await getUserme();
+      if (response.role === 'user') {
+        alert('접근 권한이 없습니다.');
+        history.push('/');
+      }
+    })();
+  }, [history]);
 
   useEffect(() => {
     dispatch(deleteSideData());

@@ -206,6 +206,7 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
 							<List>
 								{chatData.joinUsers.map((user) => (
 									<AdminChannelJoinUserElem
+                    key={user.index}
                     user={user}
                     chatData={chatData}
                     setChatData={setChatData}
