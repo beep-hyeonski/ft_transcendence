@@ -258,6 +258,16 @@ export class User extends BaseEntity {
   role: UserRole;
 
   @ApiProperty({
+    example: 'true',
+    description: '유저의 ban 여부',
+  })
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  isBanned: boolean;
+
+  @ApiProperty({
     example: '2021-03-18 00:00:00',
     description: 'user 생성 시간',
   })

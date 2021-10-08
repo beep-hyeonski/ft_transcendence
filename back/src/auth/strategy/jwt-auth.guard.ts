@@ -8,12 +8,19 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtPermission } from '../dto/jwt-payload.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Repository } from 'typeorm';
+import { JwtPayloadDto, JwtPermission } from '../dto/jwt-payload.dto';
 import { jwtConstants } from './constants';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private jwtService: JwtService, private reflector: Reflector) {
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {
     super();
   }
 
@@ -24,7 +31,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * check the token and permission
    */
 
-  canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext) {
     const permissions = this.reflector.get<JwtPermission[]>(
       'Permission',
       context.getHandler(),
@@ -39,6 +46,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     const token = authorization.replace('Bearer ', '');
     request.user = this.validateToken(token);
+    request.userData = await this.userRepository.findOne({
+      where: { index: request.user.sub },
+    });
 
     // Permission 데이터가 없는 경우 GENERAL 및 ADMIN 권한으로 설정
     if (!permissions) {
@@ -56,7 +66,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return true;
   }
 
-  validateToken(token: string) {
+  validateToken(token: string): JwtPayloadDto {
     const secretKey = jwtConstants.secret;
 
     const verify = this.jwtService.verify(token, { secret: secretKey });

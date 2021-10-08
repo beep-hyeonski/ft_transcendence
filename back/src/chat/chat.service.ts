@@ -138,11 +138,7 @@ export class ChatService {
     return chat;
   }
 
-  async deleteChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: jwtPayloadDto.sub },
-    });
-
+  async deleteChat(user: User, chatIndex: number) {
     if (user.role === UserRole.USER) {
       throw new ForbiddenException('Permission Denied');
     }
@@ -156,18 +152,10 @@ export class ChatService {
     return await this.chatRepository.remove(chat);
   }
 
-  async joinChat(
-    jwtPayloadDto: JwtPayloadDto,
-    chatIndex: number,
-    password: string,
-  ) {
+  async joinChat(user: User, chatIndex: number, password: string) {
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['joinUsers', 'bannedUsers'],
       where: { index: chatIndex },
-    });
-
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: jwtPayloadDto.sub },
     });
 
     if (chat.joinUsers.find((joinUser) => joinUser.index === user.index)) {
@@ -196,14 +184,10 @@ export class ChatService {
     return chat;
   }
 
-  async leaveChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
+  async leaveChat(user: User, chatIndex: number) {
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers'],
       where: { index: chatIndex },
-    });
-
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: jwtPayloadDto.sub },
     });
 
     if (!chat.joinUsers.find((joinUser) => joinUser.index === user.index)) {
@@ -228,14 +212,7 @@ export class ChatService {
     }
   }
 
-  async registerAdmin(
-    jwtPayloadDto: JwtPayloadDto,
-    chatIndex: number,
-    nickname: string,
-  ) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: jwtPayloadDto.sub },
-    });
+  async registerAdmin(user: User, chatIndex: number, nickname: string) {
     const toBeAdmin = await this.userRepository.findOneOrFail({
       where: { nickname: nickname },
     });
@@ -244,10 +221,7 @@ export class ChatService {
       where: { index: chatIndex },
     });
 
-    if (
-      jwtPayloadDto.sub !== chat.ownerUser.index ||
-      user.role === UserRole.USER
-    )
+    if (user.index !== chat.ownerUser.index || user.role === UserRole.USER)
       throw new ForbiddenException('Permission Denied');
 
     if (!this.existUserInChat(toBeAdmin.index, chat))
@@ -264,14 +238,7 @@ export class ChatService {
     return chat;
   }
 
-  async unRegisterAdmin(
-    jwtPayloadDto: JwtPayloadDto,
-    chatIndex: number,
-    nickname: string,
-  ) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: jwtPayloadDto.sub },
-    });
+  async unRegisterAdmin(user: User, chatIndex: number, nickname: string) {
     const toNotBeAdmin = await this.userRepository.findOneOrFail({
       where: { nickname: nickname },
     });
@@ -280,10 +247,7 @@ export class ChatService {
       where: { index: chatIndex },
     });
 
-    if (
-      jwtPayloadDto.sub !== chat.ownerUser.index ||
-      user.role === UserRole.USER
-    )
+    if (user.index !== chat.ownerUser.index || user.role === UserRole.USER)
       throw new ForbiddenException('Permission Denied');
 
     if (
@@ -461,10 +425,7 @@ export class ChatService {
     return chat;
   }
 
-  async getMessages(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: jwtPayloadDto.sub },
-    });
+  async getMessages(user: User, chatIndex: number) {
     const chat = await this.chatRepository.findOneOrFail({
       relations: ['joinUsers'],
       where: { index: chatIndex },
