@@ -56,15 +56,12 @@ export class UsersController {
     return await this.usersService.getUserWithChat(req.user.username);
   }
 
-  @ApiOperation({
-    summary: 'nickname 검색',
-    description: 'nickname에 해당하는 user의 정보를 조회한다.',
-  })
-  @ApiOkResponse({ type: User })
+  @ApiOperation({ summary: 'user ban 목록 조회' })
+  @ApiOkResponse({ type: User, isArray: true })
   @UseGuards(JwtAuthGuard)
-  @Get(':nickname')
-  getUser(@Param('nickname') nickname: string) {
-    return this.usersService.getUserByNickname(nickname);
+  @Get('ban')
+  async getBannedUsers(@Req() req: any) {
+    return await this.usersService.getBannedUsers(req.userData);
   }
 
   @ApiOperation({ summary: 'user ban 등록' })
@@ -79,5 +76,38 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async unbanUser(@Req() req: any, @Param('username') username: string) {
     return await this.usersService.unbanUser(req.userData, username);
+  }
+
+  @ApiOperation({ summary: 'user admin 목록 조회' })
+  @ApiOkResponse({ type: User, isArray: true })
+  @UseGuards(JwtAuthGuard)
+  @Get('admin')
+  async getAdminUsers(@Req() req: any) {
+    return await this.usersService.getAdminUsers(req.userData);
+  }
+
+  @ApiOperation({ summary: 'user admin 등록' })
+  @Post('admin/:username')
+  @UseGuards(JwtAuthGuard)
+  async registerAdmin(@Req() req: any, @Param('username') username: string) {
+    return await this.usersService.registerAdmin(req.userData, username);
+  }
+
+  @ApiOperation({ summary: 'user admin 해제' })
+  @Delete('admin/:username')
+  @UseGuards(JwtAuthGuard)
+  async unregisterAdmin(@Req() req: any, @Param('username') username: string) {
+    return await this.usersService.unregisterAdmin(req.userData, username);
+  }
+
+  @ApiOperation({
+    summary: 'nickname 검색',
+    description: 'nickname에 해당하는 user의 정보를 조회한다.',
+  })
+  @ApiOkResponse({ type: User })
+  @UseGuards(JwtAuthGuard)
+  @Get(':nickname')
+  getUser(@Param('nickname') nickname: string) {
+    return this.usersService.getUserByNickname(nickname);
   }
 }

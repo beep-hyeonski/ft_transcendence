@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   Logger,
@@ -137,14 +138,26 @@ export class UsersService {
     this.logger.debug(`${user.nickname} - ${status}`);
   }
 
+  async getBannedUsers(user: User) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('You are not admin');
+    }
+    return await this.userRepository.find({
+      where: { isBanned: true },
+    });
+  }
+
   async banUser(user: User, username: string) {
     if (user.role === UserRole.USER) {
       throw new ForbiddenException('You are not admin');
     }
 
     const targetUser = await this.getUser(username);
+    if (targetUser.role !== UserRole.USER) {
+      throw new BadRequestException('You cannot ban admin or owner');
+    }
     targetUser.isBanned = true;
-    await this.userRepository.save(targetUser);
+    return await this.userRepository.save(targetUser);
   }
 
   async unbanUser(user: User, username: string) {
@@ -154,6 +167,38 @@ export class UsersService {
 
     const targetUser = await this.getUser(username);
     targetUser.isBanned = false;
-    await this.userRepository.save(targetUser);
+    return await this.userRepository.save(targetUser);
+  }
+
+  async getAdminUsers(user: User) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('You are not admin');
+    }
+    return await this.userRepository.find({
+      where: [{ role: UserRole.ADMIN }, { role: UserRole.OWNER }],
+    });
+  }
+
+  async registerAdmin(user: User, username: string) {
+    if (user.role !== UserRole.OWNER) {
+      throw new ForbiddenException('You are not owner');
+    }
+
+    const targetUser = await this.getUser(username);
+    targetUser.role = UserRole.ADMIN;
+    return await this.userRepository.save(targetUser);
+  }
+
+  async unregisterAdmin(user: User, username: string) {
+    if (user.role !== UserRole.OWNER) {
+      throw new ForbiddenException('You are not owner');
+    }
+    if (user.username === username) {
+      throw new BadRequestException('You cannot unregister admin yourself');
+    }
+
+    const targetUser = await this.getUser(username);
+    targetUser.role = UserRole.USER;
+    return await this.userRepository.save(targetUser);
   }
 }
