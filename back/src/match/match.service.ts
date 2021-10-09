@@ -16,7 +16,7 @@ export class MatchService {
     return await this.matchRepository.find({
       relations: ['winner', 'loser'],
       order: {
-        'createdAt': 'DESC',
+        createdAt: 'DESC',
       },
     });
   }
@@ -34,39 +34,30 @@ export class MatchService {
 
     try {
       await getManager().transaction(async (transactionalEntityManager) => {
+        const { player1Score, player2Score } = createMatchDto;
+        const winner = player1Score > player2Score ? player1 : player2;
+        const loser = player1Score > player2Score ? player2 : player1;
+        const updater = getConnection().createQueryBuilder().update(User);
 
-        if (createMatchDto.player1Score > createMatchDto.player2Score) {
-          await getConnection().createQueryBuilder().update(User)
+        await updater
           .set({
             victory: () => 'victory + 1',
             score: () => 'score + 10',
-          }).where("id = :id", { id: createMatchDto.player1Index }).execute();
-          await getConnection().createQueryBuilder().update(User)
+          })
+          .where('index = :index', { index: winner.index })
+          .execute();
+        await updater
           .set({
             defeat: () => 'defeat + 1',
             score: () => 'score - 10',
-          }).where("id = :id", { id: createMatchDto.player2Index }).execute();
+          })
+          .where('index = :index', { index: loser.index })
+          .execute();
 
-          createMatch.winner = player1;
-          createMatch.loser = player2;
-          createMatch.winnerScore = createMatchDto.player1Score;
-          createMatch.loserScore = createMatchDto.player2Score;
-        } else {
-          await getConnection().createQueryBuilder().update(User)
-          .set({
-            victory: () => 'victory + 1',
-            score: () => 'score + 10',
-          }).where("id = :id", { id: createMatchDto.player2Index }).execute();
-          await getConnection().createQueryBuilder().update(User)
-          .set({
-            defeat: () => 'defeat + 1',
-            score: () => 'score - 10',
-          }).where("id = :id", { id: createMatchDto.player1Index }).execute();
-          createMatch.winner = player2;
-          createMatch.loser = player1;
-          createMatch.winnerScore = createMatchDto.player2Score;
-          createMatch.loserScore = createMatchDto.player1Score;
-        }
+        createMatch.winner = winner;
+        createMatch.loser = loser;
+        createMatch.winnerScore = player1Score;
+        createMatch.loserScore = player2Score;
         await transactionalEntityManager.save(createMatch);
       });
     } catch (e) {
@@ -84,7 +75,7 @@ export class MatchService {
       where: [{ winner: user.index }, { loser: user.index }],
       relations: ['winner', 'loser'],
       order: {
-        'createdAt': 'DESC',
+        createdAt: 'DESC',
       },
     });
   }
