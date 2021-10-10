@@ -8,6 +8,7 @@ import { deleteSideData } from '../modules/sidebar';
 import AdminChannels from './AdminChannels';
 import AdminUsers from './AdminUsers';
 import { getUserme } from '../utils/Requests';
+import AdminBannedUser from './AdminBannedUser';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -21,7 +22,7 @@ const useStyles = makeStyles(() =>
     },
     tabBar: {
       position: 'absolute',
-      width: '20rem',
+      width: '30rem',
       top: '-4rem',
       color: '#F4F3FF',
       borderRadius: '8px 8px 0px 0px',
@@ -56,10 +57,14 @@ function Admin(): JSX.Element {
 
   useEffect(() => {
     (async() => {
-      const response = await getUserme();
-      if (response.role === 'user') {
-        alert('접근 권한이 없습니다.');
-        history.push('/');
+      try {
+        const response = await getUserme();
+        if (response.role === 'user') {
+          alert('접근 권한이 없습니다.');
+          history.push('/');
+        }
+      } catch (error: any) {
+        console.log(error.response);
       }
     })();
   }, [history]);
@@ -86,11 +91,13 @@ function Admin(): JSX.Element {
           >
             <Tab value={1} className={classes.tapElem} label="Channels" />
             <Tab value={2} className={classes.tapElem} label="Users" />
+            <Tab value={3} className={classes.tapElem} label="Banned" />
           </Tabs>
         </div>
         <Paper className={classes.insidePaper}>
           {value === 1 && <AdminChannels />}
           {value === 2 && <AdminUsers />}
+          {value === 3 && <AdminBannedUser />}
         </Paper>
       </Paper>
     </>

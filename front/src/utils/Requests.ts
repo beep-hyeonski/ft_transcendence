@@ -48,3 +48,10 @@ export async function getChatInfo(index: number) {
   );
   return response.data;
 }
+
+export async function getBanUsers() {
+  const response = await axios.get(
+    `${String(process.env.REACT_APP_API_URL)}/users/ban`,
+  );
+  return response.data;
+}

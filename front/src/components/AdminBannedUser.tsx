@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { GridList } from '@material-ui/core';
-import { getBanUsers, getUsers } from '../utils/Requests';
-import AdminUsersElem from './AdminUsersElem';
+import { getBanUsers } from '../utils/Requests';
+import AdminBannedUserElem from './AdminBannedUserElem';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -28,19 +28,13 @@ interface UserdataProps {
   role: string,
 }
 
-function AdminUsers(): JSX.Element {
+function AdminBannedUser(): JSX.Element {
   const classes = useStyles();
-  const [users, setUsers] = useState<UserdataProps[]>([]);
   const [banUsers, setBanUsers] = useState<UserdataProps[]>([]);
 
   useEffect(() => {
-    getUsers().then((res) => {
-      setUsers(res);
-    }).catch((err) => {
-      console.log(err);
-    });
-
     getBanUsers().then((res) => {
+			console.log(res);
       setBanUsers(res);
     }).catch((err: any) => {
       console.log(err.response);
@@ -50,12 +44,10 @@ function AdminUsers(): JSX.Element {
   return (
     <div className={classes.root}>
       <GridList>
-        {users.map((user) => (
-          <AdminUsersElem
+        {banUsers.map((user) => (
+          <AdminBannedUserElem
             key={user.index}
-            user={user}
-            setUsers={setUsers}
-            banUsers={banUsers}
+            banUser={user}
             setBanUsers={setBanUsers}
           />
         ))}
@@ -64,4 +56,4 @@ function AdminUsers(): JSX.Element {
   );
 }
 
-export default AdminUsers;
+export default AdminBannedUser;

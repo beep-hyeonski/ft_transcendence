@@ -4,7 +4,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
-import { getUsers } from '../utils/Requests';
+import { getBanUsers, getUsers } from '../utils/Requests';
 import { RootState } from '../modules';
 
 const useStyles = makeStyles(() =>
@@ -32,16 +32,13 @@ interface UserdataProps {
   role: string;
 }
 
-interface AdminUsersProps {
-  nickname: string;
-}
-
 interface UserData {
   user: UserdataProps;
   setUsers: React.Dispatch<React.SetStateAction<UserdataProps[]>>;
+  setBanUsers: React.Dispatch<React.SetStateAction<UserdataProps[]>>;
 }
 
-const AdminUserMenu = ({ user, setUsers }: UserData) => {
+const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
   const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [isOwner, setIsOwner] = useState<boolean>(false);
@@ -92,7 +89,10 @@ const AdminUserMenu = ({ user, setUsers }: UserData) => {
       const res = await axios.post(
         `${String(process.env.REACT_APP_API_URL)}/users/ban/${user.username}`,
       );
-      console.log(res);
+      const newUsers = await getUsers();
+      setUsers(newUsers);
+      const newBanUsers = await getBanUsers();
+      setBanUsers(newBanUsers);
     } catch (err: any) {
       console.log(err.response);
     }
@@ -133,7 +133,6 @@ const AdminUserMenu = ({ user, setUsers }: UserData) => {
       >
         {isOwner ? null : adminMenu()}
         {isOwner || isAdmin ? null : <MenuItem onClick={onClickUserBan}>유저 추방</MenuItem>}
-        {isOwner || isAdmin ? null : <MenuItem onClick={onClickUserUnBan}>유저 추방 해제</MenuItem>}
       </Menu>
     </>
   );

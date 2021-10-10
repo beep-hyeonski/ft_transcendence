@@ -39,18 +39,20 @@ interface UserdataProps {
   role: string,
 }
 
-interface AdminUsersProps {
-  nickname: string;
-}
-
 interface UserData {
   user: UserdataProps;
   setUsers: React.Dispatch<React.SetStateAction<UserdataProps[]>>;
+  banUsers: UserdataProps[];
+  setBanUsers: React.Dispatch<React.SetStateAction<UserdataProps[]>>;
 }
 
-const AdminUsersElem = ({ user, setUsers } : UserData) : JSX.Element => {
+const AdminUsersElem = ({ user, setUsers, banUsers, setBanUsers } : UserData) : JSX.Element => {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);
+
+  if (banUsers.find((banned: any) => banned.username === user.username)) {
+    return <></>;
+  }
 
   if (mydata.nickname === user.nickname) {
     return <></>;
@@ -65,6 +67,7 @@ const AdminUsersElem = ({ user, setUsers } : UserData) : JSX.Element => {
       <AdminUserMenu
         user={user}
         setUsers={setUsers}
+        setBanUsers={setBanUsers}
       />
     </div>
   );

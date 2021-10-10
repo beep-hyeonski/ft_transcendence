@@ -7,6 +7,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import { joinChatRoom } from '../modules/chat';
 import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -140,6 +141,9 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
       dispatch(updateUser(data));
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
       if (error.response.data.message === 'User Banned')
         alert('채팅방에 참여할 수 없습니다.');
       if (error.response.data.message === 'Password Required' ||

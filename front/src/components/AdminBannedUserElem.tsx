@@ -1,21 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import { Avatar, Button } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
-import { updateUser } from '../modules/user';
+import { useSelector } from 'react-redux';
+import { RootState } from '../modules';
+import { getBanUsers } from '../utils/Requests';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
-    width: '22rem',
+    width: '30%',
     height: '5rem',
     margin: '1rem',
     display: 'flex',
     border: '1px solid black',
     borderRadius: '1rem',
     boxShadow: '1px 1px 1px gray',
-		backgroundColor: '#3f446e',
-		color: '#F4F3FF',
   },
   image: {
     width: '4rem',
@@ -28,17 +27,17 @@ const useStyles = makeStyles(() => createStyles({
     fontSize: '2rem',
     marginTop: '18px',
     marginLeft: '1rem',
-		textShadow: '1px 1px 1px white',
+    textShadow: '0.5px 0.5px 1px gray',
   },
-  unblockedButton: {
+	unblockedButton: {
     position: 'absolute',
     marginTop: '2.6rem',
-    marginLeft: '19rem',
+    marginLeft: '16.5rem',
 		fontSize: '1rem',
 		fontStyle: 'border',
 		transform: 'translate(-50%, -50%)',
-    boxShadow: '1px 1px 1px gray',
 		borderRadius: '6px',
+		boxShadow: '1px 1px 1px gray',
 		backgroundColor: '#CE6F84',
 		'&:hover': {
 			backgroundColor: '#cc6b80',
@@ -50,32 +49,42 @@ interface UserdataProps {
   avatar: string,
   index: number,
   nickname: string,
+  username: string,
   status: string,
-	username: string,
+  role: string,
 }
 
 interface UserData {
-  user: UserdataProps
+  banUser: UserdataProps;
+  setBanUsers: React.Dispatch<React.SetStateAction<UserdataProps[]>>;
 }
 
-const BlockedUserElem = ({ user } : UserData) : JSX.Element => {
+const AdminBannedUserElem = ({ banUser, setBanUsers } : UserData) : JSX.Element => {
   const classes = useStyles();
-	const dispatch = useDispatch();
+  const mydata = useSelector((state: RootState) => state.userModule);
 
-	const UnBlockButton = async () => {
+  if (mydata.nickname === banUser.nickname) {
+    return <></>;
+  }
+
+	const UnBlockButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
     try {
-      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/block`, { data: { blockedUser: user.username } });
-      dispatch(updateUser(res.data));
-    } catch (err: any) {
-      console.log(err.response);
-    }
+			const res = await axios.delete(
+				`${String(process.env.REACT_APP_API_URL)}/users/ban/${banUser.username}`,
+			);
+			const newBanUsers = await getBanUsers();
+			setBanUsers(newBanUsers);
+		} catch (err: any) {
+			console.log(err.response);
+		}
   };
 
   return (
     <div className={classes.root}>
-      <Avatar className={classes.image} src={user.avatar} />
+      <Avatar className={classes.image} src={banUser.avatar} />
       <div className={classes.username}>
-        {user.nickname}
+        {banUser.nickname}
       </div>
 			<Button className={classes.unblockedButton} onClick={UnBlockButton}>
 				차단 해제
@@ -84,4 +93,4 @@ const BlockedUserElem = ({ user } : UserData) : JSX.Element => {
   );
 };
 
-export default React.memo(BlockedUserElem);
+export default React.memo(AdminBannedUserElem);
