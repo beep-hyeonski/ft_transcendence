@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -7,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import ListItemText from '@material-ui/core/ListItemText';
 import { ChatBubbleOutlineRounded } from '@material-ui/icons';
 import { joinChatRoom } from '../modules/chat';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => createStyles({
   usernameMargin: {
@@ -37,8 +37,11 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
         roomMuted: data.mutedUsers,
         roomOwner: data.ownerUser.nickname,
       }));
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 

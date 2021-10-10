@@ -5,6 +5,7 @@ import { Avatar, Button } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -79,6 +80,9 @@ const BannedUserElem = ({ user } : UserData) : JSX.Element => {
 			}));
     } catch (err: any) {
       console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 

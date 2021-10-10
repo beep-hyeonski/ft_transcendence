@@ -12,6 +12,7 @@ import SignUpInputs from './SignUpInputs';
 import { RootState } from '../modules';
 import checkToken from '../utils/checkToken';
 import { initSocket } from '../modules/socket';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -126,6 +127,9 @@ function SignUpPage() {
       history.push('/');
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
       if (error.response.data.message === 'Duplicated Nickname') {
         alert('이미 사용중인 닉네임입니다');
       } else if (error.response.data.message[0] === 'email must be an email') {

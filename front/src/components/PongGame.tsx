@@ -10,6 +10,7 @@ import axios from 'axios';
 import { RootState } from '../modules';
 import { waitGame } from '../modules/gamestate';
 import { IGameDataProps } from '../modules/gamedata';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -259,8 +260,11 @@ function PongGame(): JSX.Element {
                 player2Score: player2.score,
               },
             });
-          } catch (err) {
+          } catch (err: any) {
             console.log(err);
+            if (err.response.data.message === 'User is Banned') {
+              BannedUserHandler();
+            }
           }
         })();
       }

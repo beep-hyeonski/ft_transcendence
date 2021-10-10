@@ -4,6 +4,7 @@ import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import MatchHistoryList from './MatchHistoryList';
 import { RootState } from '../modules';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 // TODO: CSS 설정하기
 const useStyles = makeStyles(() =>
@@ -121,6 +122,9 @@ function ViewBoxProfileInfo() {
       })
       .catch((err) => {
         console.log(err);
+        if (err.response.data.message === 'User is Banned') {
+          BannedUserHandler();
+        }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userdata.username]);

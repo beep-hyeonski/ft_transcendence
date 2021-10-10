@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import { getBanUsers, getUsers } from '../utils/Requests';
 import { RootState } from '../modules';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -66,6 +67,9 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
       setUsers(newUsers);
     } catch (err: any) {
       console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
 	};
 
@@ -80,6 +84,9 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
       setUsers(newUsers);
     } catch (err: any) {
       console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
 	};
 
@@ -95,6 +102,9 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
       setBanUsers(newBanUsers);
     } catch (err: any) {
       console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
 		setMenuAnchor(null);
 	};
@@ -108,6 +118,9 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
       console.log(res);
     } catch (err: any) {
       console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
 		setMenuAnchor(null);
 	};

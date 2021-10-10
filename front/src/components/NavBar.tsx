@@ -12,6 +12,7 @@ import { deleteUser } from '../modules/user';
 import { deleteSideData } from '../modules/sidebar';
 import { logout } from '../modules/auth';
 import { exitChatRoom } from '../modules/chat';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -43,6 +44,9 @@ const NavBar = () => {
       dispatch(logout());
       dispatch(deleteSideData());
     } catch (error: any) {
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
       console.log(error.response);
     }
   };

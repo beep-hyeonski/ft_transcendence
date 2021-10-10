@@ -6,6 +6,7 @@ import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
 import { getBlock } from '../utils/Requests';
 import BlockedUserElem from './BlockedUserElem';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,6 +40,9 @@ function SettingBlockedUsers() {
       dispatch(updateUser(res.data));
     }).catch((err) => {
       console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     });
   }, [dispatch]);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
 import { useSelector } from 'react-redux';

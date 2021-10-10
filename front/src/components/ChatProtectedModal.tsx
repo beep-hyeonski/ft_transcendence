@@ -118,7 +118,6 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
 
   const onClickJoinButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    console.log(password);
     try {
       await axios.post(
         `${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`,

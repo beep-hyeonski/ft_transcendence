@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import { Avatar, Button } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { getBanUsers } from '../utils/Requests';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -77,6 +78,9 @@ const AdminBannedUserElem = ({ banUser, setBanUsers } : UserData) : JSX.Element 
 			setBanUsers(newBanUsers);
 		} catch (err: any) {
 			console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
 		}
   };
 

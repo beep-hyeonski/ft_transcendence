@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../modules/user';
 import { getUsermeChat } from '../utils/Requests';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -199,6 +200,9 @@ function CreateChannelModal({ create, setCreate }: CreateProps) {
       dispatch(updateUser(data));
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 

@@ -22,6 +22,7 @@ import { updateUser } from '../modules/user';
 import ChatUserMenu from './ChatUserMenu';
 import ChatSettingMenu from './ChatSettingMenu';
 import ChatBannedUserMenu from './ChatBannedUserMenu';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -146,6 +147,9 @@ export default function ChatRoom(): JSX.Element {
         );
       } catch (error: any) {
         console.log(error.response);
+        if (error.response.data.message === 'User is Banned') {
+          BannedUserHandler();
+        }
         alert('접근할 수 없습니다');
         dispatch(exitChatRoom());
       }
@@ -270,8 +274,11 @@ export default function ChatRoom(): JSX.Element {
       const data = await getUsermeChat();
       dispatch(updateUser(data));
       setMenuAnchor(null);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
@@ -295,8 +302,11 @@ export default function ChatRoom(): JSX.Element {
       );
       setOpenJoinedMenu(true);
       setMenuAnchor(null);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 

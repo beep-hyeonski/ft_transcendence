@@ -4,6 +4,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LockRounded, LockOpenRounded } from '@material-ui/icons';
 import { ListItem } from '@material-ui/core';
 import { getChatInfo } from '../utils/Requests';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -82,8 +83,11 @@ function ChatRoomList({ roomdata, setModal }: Roomdata) {
         adminUsers: res.adminUsers,
         ownerUser: res.ownerUser.nickname,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 

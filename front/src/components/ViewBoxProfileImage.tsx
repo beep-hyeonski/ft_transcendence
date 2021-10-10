@@ -8,6 +8,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { Button } from '@material-ui/core';
 import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -131,6 +132,9 @@ function ViewBoxProfileImage(): JSX.Element {
       } catch (err: any) {
         console.log(err.response);
         setBlock(true);
+        if (err.response.data.message === 'User is Banned') {
+          BannedUserHandler();
+        }
       }
     }
     try {
@@ -140,6 +144,9 @@ function ViewBoxProfileImage(): JSX.Element {
     } catch (err: any) {
       console.log(err.response);
       setFollow(false);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
@@ -151,6 +158,9 @@ function ViewBoxProfileImage(): JSX.Element {
     } catch (err: any) {
       console.log(err.response);
       setFollow(true);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
@@ -163,6 +173,9 @@ function ViewBoxProfileImage(): JSX.Element {
       } catch (err: any) {
         console.log(err.response);
         setFollow(true);
+        if (err.response.data.message === 'User is Banned') {
+          BannedUserHandler();
+        }
       }
     }
     try {
@@ -172,6 +185,9 @@ function ViewBoxProfileImage(): JSX.Element {
     } catch (err: any) {
       console.log(err.response);
       setBlock(false);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
@@ -183,6 +199,9 @@ function ViewBoxProfileImage(): JSX.Element {
     } catch (err: any) {
       console.log(err.response);
       setBlock(true);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 

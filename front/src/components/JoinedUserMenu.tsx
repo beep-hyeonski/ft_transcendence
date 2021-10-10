@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -69,6 +70,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
@@ -94,6 +98,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
@@ -119,6 +126,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
@@ -144,6 +154,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
@@ -200,6 +213,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       }));
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 

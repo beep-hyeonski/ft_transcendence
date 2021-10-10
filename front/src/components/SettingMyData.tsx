@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import SettingInputs from './SettingInputs';
 import { updateUser } from '../modules/user';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -83,8 +84,11 @@ function SettingMyData() {
         formData,
       );
       setImage(ret.data.image);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
       localStorage.removeItem('p_auth');
       alert('인증 정보가 유효하지 않습니다');
       history.push('/');

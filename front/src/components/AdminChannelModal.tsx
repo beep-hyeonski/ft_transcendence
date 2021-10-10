@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Modal, Button, IconButton, List } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { getChatInfo, getChats } from '../utils/Requests';
 import ChattingList from './ChattingList';
 import AdminChannelJoinUserElem from './AdminChannelJoinUserElem';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -121,7 +121,6 @@ interface AdminChannelModalProps {
 
 function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalProps) {
   const classes = useStyles();
-  const dispatch = useDispatch();
 	const [messages, setMsg] = useState<MessageProps[]>([]);
 	const [chatData, setChatData] = useState<ChatDataProps>(
 		{
@@ -142,8 +141,11 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
 		if (chatModal.open) {
 			getChatInfo(chatModal.chatIndex).then((res) => {
 				setChatData(res);
-			}).catch((err) => {
-				console.log(err.response);
+			}).catch((err:any) => {
+        console.log(err.response);
+				if (err.response.data.message === 'User is Banned') {
+          BannedUserHandler();
+        }
 			});
 
 			(async () => {
@@ -156,6 +158,9 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
 					setMsg(data);
 				} catch (err: any) {
 					console.log(err.response);
+          if (err.response.data.message === 'User is Banned') {
+            BannedUserHandler();
+          }
 				}
 			})();
 		}
@@ -168,14 +173,15 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
 
   const onClickDeleteButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log('click delete');
     try {
       const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`);
-      console.log(res);
       const newChats = await getChats();
       setChats(newChats);
     } catch (err: any) {
       console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
     setModal({ open: false, chatIndex: -1 });
   };

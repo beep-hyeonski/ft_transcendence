@@ -3,6 +3,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -74,6 +75,9 @@ const AdminJoinUserMenu = ({ user, isOwner, chatData, setChatData }: UserData) =
       setChatData(data);
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
     setMenuAnchor(null);
 	};
@@ -88,6 +92,9 @@ const AdminJoinUserMenu = ({ user, isOwner, chatData, setChatData }: UserData) =
       setChatData(data);
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
     setMenuAnchor(null);
 	};

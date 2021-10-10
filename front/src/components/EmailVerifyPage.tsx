@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import checkToken from '../utils/checkToken';
 import { initSocket } from '../modules/socket';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -115,7 +116,10 @@ function EmailVerifyPage() {
         dispatch(initSocket(socket));
       }
       history.push('/');
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
       alert('코드를 다시 확인해주세요.');
     }
   };

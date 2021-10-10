@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Avatar, Button } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../modules/user';
+import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -68,6 +69,9 @@ const BlockedUserElem = ({ user } : UserData) : JSX.Element => {
       dispatch(updateUser(res.data));
     } catch (err: any) {
       console.log(err.response);
+      if (err.response.data.message === 'User is Banned') {
+        BannedUserHandler();
+      }
     }
   };
 
