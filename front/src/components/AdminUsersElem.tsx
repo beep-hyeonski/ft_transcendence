@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
+import { useSelector } from 'react-redux';
 import AdminUserMenu from './AdminUserMenu';
+import { RootState } from '../modules';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -48,6 +50,11 @@ interface UserData {
 
 const AdminUsersElem = ({ user, setUsers } : UserData) : JSX.Element => {
   const classes = useStyles();
+  const mydata = useSelector((state: RootState) => state.userModule);
+
+  if (mydata.nickname === user.nickname) {
+    return <></>;
+  }
 
   return (
     <div className={classes.root}>

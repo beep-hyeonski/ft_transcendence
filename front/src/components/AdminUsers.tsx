@@ -28,10 +28,6 @@ interface UserdataProps {
   role: string,
 }
 
-interface AdminUsersProps {
-  nickname: string;
-}
-
 function AdminUsers(): JSX.Element {
   const classes = useStyles();
   const [users, setUsers] = useState<UserdataProps[]>([]);

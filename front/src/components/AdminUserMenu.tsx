@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import { getUsers } from '../utils/Requests';
+import { RootState } from '../modules';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -44,6 +46,7 @@ const AdminUserMenu = ({ user, setUsers }: UserData) => {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const mydata = useSelector((state: RootState) => state.userModule);
 
   useEffect(() => {
     setIsOwner(user.role === 'owner');
@@ -83,18 +86,37 @@ const AdminUserMenu = ({ user, setUsers }: UserData) => {
     }
 	};
 
-  const onClickUserBan = (e: React.MouseEvent<HTMLLIElement>) => {
+  const onClickUserBan = async (e: React.MouseEvent<HTMLLIElement>) => {
 		e.preventDefault();
-		console.log('test');
-		console.log(user);
+    try {
+      const res = await axios.post(
+        `${String(process.env.REACT_APP_API_URL)}/users/ban/${user.username}`,
+      );
+      console.log(res);
+    } catch (err: any) {
+      console.log(err.response);
+    }
+		setMenuAnchor(null);
+	};
+
+  const onClickUserUnBan = async (e: React.MouseEvent<HTMLLIElement>) => {
+		e.preventDefault();
+    try {
+      const res = await axios.delete(
+        `${String(process.env.REACT_APP_API_URL)}/users/ban/${user.username}`,
+      );
+      console.log(res);
+    } catch (err: any) {
+      console.log(err.response);
+    }
 		setMenuAnchor(null);
 	};
 
   function adminMenu() {
     return (
       <>
-        {!isAdmin && <MenuItem onClick={onClickAdminGive}>관리자 등록</MenuItem>}
-        {isAdmin && <MenuItem onClick={onClickAdminRemove}>관리자 해제</MenuItem>}
+        {mydata.role === 'owner' && !isAdmin && <MenuItem onClick={onClickAdminGive}>관리자 등록</MenuItem>}
+        {mydata.role === 'owner' && isAdmin && <MenuItem onClick={onClickAdminRemove}>관리자 해제</MenuItem>}
       </>
     )
   }
@@ -110,7 +132,8 @@ const AdminUserMenu = ({ user, setUsers }: UserData) => {
         onClose={() => setMenuAnchor(null)}
       >
         {isOwner ? null : adminMenu()}
-        {isOwner ? null : <MenuItem onClick={onClickUserBan}>유저 추방</MenuItem>}
+        {isOwner || isAdmin ? null : <MenuItem onClick={onClickUserBan}>유저 추방</MenuItem>}
+        {isOwner || isAdmin ? null : <MenuItem onClick={onClickUserUnBan}>유저 추방 해제</MenuItem>}
       </Menu>
     </>
   );
