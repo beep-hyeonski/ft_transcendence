@@ -6,11 +6,9 @@ import InputBase from '@material-ui/core/InputBase';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
-import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import checkToken from '../utils/checkToken';
-import { initSocket } from '../modules/socket';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -71,7 +69,6 @@ function EmailVerifyPage() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state: RootState) => state.authModule);
-  const authState = useSelector((state: RootState) => state.authModule);
 
   useEffect(() => {
     if (isLoggedIn || !localStorage.getItem('p_auth')) {
@@ -100,10 +97,7 @@ function EmailVerifyPage() {
       TwoFAToken: form.verifyCode,
     };
     try {
-      const ret = await axios.post(
-        `/auth/twofa`,
-        twofaForm,
-      );
+      const ret = await axios.post(`/auth/twofa`, twofaForm);
       localStorage.setItem('p_auth', String(ret.data.jwt));
       await checkToken(dispatch);
       history.push('/');

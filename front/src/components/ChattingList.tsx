@@ -20,7 +20,7 @@ interface ChattingListProps {
       avatar: string;
     };
     timestamp: string;
-  }
+  };
 }
 
 function ChattingList({ data }: ChattingListProps): JSX.Element {

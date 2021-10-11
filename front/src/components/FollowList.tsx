@@ -67,7 +67,9 @@ function FollowList({ user }: UserdataProps): JSX.Element {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
-  const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
+  const { gamestate } = useSelector(
+    (state: RootState) => state.gameStateMoudle,
+  );
   const [menuAnchor, setMenuAnchor] = useState<null | any>(null);
   const menu = Boolean(menuAnchor);
   const { socket } = useSelector((state: RootState) => state.socketModule);
@@ -120,7 +122,6 @@ function FollowList({ user }: UserdataProps): JSX.Element {
     };
   };
 
-
   const onClose = (event: React.MouseEvent<HTMLLIElement>) => {
     setMenuAnchor(null);
     event.stopPropagation();
@@ -143,21 +144,26 @@ function FollowList({ user }: UserdataProps): JSX.Element {
         primary={user.nickname}
         className={classes.usernameMargin}
       />
-      <StatusIcon status={user.status} isBanned={user.isBanned}/>
-      { !user.isBanned &&
+      <StatusIcon status={user.status} isBanned={user.isBanned} />
+      {!user.isBanned && (
         <Menu
-        id="menu"
-        open={menu}
-        anchorEl={menuAnchor}
-        getContentAnchorEl={null}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        onClose={onClose}
-      >
-        <MenuItem onClick={clickDM}>DM</MenuItem>
-        {gamestate === 'WAIT' && user.status === 'online' && <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>}
-        {gamestate === 'WAIT' && user.status === 'ingame' && <MenuItem onClick={clickObserve}>관전하기</MenuItem>}
-      </Menu>}
+          id="menu"
+          open={menu}
+          anchorEl={menuAnchor}
+          getContentAnchorEl={null}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          onClose={onClose}
+        >
+          <MenuItem onClick={clickDM}>DM</MenuItem>
+          {gamestate === 'WAIT' && user.status === 'online' && (
+            <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>
+          )}
+          {gamestate === 'WAIT' && user.status === 'ingame' && (
+            <MenuItem onClick={clickObserve}>관전하기</MenuItem>
+          )}
+        </Menu>
+      )}
     </ListItem>
   );
 }

@@ -176,10 +176,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
       data.title = chatData.title;
     }
     try {
-      const res = await axios.patch(
-        `/chat/${chatData.index}`,
-        data,
-      );
+      const res = await axios.patch(`/chat/${chatData.index}`, data);
       dispatch(
         joinChatRoom({
           roomTitle: res.data.title,

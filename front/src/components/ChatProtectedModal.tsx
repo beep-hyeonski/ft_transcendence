@@ -76,7 +76,7 @@ interface ModalProps {
     title: string;
     joinUsers: never[];
     mutedUsers: never[];
-    bannedUsers: never[],
+    bannedUsers: never[];
     adminUsers: never[];
     ownerUser: string;
   };
@@ -87,7 +87,7 @@ interface ModalProps {
       status: string;
       title: string;
       joinUsers: never[];
-      bannedUsers: never[],
+      bannedUsers: never[];
       mutedUsers: never[];
       adminUsers: never[];
       ownerUser: string;
@@ -115,13 +115,12 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
     });
   };
 
-  const onClickJoinButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickJoinButton = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     event.preventDefault();
     try {
-      await axios.post(
-        `/chat/${modal.index}/join`,
-        {password},
-      );
+      await axios.post(`/chat/${modal.index}/join`, { password });
       dispatch(
         joinChatRoom({
           roomTitle: modal.title,
@@ -141,8 +140,10 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
       console.log(error.response);
       if (error.response.data.message === 'User Banned')
         alert('채팅방에 참여할 수 없습니다.');
-      if (error.response.data.message === 'Password Required' ||
-        error.response.data.message === 'Invalid Password') {
+      if (
+        error.response.data.message === 'Password Required' ||
+        error.response.data.message === 'Invalid Password'
+      ) {
         setPassword('');
         alert('Wrong password');
         return;

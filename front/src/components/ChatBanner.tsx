@@ -39,14 +39,16 @@ interface ChatBannerProps {
   setCreate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function ChatBanner({ clickCreateChannelButton, create, setCreate }: ChatBannerProps) {
+function ChatBanner({
+  clickCreateChannelButton,
+  create,
+  setCreate,
+}: ChatBannerProps) {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      <div className={classes.textArea}>
-        참가할 수 있는 채널
-      </div>
+      <div className={classes.textArea}>참가할 수 있는 채널</div>
       <Button
         variant="contained"
         size="large"

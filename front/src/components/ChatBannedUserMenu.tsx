@@ -77,7 +77,7 @@ interface ModalProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function ChatBannedUserMenu({ open, setOpen }: ModalProps) {
+function ChatBannedUserMenu({ open, setOpen }: ModalProps): JSX.Element {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
 

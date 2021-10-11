@@ -1,12 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Route,
-  Switch,
-  Redirect,
-  withRouter,
-} from 'react-router-dom';
+import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import ProfileUI from './components/ProfileUI';
 import LoginPage from './components/LoginPage';
 import SignUpPage from './components/SignUpPage';
@@ -29,7 +24,6 @@ function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
   const authState = useSelector((state: RootState) => state.authModule);
   const userState = useSelector((state: RootState) => state.userModule);
-  const { socket } = useSelector((state: RootState) => state.socketModule);
   const dispatch = useDispatch();
 
   useEffect(() => {

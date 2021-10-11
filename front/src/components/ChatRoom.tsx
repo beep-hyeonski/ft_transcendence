@@ -122,12 +122,8 @@ export default function ChatRoom(): JSX.Element {
 
   useEffect(() => {
     (async () => {
-      try{
-        const { data } = await axios.get(
-          `/chat/${
-            chatData.index
-          }/messages`,
-        );
+      try {
+        const { data } = await axios.get(`/chat/${chatData.index}/messages`);
         const msgs = data.map((message: any) => ({
           timestamp: message.createdAt,
           sendUser: {
@@ -187,7 +183,9 @@ export default function ChatRoom(): JSX.Element {
         dispatch(exitChatRoom());
       }
       if (payload.message === 'User Not Joined in the Chat') {
-        alert('채팅방에 입장된 상태가 아닙니다. 새로고침 후 다시 시도해 주세요');
+        alert(
+          '채팅방에 입장된 상태가 아닙니다. 새로고침 후 다시 시도해 주세요',
+        );
         dispatch(exitChatRoom());
       }
       if (payload.message === 'Chat Not Found') {
@@ -201,7 +199,7 @@ export default function ChatRoom(): JSX.Element {
       alert('존재하지 않는 채팅방입니다.');
       getUsermeChat().then((res) => dispatch(updateUser(res)));
       dispatch(exitChatRoom());
-    })
+    });
 
     return () => {
       socket?.off('onMessage');
@@ -263,9 +261,7 @@ export default function ChatRoom(): JSX.Element {
   const onClickMenuExit = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      await axios.post(
-        `/chat/${chatData.index}/leave`,
-      );
+      await axios.post(`/chat/${chatData.index}/leave`);
       dispatch(exitChatRoom());
       const data = await getUsermeChat();
       dispatch(updateUser(data));
@@ -278,9 +274,7 @@ export default function ChatRoom(): JSX.Element {
   const onClickMenuUser = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.get(
-        `/chat/${chatData.index}`,
-      );
+      const { data } = await axios.get(`/chat/${chatData.index}`);
       dispatch(
         joinChatRoom({
           roomTitle: data.title,

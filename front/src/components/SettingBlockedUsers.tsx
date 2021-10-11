@@ -25,7 +25,7 @@ const useStyles = makeStyles(() =>
       height: '80%',
       border: '2px solid black',
       borderRadius: '10px',
-		  backgroundColor: '#F4F3FF',
+      backgroundColor: '#F4F3FF',
     },
   }),
 );
@@ -35,18 +35,20 @@ function SettingBlockedUsers() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getBlock().then((res) => {
-      dispatch(updateUser(res.data));
-    }).catch((err) => {
-      console.log(err.response);
-    });
+    getBlock()
+      .then((res) => {
+        dispatch(updateUser(res.data));
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
   }, [dispatch]);
 
   const mydata = useSelector((state: RootState) => state.userModule);
 
   return (
     <>
-			<div className={classes.title}>Blocked Users</div>
+      <div className={classes.title}>Blocked Users</div>
       <div className={classes.contentBox}>
         <GridList>
           {mydata.blockings.map((user: any) => (

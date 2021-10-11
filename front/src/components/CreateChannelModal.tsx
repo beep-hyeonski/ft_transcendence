@@ -128,23 +128,17 @@ interface CreateChannelProps {
 
 const createChannel = async (data: CreateChannelProps) => {
   if (data.password === '') {
-    const res = await axios.post(
-      `/chat`,
-      {
-        title: data.title,
-        status: data.status,
-      }
-    );
-    return res;
-  }
-  const res = await axios.post(
-    `/chat`,
-    {
+    const res = await axios.post(`/chat`, {
       title: data.title,
       status: data.status,
-      password: data.password,
-    },
-  );
+    });
+    return res;
+  }
+  const res = await axios.post(`/chat`, {
+    title: data.title,
+    status: data.status,
+    password: data.password,
+  });
   return res.data;
 };
 

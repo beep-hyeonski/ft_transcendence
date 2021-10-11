@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import { WsException } from '@nestjs/websockets';
 import { User } from 'src/users/entities/user.entity';
 import { Server } from 'socket.io';
 import { WsGameException } from 'src/filters/websocket-exception.filter';
@@ -123,6 +122,7 @@ export class Game {
 
 @Injectable()
 export class GameService {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}
 
   gameList: Map<string, Game> = new Map<string, Game>();

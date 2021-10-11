@@ -55,11 +55,9 @@ function ProfileSideBar() {
 
   const mydata = useSelector((state: RootState) => state.userModule);
   useEffect(() => {
-    axios
-      .get(`/users/${mydata.nickname}`)
-      .then((res: any) => {
-        dispatch(updateUser(res.data));
-      });
+    axios.get(`/users/${mydata.nickname}`).then((res: any) => {
+      dispatch(updateUser(res.data));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

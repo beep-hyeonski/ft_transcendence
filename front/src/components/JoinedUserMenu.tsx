@@ -50,10 +50,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const onClickAddAdmin = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        `/chat/${chatData.index}/admin`,
-        { nickname: user.nickname },
-      );
+      const { data } = await axios.post(`/chat/${chatData.index}/admin`, {
+        nickname: user.nickname,
+      });
       dispatch(
         joinChatRoom({
           roomIndex: data.index,
@@ -75,10 +74,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const onClickDeleteAdmin = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.delete(
-        `/chat/${chatData.index}/admin`,
-        { data: { nickname: user.nickname } },
-      );
+      const { data } = await axios.delete(`/chat/${chatData.index}/admin`, {
+        data: { nickname: user.nickname },
+      });
       dispatch(
         joinChatRoom({
           roomIndex: data.index,
@@ -100,10 +98,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const onClickMuteUser = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        `/chat/${chatData.index}/mute`,
-        { nickname: user.nickname },
-      );
+      const { data } = await axios.post(`/chat/${chatData.index}/mute`, {
+        nickname: user.nickname,
+      });
       dispatch(
         joinChatRoom({
           roomIndex: data.index,
@@ -125,10 +122,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const onClickUnMuteUser = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.delete(
-        `/chat/${chatData.index}/mute`,
-        { data: { nickname: user.nickname } },
-      );
+      const { data } = await axios.delete(`/chat/${chatData.index}/mute`, {
+        data: { nickname: user.nickname },
+      });
       dispatch(
         joinChatRoom({
           roomIndex: data.index,
@@ -185,19 +181,21 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const onClickBan = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`/chat/${chatData.index}/ban`,
-      {nickname: user.nickname}
-      )
-      dispatch(joinChatRoom({
-        roomTitle: data.title,
-        roomIndex: data.index,
-        roomStatus: data.status,
-        roomJoinedUsers: data.joinUsers,
-        roomBannedUsers: data.bannedUsers,
-        roomAdmins: data.adminUsers,
-        roomMuted: data.mutedUsers,
-        roomOwner: data.ownerUser.nickname,
-      }));
+      const { data } = await axios.post(`/chat/${chatData.index}/ban`, {
+        nickname: user.nickname,
+      });
+      dispatch(
+        joinChatRoom({
+          roomTitle: data.title,
+          roomIndex: data.index,
+          roomStatus: data.status,
+          roomJoinedUsers: data.joinUsers,
+          roomBannedUsers: data.bannedUsers,
+          roomAdmins: data.adminUsers,
+          roomMuted: data.mutedUsers,
+          roomOwner: data.ownerUser.nickname,
+        }),
+      );
     } catch (error: any) {
       console.log(error.response);
     }
@@ -218,8 +216,12 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         {chatData.ownerUser !== user.nickname && isAdmin && isManager
           ? muteMenu()
           : null}
-        {isOwner && chatData.ownerUser !== user.nickname && isAdmin && isManager ?
-        <MenuItem onClick={onClickBan}>유저 추방</MenuItem> : null}
+        {isOwner &&
+        chatData.ownerUser !== user.nickname &&
+        isAdmin &&
+        isManager ? (
+          <MenuItem onClick={onClickBan}>유저 추방</MenuItem>
+        ) : null}
       </Menu>
     </>
   );

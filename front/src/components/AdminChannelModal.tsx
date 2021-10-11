@@ -27,14 +27,14 @@ const useStyles = makeStyles(() =>
       textShadow: '1px 1px 2px black',
     },
     paper: {
-			position: 'absolute',
-			transform: 'translate(-50%, -50%)',
-			top: '50%',
-			left: '50%',
-			width: '95%',
-			height: '70%',
-			backgroundColor: '#F4F3FF',
-			display: 'flex',
+      position: 'absolute',
+      transform: 'translate(-50%, -50%)',
+      top: '50%',
+      left: '50%',
+      width: '95%',
+      height: '70%',
+      backgroundColor: '#F4F3FF',
+      display: 'flex',
     },
     closeButtonLocation: {
       position: 'absolute',
@@ -48,17 +48,17 @@ const useStyles = makeStyles(() =>
         color: '#DA3A3A',
       },
     },
-		messageList: {
-			width: '75%',
-			overflow: 'auto',
+    messageList: {
+      width: '75%',
+      overflow: 'auto',
       display: 'flex',
-			flexDirection: 'column-reverse',
-		},
-		userList: {
-			width: '25%',
-			overflow: 'auto',
-			borderLeft: '2px solid gray',
-		},
+      flexDirection: 'column-reverse',
+    },
+    userList: {
+      width: '25%',
+      overflow: 'auto',
+      borderLeft: '2px solid gray',
+    },
     button: {
       position: 'absolute',
       top: '88%',
@@ -86,9 +86,9 @@ interface ChatDataProps {
   adminUsers: string[];
   ownerUser: {
     nickname: string;
-  }
+  };
   mutedUsers: string[];
-};
+}
 
 interface MessageProps {
   timestamp: string;
@@ -110,64 +110,70 @@ interface AdminChannelModalProps {
   chatModal: {
     open: boolean;
     chatIndex: number;
-  }
-  setModal: React.Dispatch<React.SetStateAction<{
-    open: boolean;
-    chatIndex: number;
-  }>>;
+  };
+  setModal: React.Dispatch<
+    React.SetStateAction<{
+      open: boolean;
+      chatIndex: number;
+    }>
+  >;
   setChats: React.Dispatch<React.SetStateAction<ChatInfoProps[]>>;
-};
+}
 
-function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalProps) {
+function AdminChannelModal({
+  chatModal,
+  setModal,
+  setChats,
+}: AdminChannelModalProps) {
   const classes = useStyles();
-	const [messages, setMsg] = useState<MessageProps[]>([]);
-	const [chatData, setChatData] = useState<ChatDataProps>(
-		{
-			index: 0,
-			title: '',
-			status: '',
-			joinUsers: [],
-			bannedUsers: [],
-			adminUsers: [],
-			ownerUser: {
-        nickname: '',
-      },
-			mutedUsers: [],
-		}
-	);
+  const [messages, setMsg] = useState<MessageProps[]>([]);
+  const [chatData, setChatData] = useState<ChatDataProps>({
+    index: 0,
+    title: '',
+    status: '',
+    joinUsers: [],
+    bannedUsers: [],
+    adminUsers: [],
+    ownerUser: {
+      nickname: '',
+    },
+    mutedUsers: [],
+  });
 
-	useEffect(() => {
-		if (chatModal.open) {
-			getChatInfo(chatModal.chatIndex).then((res) => {
-				setChatData(res);
-			}).catch((err:any) => {
-        console.log(err.response);
-			});
+  useEffect(() => {
+    if (chatModal.open) {
+      getChatInfo(chatModal.chatIndex)
+        .then((res) => {
+          setChatData(res);
+        })
+        .catch((err: any) => {
+          console.log(err.response);
+        });
 
-			(async () => {
-				try {
-					const { data } = await axios.get(
-						`/chat/${
-							chatModal.chatIndex
-						}/messages`,
-					);
-					setMsg(data);
-				} catch (err: any) {
-					console.log(err.response);
-				}
-			})();
-		}
-	}, [chatModal.chatIndex, chatModal.open, setChats]);
+      (async () => {
+        try {
+          const { data } = await axios.get(
+            `/chat/${chatModal.chatIndex}/messages`,
+          );
+          setMsg(data);
+        } catch (err: any) {
+          console.log(err.response);
+        }
+      })();
+    }
+  }, [chatModal.chatIndex, chatModal.open, setChats]);
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-		setModal({ open: false, chatIndex: -1 });
+    setModal({ open: false, chatIndex: -1 });
   };
 
-  const onClickDeleteButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickDeleteButton = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     e.preventDefault();
     try {
-      const res = await axios.delete(`/chat/${chatData.index}`);
+      await axios.delete(`/chat/${chatData.index}`);
       const newChats = await getChats();
       setChats(newChats);
     } catch (err: any) {
@@ -190,27 +196,27 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
             <CancelIcon className={classes.closeButton} />
           </IconButton>
           <div className={classes.title}>{chatData.title}</div>
-					<div className={classes.paper}>
-						<div className={classes.messageList}>
-							<List>
-								{messages.map((data) => (
-									<ChattingList data={data} />
-								))}
-							</List>
-						</div>
-						<div className={classes.userList}>
-							<List>
-								{chatData.joinUsers.map((user) => (
-									<AdminChannelJoinUserElem
+          <div className={classes.paper}>
+            <div className={classes.messageList}>
+              <List>
+                {messages.map((data) => (
+                  <ChattingList data={data} />
+                ))}
+              </List>
+            </div>
+            <div className={classes.userList}>
+              <List>
+                {chatData.joinUsers.map((user) => (
+                  <AdminChannelJoinUserElem
                     key={user.index}
                     user={user}
                     chatData={chatData}
                     setChatData={setChatData}
                   />
-								))}
-							</List>
-						</div>
-					</div>
+                ))}
+              </List>
+            </div>
+          </div>
           <Button
             variant="contained"
             size="large"

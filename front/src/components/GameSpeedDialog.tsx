@@ -1,16 +1,20 @@
-import {
-	Dialog, DialogTitle, List, ListItem,
-	ListItemText,
-} from '@material-ui/core';
 import React from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { pvpQueueGame, settingGame } from '../modules/gamestate';
 
-function GameSpeedDialog() : JSX.Element {
-  const userdata = useSelector((state: RootState) => state.profileModule);
+function GameSpeedDialog(): JSX.Element {
   const socket = useSelector((state: RootState) => state.socketModule);
-	const { dialog, receiveUserIndex } = useSelector((state: RootState) => state.gameStateMoudle);
+  const { dialog, receiveUserIndex } = useSelector(
+    (state: RootState) => state.gameStateMoudle,
+  );
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -20,10 +24,10 @@ function GameSpeedDialog() : JSX.Element {
   const handleListItemClick = (value: string) => {
     console.log(value);
     socket?.socket?.emit('matchRequest', {
-			receiveUserIndex,
+      receiveUserIndex,
       ballSpeed: value,
     });
-		dispatch(settingGame(false));
+    dispatch(settingGame(false));
     dispatch(pvpQueueGame());
   };
 

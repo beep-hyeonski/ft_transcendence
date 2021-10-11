@@ -82,63 +82,63 @@ interface MessageProps {
 }
 
 interface DMProps {
-	nickname: string;
-};
+  nickname: string;
+}
 
-export default function DMRoom({ match }: RouteComponentProps<DMProps>): JSX.Element {
+export default function DMRoom({
+  match,
+}: RouteComponentProps<DMProps>): JSX.Element {
   const classes = useStyles();
   const { socket } = useSelector((state: RootState) => state.socketModule);
-	const { nickname } = match.params;
-	const history = useHistory();
-	const dispatch = useDispatch();
+  const { nickname } = match.params;
+  const history = useHistory();
+  const dispatch = useDispatch();
 
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [inputs, setInputs] = useState('');
 
   useEffect(() => {
-		dispatch(deleteSideData());
-		(async () => {
-			try {
-				const { data } = await axios.get(
-					`/dm/${nickname}`
-				);
-				const msgs = data.map((message: any) => ({
-					timestamp: message.createdAt,
-					sendUser: {
-						nickname: message.sendUser.nickname,
-						avatar: message.sendUser.avatar,
-					},
-					messageContent: message.message,
-				}));
-				setMsg(msgs);
-			} catch (error: any) {
-				console.log(error.response);
-				alert('접근할 수 없습니다');
-				history.goBack();
-			}
-		})();
+    dispatch(deleteSideData());
+    (async () => {
+      try {
+        const { data } = await axios.get(`/dm/${nickname}`);
+        const msgs = data.map((message: any) => ({
+          timestamp: message.createdAt,
+          sendUser: {
+            nickname: message.sendUser.nickname,
+            avatar: message.sendUser.avatar,
+          },
+          messageContent: message.message,
+        }));
+        setMsg(msgs);
+      } catch (error: any) {
+        console.log(error.response);
+        alert('접근할 수 없습니다');
+        history.goBack();
+      }
+    })();
 
-		socket?.on('onDM', ({ sendUser, message }) => {
-			const msg = {
-				timestamp: new Date().toUTCString(),
-				sendUser: {
-					nickname: sendUser.nickname,
-					avatar: sendUser.avatar,
-				},
-				messageContent: message,
-			};
-			setMsg((prev) => prev.concat(msg));
-		});
+    socket?.on('onDM', ({ sendUser, message }) => {
+      const msg = {
+        timestamp: new Date().toUTCString(),
+        sendUser: {
+          nickname: sendUser.nickname,
+          avatar: sendUser.avatar,
+        },
+        messageContent: message,
+      };
+      setMsg((prev) => prev.concat(msg));
+    });
 
-		socket?.on('chatException', (payload) => {
-			console.log(payload);
-		});
+    socket?.on('chatException', (payload) => {
+      console.log(payload);
+    });
 
     return () => {
-			socket?.off('onDM');
-			socket?.off('chatException');
+      socket?.off('onDM');
+      socket?.off('chatException');
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nickname, dispatch]);
 
   const onChange = (e: any) => {
@@ -150,13 +150,13 @@ export default function DMRoom({ match }: RouteComponentProps<DMProps>): JSX.Ele
     if (inputs === '') {
       return;
     }
-		const data = {
-			receiveUser: nickname,
-			message: inputs,
-		}
+    const data = {
+      receiveUser: nickname,
+      message: inputs,
+    };
     if (e.key === 'Enter') {
       // socket으로 input 넘겨주기
-			socket?.emit('onDM', data);
+      socket?.emit('onDM', data);
       setInputs('');
     }
   };
@@ -165,17 +165,17 @@ export default function DMRoom({ match }: RouteComponentProps<DMProps>): JSX.Ele
     if (inputs === '') {
       return;
     }
-		const data = {
-			receiveUser: nickname,
-			message: inputs,
-		}
-		socket?.emit('onDM', data);
+    const data = {
+      receiveUser: nickname,
+      message: inputs,
+    };
+    socket?.emit('onDM', data);
     setInputs('');
   };
 
   const onClickBackButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-		history.goBack();
+    history.goBack();
   };
 
   return (

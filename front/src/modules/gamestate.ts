@@ -60,7 +60,11 @@ export default function gameStateMoudle(
     case GAMEING:
       return { ...state, gamestate: 'ING' };
     case SETTING_GAME:
-      return { ...state, dialog: action.dialog, receiveUserIndex: action.receiveUserIndex };
+      return {
+        ...state,
+        dialog: action.dialog,
+        receiveUserIndex: action.receiveUserIndex,
+      };
     default:
       return state;
   }

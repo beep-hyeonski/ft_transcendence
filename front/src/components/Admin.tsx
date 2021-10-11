@@ -56,7 +56,7 @@ function Admin(): JSX.Element {
   const [value, setValue] = React.useState(1);
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       try {
         const response = await getUserme();
         if (response.role === 'user') {

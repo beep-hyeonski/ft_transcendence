@@ -67,7 +67,9 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
   const dispatch = useDispatch();
   const history = useHistory();
   const [menuAnchor, setMenuAnchor] = useState<null | any>(null);
-  const { gamestate } = useSelector((state: RootState) => state.gameStateMoudle);
+  const { gamestate } = useSelector(
+    (state: RootState) => state.gameStateMoudle,
+  );
   const { socket } = useSelector((state: RootState) => state.socketModule);
 
   const onClickLobyUser = () => {
@@ -140,21 +142,26 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
         primary={user.nickname}
         className={classes.usernameMargin}
       />
-      <StatusIcon status={user.status} isBanned={user.isBanned}/>
-      { !user.isBanned &&
-      <Menu
-        id="menu"
-        open={Boolean(menuAnchor)}
-        anchorEl={menuAnchor}
-        getContentAnchorEl={null}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        onClose={onClose}
-      >
-        <MenuItem onClick={clickDM}>DM</MenuItem>
-        {gamestate === 'WAIT' && user.status === 'online' && <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>}
-        {gamestate === 'WAIT' && user.status === 'ingame' && <MenuItem onClick={clickObserve}>관전하기</MenuItem>}
-      </Menu>}
+      <StatusIcon status={user.status} isBanned={user.isBanned} />
+      {!user.isBanned && (
+        <Menu
+          id="menu"
+          open={Boolean(menuAnchor)}
+          anchorEl={menuAnchor}
+          getContentAnchorEl={null}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          onClose={onClose}
+        >
+          <MenuItem onClick={clickDM}>DM</MenuItem>
+          {gamestate === 'WAIT' && user.status === 'online' && (
+            <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>
+          )}
+          {gamestate === 'WAIT' && user.status === 'ingame' && (
+            <MenuItem onClick={clickObserve}>관전하기</MenuItem>
+          )}
+        </Menu>
+      )}
     </ListItem>
   );
 }

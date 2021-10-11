@@ -59,9 +59,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
     e.preventDefault();
     setMenuAnchor(null);
     try {
-      const { data } = await axios.post(
-        `/users/admin/${user.username}`,
-      );
+      await axios.post(`/users/admin/${user.username}`);
       const newUsers = await getUsers();
       setUsers(newUsers);
     } catch (err: any) {
@@ -73,9 +71,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
     e.preventDefault();
     setMenuAnchor(null);
     try {
-      const { data } = await axios.delete(
-        `/users/admin/${user.username}`,
-      );
+      await axios.delete(`/users/admin/${user.username}`);
       const newUsers = await getUsers();
       setUsers(newUsers);
     } catch (err: any) {
@@ -86,9 +82,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
   const onClickUserBan = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        `/users/ban/${user.username}`,
-      );
+      await axios.post(`/users/ban/${user.username}`);
       const newUsers = await getUsers();
       setUsers(newUsers);
       const newBanUsers = await getBanUsers();
@@ -102,9 +96,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
   const onClickUserUnBan = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const res = await axios.delete(
-        `/users/ban/${user.username}`,
-      );
+      const res = await axios.delete(`/users/ban/${user.username}`);
       console.log(res);
     } catch (err: any) {
       console.log(err.response);

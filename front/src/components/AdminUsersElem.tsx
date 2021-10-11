@@ -5,38 +5,40 @@ import { useSelector } from 'react-redux';
 import AdminUserMenu from './AdminUserMenu';
 import { RootState } from '../modules';
 
-const useStyles = makeStyles(() => createStyles({
-  root: {
-    width: '30%',
-    height: '5rem',
-    margin: '1rem',
-    display: 'flex',
-    border: '1px solid black',
-    borderRadius: '1rem',
-    boxShadow: '1px 1px 1px gray',
-  },
-  image: {
-    width: '4rem',
-    height: '4rem',
-    marginTop: '0.5rem',
-    marginLeft: '0.5rem',
-    boxShadow: '1px 1px 1.5px gray',
-  },
-  username: {
-    fontSize: '2rem',
-    marginTop: '18px',
-    marginLeft: '1rem',
-    textShadow: '0.5px 0.5px 1px gray',
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      width: '30%',
+      height: '5rem',
+      margin: '1rem',
+      display: 'flex',
+      border: '1px solid black',
+      borderRadius: '1rem',
+      boxShadow: '1px 1px 1px gray',
+    },
+    image: {
+      width: '4rem',
+      height: '4rem',
+      marginTop: '0.5rem',
+      marginLeft: '0.5rem',
+      boxShadow: '1px 1px 1.5px gray',
+    },
+    username: {
+      fontSize: '2rem',
+      marginTop: '18px',
+      marginLeft: '1rem',
+      textShadow: '0.5px 0.5px 1px gray',
+    },
+  }),
+);
 
 interface UserdataProps {
-  avatar: string,
-  index: number,
-  nickname: string,
-  username: string,
-  status: string,
-  role: string,
+  avatar: string;
+  index: number;
+  nickname: string;
+  username: string;
+  status: string;
+  role: string;
 }
 
 interface UserData {
@@ -46,7 +48,12 @@ interface UserData {
   setBanUsers: React.Dispatch<React.SetStateAction<UserdataProps[]>>;
 }
 
-const AdminUsersElem = ({ user, setUsers, banUsers, setBanUsers } : UserData) : JSX.Element => {
+const AdminUsersElem = ({
+  user,
+  setUsers,
+  banUsers,
+  setBanUsers,
+}: UserData): JSX.Element => {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);
 
@@ -61,9 +68,7 @@ const AdminUsersElem = ({ user, setUsers, banUsers, setBanUsers } : UserData) : 
   return (
     <div className={classes.root}>
       <Avatar className={classes.image} src={user.avatar} />
-      <div className={classes.username}>
-        {user.nickname}
-      </div>
+      <div className={classes.username}>{user.nickname}</div>
       <AdminUserMenu
         user={user}
         setUsers={setUsers}

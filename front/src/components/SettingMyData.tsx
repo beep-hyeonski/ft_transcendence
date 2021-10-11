@@ -78,10 +78,7 @@ function SettingMyData() {
       formData.set('image', file);
     }
     try {
-      const ret = await axios.post(
-        `/images`,
-        formData,
-      );
+      const ret = await axios.post(`/images`, formData);
       setImage(ret.data.image);
     } catch (error: any) {
       console.log(error);
@@ -110,10 +107,7 @@ function SettingMyData() {
       useTwoFA: form.twofa,
     };
     try {
-      const ret = await axios.patch(
-        `/users/me`,
-        inputForm,
-      );
+      const ret = await axios.patch(`/users/me`, inputForm);
       dispatch(updateUser(ret.data));
       alert('저장되었습니다.');
     } catch (error: any) {
@@ -129,25 +123,25 @@ function SettingMyData() {
 
   return (
     <>
-			<div className={classes.title}>Setting</div>
-			<Avatar className={classes.profileImage} src={image} />
-			<label className={classes.changeLabel} htmlFor="file">
-				Change Image
-			</label>
-			<input
-				style={{ display: 'none' }}
-				id="file"
-				type="file"
-				name="profileImage"
-				onChange={changeImage}
-				accept=".jpg, .jpeg, .png, .gif"
-			/>
-			<SettingInputs
-				onSubmit={clickSaveButton}
-				buttonName="Save"
-				username={mydata.nickname}
-				isTwofa={mydata.useTwoFA}
-			/>
+      <div className={classes.title}>Setting</div>
+      <Avatar className={classes.profileImage} src={image} />
+      <label className={classes.changeLabel} htmlFor="file">
+        Change Image
+      </label>
+      <input
+        style={{ display: 'none' }}
+        id="file"
+        type="file"
+        name="profileImage"
+        onChange={changeImage}
+        accept=".jpg, .jpeg, .png, .gif"
+      />
+      <SettingInputs
+        onSubmit={clickSaveButton}
+        buttonName="Save"
+        username={mydata.nickname}
+        isTwofa={mydata.useTwoFA}
+      />
     </>
   );
 }

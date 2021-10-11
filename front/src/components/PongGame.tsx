@@ -26,7 +26,6 @@ const keyState = {
   downKey: false,
 };
 
-
 // interface IBallInfo {
 //   x: number;
 //   y: number;
@@ -148,11 +147,12 @@ function PongGame(): JSX.Element {
 
   useEffect(() => {
     if (canvasRef.current === null) {
-      alert("게임을 실행할 수 없습니다(canvas is null). 관리자에게 문의하세요.");
+      alert(
+        '게임을 실행할 수 없습니다(canvas is null). 관리자에게 문의하세요.',
+      );
       dispatch(waitGame());
       history.push('/');
-      return () => {
-      };
+      return () => {};
     }
 
     const callback = (gameData: IGameDataProps) => {
@@ -176,11 +176,12 @@ function PongGame(): JSX.Element {
     const context = canvas.getContext('2d');
 
     if (!context) {
-      alert("게임을 실행할 수 없습니다(context is null). 관리자에게 문의하세요.");
+      alert(
+        '게임을 실행할 수 없습니다(context is null). 관리자에게 문의하세요.',
+      );
       dispatch(waitGame());
       history.push('/');
-      return () => {
-      };
+      return () => {};
     }
 
     const ball = game.ballInfo;
@@ -235,12 +236,19 @@ function PongGame(): JSX.Element {
       context.fillText(`${gamedata.gameInfo.player1Nickname}`, 50, 50);
       context.textAlign = 'right';
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      context.fillText(`${gamedata.gameInfo.player2Nickname}`, canvas.width - 50, 50);
+      context.fillText(
+        `${gamedata.gameInfo.player2Nickname}`,
+        canvas.width - 50,
+        50,
+      );
       context.textAlign = 'center';
       context.font = '60px Skia';
       context.fillText(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      `${player1.score}      score      ${player2.score}`, canvas.width / 2, 50);
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        `${player1.score}      score      ${player2.score}`,
+        canvas.width / 2,
+        50,
+      );
     }
 
     drawPong();
@@ -249,7 +257,9 @@ function PongGame(): JSX.Element {
         (async () => {
           try {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            const { data } = await axios.get(`/users/${gamedata.gameInfo.player2Nickname}`);
+            const { data } = await axios.get(
+              `/users/${gamedata.gameInfo.player2Nickname}`,
+            );
             socket?.socket?.emit('matchResult', {
               gameName: gamedata.gameName,
               createMatchDto: {

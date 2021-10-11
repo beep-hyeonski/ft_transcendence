@@ -7,15 +7,17 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { ChatBubbleOutlineRounded } from '@material-ui/icons';
 import { joinChatRoom } from '../modules/chat';
 
-const useStyles = makeStyles(() => createStyles({
-  usernameMargin: {
-    marginLeft: '10px',
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    usernameMargin: {
+      marginLeft: '10px',
+    },
+  }),
+);
 
 interface SideBarProps {
-  index: number,
-  title: string,
+  index: number;
+  title: string;
 }
 
 function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
@@ -26,27 +28,25 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
     e.preventDefault();
     try {
       const { data } = await axios.get(`/chat/${index}`);
-      dispatch(joinChatRoom({
-        roomTitle: data.title,
-        roomIndex: data.index,
-        roomStatus: data.status,
-        roomJoinedUsers: data.joinUsers,
-        roomBannedUsers: data.bannedUsers,
-        roomAdmins: data.adminUsers,
-        roomMuted: data.mutedUsers,
-        roomOwner: data.ownerUser.nickname,
-      }));
+      dispatch(
+        joinChatRoom({
+          roomTitle: data.title,
+          roomIndex: data.index,
+          roomStatus: data.status,
+          roomJoinedUsers: data.joinUsers,
+          roomBannedUsers: data.bannedUsers,
+          roomAdmins: data.adminUsers,
+          roomMuted: data.mutedUsers,
+          roomOwner: data.ownerUser.nickname,
+        }),
+      );
     } catch (error: any) {
       console.log(error.response);
     }
   };
 
   return (
-    <ListItem
-      button
-      key={index}
-      onClick={clickButton}
-    >
+    <ListItem button key={index} onClick={clickButton}>
       <ChatBubbleOutlineRounded style={{ fontSize: 40 }} />
       <ListItemText primary={title} className={classes.usernameMargin} />
     </ListItem>

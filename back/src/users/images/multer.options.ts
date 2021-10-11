@@ -5,7 +5,7 @@ import { v1 } from 'uuid';
 
 export const multerOptions = {
   fileFilter: (request, file, cb) => {
-    if (file.mimetype.match(/(jpg|jpeg|png|gif)$/)) {
+    if (file.mimetype.match(/(jpg|jpeg|png)$/)) {
       cb(null, true);
     } else {
       cb(new BadRequestException('Not Supported Format'), false);

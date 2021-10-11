@@ -9,9 +9,9 @@ const useStyles = makeStyles(() =>
     menuIconLocation: {
       width: '1rem',
       height: '1rem',
-			position: 'absolute',
-			right: '10%',
-			marginTop: '2.5vh',
+      position: 'absolute',
+      right: '10%',
+      marginTop: '2.5vh',
     },
     menuIcon: {
       fontSize: '2rem',
@@ -29,9 +29,9 @@ interface ChatDataProps {
   adminUsers: string[];
   ownerUser: {
     nickname: string;
-  }
+  };
   mutedUsers: string[];
-};
+}
 
 interface UserdataProps {
   avatar: string;
@@ -47,7 +47,12 @@ interface UserData {
   setChatData: React.Dispatch<React.SetStateAction<ChatDataProps>>;
 }
 
-const AdminJoinUserMenu = ({ user, isOwner, chatData, setChatData }: UserData) => {
+const AdminJoinUserMenu = ({
+  user,
+  isOwner,
+  chatData,
+  setChatData,
+}: UserData) => {
   const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -64,42 +69,46 @@ const AdminJoinUserMenu = ({ user, isOwner, chatData, setChatData }: UserData) =
     setMenuAnchor(e.currentTarget);
   };
 
-	const onClickAddAdmin = async (e: React.MouseEvent<HTMLLIElement>) => {
-		e.preventDefault();
+  const onClickAddAdmin = async (e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault();
     try {
-      const { data } = await axios.post(
-        `/chat/${chatData.index}/admin`,
-        { nickname: user.nickname },
-      );
+      const { data } = await axios.post(`/chat/${chatData.index}/admin`, {
+        nickname: user.nickname,
+      });
       setChatData(data);
     } catch (error: any) {
       console.log(error.response);
     }
     setMenuAnchor(null);
-	};
+  };
 
   const onClickDeleteAdmin = async (e: React.MouseEvent<HTMLLIElement>) => {
-		e.preventDefault();
+    e.preventDefault();
     try {
-      const { data } = await axios.delete(
-        `/chat/${chatData.index}/admin`,
-        { data: { nickname: user.nickname } },
-      );
+      const { data } = await axios.delete(`/chat/${chatData.index}/admin`, {
+        data: { nickname: user.nickname },
+      });
       setChatData(data);
     } catch (error: any) {
       console.log(error.response);
     }
     setMenuAnchor(null);
-	};
+  };
 
   function adminMenu() {
     return (
       <>
-        {!isAdmin && <MenuItem onClick={onClickAddAdmin}>채널 관리자 권한 부여</MenuItem>}
-        {isAdmin && <MenuItem onClick={onClickDeleteAdmin}>채널 관리자 권한 해제</MenuItem>}
+        {!isAdmin && (
+          <MenuItem onClick={onClickAddAdmin}>채널 관리자 권한 부여</MenuItem>
+        )}
+        {isAdmin && (
+          <MenuItem onClick={onClickDeleteAdmin}>
+            채널 관리자 권한 해제
+          </MenuItem>
+        )}
       </>
-    )
-  };
+    );
+  }
 
   return (
     <>

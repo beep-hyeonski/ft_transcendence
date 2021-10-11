@@ -6,14 +6,14 @@ import GameButton from './GameButton';
 import RuleBook from './RuleBook';
 
 const useStyles = makeStyles({
-	content: {
+  content: {
     height: '100vh',
     width: '80vw',
-	  display: 'flex',
-	  alignItems: 'center',
-	  justifyContent: 'center',
-	  flexDirection: 'column',
-	},
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
 });
 
 function MainUI(): JSX.Element {

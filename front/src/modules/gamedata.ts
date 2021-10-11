@@ -53,8 +53,7 @@ type GameData = {
   gamedata: IGameDataProps;
 };
 
-type GameDataAction =
-  | ReturnType<typeof setGameData>;
+type GameDataAction = ReturnType<typeof setGameData>;
 
 const initialState: GameData = {
   gamedata: {

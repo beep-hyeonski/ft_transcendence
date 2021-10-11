@@ -28,10 +28,12 @@ interface RoomdataProps {
 
 interface Roomdata {
   roomdata: RoomdataProps;
-	setModal: React.Dispatch<React.SetStateAction<{
-    open: boolean;
-    chatIndex: number;
-  }>>;
+  setModal: React.Dispatch<
+    React.SetStateAction<{
+      open: boolean;
+      chatIndex: number;
+    }>
+  >;
 }
 
 function AdminChannelsElem({ roomdata, setModal }: Roomdata): JSX.Element {

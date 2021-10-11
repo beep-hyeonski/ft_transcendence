@@ -68,11 +68,7 @@ export class AuthController {
   @Permission(JwtPermission.SIGNUP)
   @UseGuards(JwtAuthGuard)
   @Post('signup')
-  async signUp(
-    @Req() req: any,
-    @Body() userInfo: CreateUserDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async signUp(@Req() req: any, @Body() userInfo: CreateUserDto) {
     const signUpRet: LoginStatusDto = await this.usersService.signUp(
       req.user,
       userInfo,
@@ -95,7 +91,6 @@ export class AuthController {
   async TwoFactorAuth(
     @Req() req: any,
     @Body() twoFactorTokenDto: TwoFactorTokenDto,
-    @Res({ passthrough: true }) res: Response,
   ) {
     const twoFARet = await this.authService.checkTwoFactor(
       req.user,

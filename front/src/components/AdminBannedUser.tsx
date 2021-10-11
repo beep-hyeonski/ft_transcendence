@@ -20,12 +20,12 @@ const useStyles = makeStyles(() =>
 );
 
 interface UserdataProps {
-  avatar: string,
-  index: number,
-  nickname: string,
-  username: string,
-  status: string,
-  role: string,
+  avatar: string;
+  index: number;
+  nickname: string;
+  username: string;
+  status: string;
+  role: string;
 }
 
 function AdminBannedUser(): JSX.Element {
@@ -33,12 +33,14 @@ function AdminBannedUser(): JSX.Element {
   const [banUsers, setBanUsers] = useState<UserdataProps[]>([]);
 
   useEffect(() => {
-    getBanUsers().then((res) => {
-			console.log(res);
-      setBanUsers(res);
-    }).catch((err: any) => {
-      console.log(err.response);
-    });
+    getBanUsers()
+      .then((res) => {
+        console.log(res);
+        setBanUsers(res);
+      })
+      .catch((err: any) => {
+        console.log(err.response);
+      });
   }, []);
 
   return (

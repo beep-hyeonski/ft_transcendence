@@ -5,13 +5,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { io } from 'socket.io-client';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import SignUpInputs from './SignUpInputs';
 import { RootState } from '../modules';
 import checkToken from '../utils/checkToken';
-import { initSocket } from '../modules/socket';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -71,7 +69,6 @@ function SignUpPage() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state: RootState) => state.authModule);
-  const authState = useSelector((state: RootState) => state.authModule);
 
   useEffect(() => {
     if (!localStorage.getItem('p_auth') || isLoggedIn) {
@@ -109,10 +106,7 @@ function SignUpPage() {
       avatar: image,
     };
     try {
-      const data = await axios.post(
-        `/auth/signup`,
-        signupForm,
-      );
+      const data = await axios.post(`/auth/signup`, signupForm);
       localStorage.setItem('p_auth', String(data.data.jwt));
       await checkToken(dispatch);
       history.push('/');
@@ -142,10 +136,7 @@ function SignUpPage() {
     if (file) {
       formData.set('image', file);
     }
-    const ret = await axios.post(
-      `/images`,
-      formData,
-    );
+    const ret = await axios.post(`/images`, formData);
     setImage(ret.data.image);
   };
 

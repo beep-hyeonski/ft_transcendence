@@ -17,7 +17,7 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
   }
 
   try {
-    axios.defaults.baseURL = `${String(process.env.REACT_APP_API_URL)}`
+    axios.defaults.baseURL = `${String(process.env.REACT_APP_API_URL)}`;
     axios.defaults.headers.common.Authorization = `Bearer ${String(token)}`;
     axios.interceptors.response.use(
       (response) => response,

@@ -82,7 +82,7 @@ interface ModalProps {
     status: string;
     title: string;
     joinUsers: never[];
-    bannedUsers: never[],
+    bannedUsers: never[];
     mutedUsers: never[];
     adminUsers: never[];
     ownerUser: string;
@@ -94,7 +94,7 @@ interface ModalProps {
       status: string;
       title: string;
       joinUsers: never[];
-      bannedUsers: never[],
+      bannedUsers: never[];
       mutedUsers: never[];
       adminUsers: never[];
       ownerUser: string;
@@ -127,9 +127,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
     event.preventDefault();
     // 클릭 시 해당 채팅 채널로 이동
     try {
-      await axios.post(
-        `/chat/${modal.index}/join`,
-      );
+      await axios.post(`/chat/${modal.index}/join`);
       dispatch(
         joinChatRoom({
           roomTitle: modal.title,

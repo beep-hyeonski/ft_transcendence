@@ -1,31 +1,11 @@
 import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import { ingGame } from '../modules/gamestate';
 import { setGameData, IGameDataProps } from '../modules/gamedata';
 
-const useStyles = makeStyles({
-  alram: {
-    backgroundColor: 'white',
-    width: '300px',
-    height: '100px',
-    position: 'absolute',
-    left: '1%',
-    top: '88%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  alramText: {
-    margin: '10px',
-  },
-});
-
 function GameQueuing(): JSX.Element {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
   const socket = useSelector((state: RootState) => state.socketModule);
@@ -50,9 +30,9 @@ function GameQueuing(): JSX.Element {
     return () => {
       socket?.socket?.off('matchComplete');
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, gamestate, dispatch]);
-  
+
   return <></>;
 }
 

@@ -56,7 +56,7 @@ interface Roomdata {
       status: string;
       title: string;
       joinUsers: never[];
-      bannedUsers: never[],
+      bannedUsers: never[];
       mutedUsers: never[];
       adminUsers: never[];
       ownerUser: string;

@@ -108,15 +108,13 @@ function ViewBoxProfileInfo() {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     axios
-      .get(
-        `/match/${userdata.username}`,
-      )
+      .get(`/match/${userdata.username}`)
       .then((res) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         res.data = res.data.map((match: IMatchDataProps) => ({
           ...match,
           createdAt: new Date(match.createdAt),
-        }))
+        }));
         setRecord(res.data);
       })
       .catch((err) => {
