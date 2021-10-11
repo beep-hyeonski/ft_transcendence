@@ -72,7 +72,7 @@ function ProfileSideBar(): JSX.Element {
     >
       <List>
         {mydata.followings.map((user: any) => (
-          <FollowList user={user} />
+          <FollowList key={user.index} user={user} />
         ))}
       </List>
     </Drawer>
