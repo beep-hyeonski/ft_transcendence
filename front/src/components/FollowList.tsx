@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
-import { Menu, MenuItem } from '@material-ui/core';
+import { Menu, MenuItem, ThemeProvider, unstable_createMuiStrictModeTheme } from '@material-ui/core';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -72,6 +72,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
   );
   const [menuAnchor, setMenuAnchor] = useState<null | any>(null);
   const menu = Boolean(menuAnchor);
+  const theme = unstable_createMuiStrictModeTheme();
   const { socket } = useSelector((state: RootState) => state.socketModule);
 
   const onClickFollowUser = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -128,43 +129,45 @@ function FollowList({ user }: UserdataProps): JSX.Element {
   };
 
   return (
-    <ListItem
-      button
-      key={user.nickname}
-      onClick={onClickFollowUser}
-      onContextMenu={rightClick}
-    >
-      <DrawAvatar
-        type="sideBarImage"
-        username={user.nickname}
-        src={user.avatar}
-        status={user.status}
-      />
-      <ListItemText
-        primary={user.nickname}
-        className={classes.usernameMargin}
-      />
-      <StatusIcon status={user.status} isBanned={user.isBanned} />
-      {!user.isBanned && (
-        <Menu
-          id="menu"
-          open={menu}
-          anchorEl={menuAnchor}
-          getContentAnchorEl={null}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          onClose={onClose}
-        >
-          <MenuItem onClick={clickDM}>DM</MenuItem>
-          {gamestate === 'WAIT' && user.status === 'online' && (
-            <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>
-          )}
-          {gamestate === 'WAIT' && user.status === 'ingame' && (
-            <MenuItem onClick={clickObserve}>관전하기</MenuItem>
-          )}
-        </Menu>
-      )}
-    </ListItem>
+    <ThemeProvider theme={theme}>
+      <ListItem
+        button
+        key={user.nickname}
+        onClick={onClickFollowUser}
+        onContextMenu={rightClick}
+      >
+        <DrawAvatar
+          type="sideBarImage"
+          username={user.nickname}
+          src={user.avatar}
+          status={user.status}
+        />
+        <ListItemText
+          primary={user.nickname}
+          className={classes.usernameMargin}
+        />
+        <StatusIcon status={user.status} isBanned={user.isBanned} />
+        {!user.isBanned && (
+          <Menu
+            id="menu"
+            open={menu}
+            anchorEl={menuAnchor}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            onClose={onClose}
+          >
+            <MenuItem onClick={clickDM}>DM</MenuItem>
+            {gamestate === 'WAIT' && user.status === 'online' && (
+              <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>
+            )}
+            {gamestate === 'WAIT' && user.status === 'ingame' && (
+              <MenuItem onClick={clickObserve}>관전하기</MenuItem>
+            )}
+          </Menu>
+        )}
+      </ListItem>
+    </ThemeProvider>
   );
 }
 
