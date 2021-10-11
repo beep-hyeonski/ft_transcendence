@@ -68,7 +68,12 @@ const ChatJoinedUser = ({
       <Avatar className={classes.image} src={user.avatar} />
       <div className={classes.username}>{user.nickname}</div>
       {isInRoom ? (
-        <JoinedUserMenu user={user} isOwner={isOwner} isManager={isManager} />
+        <JoinedUserMenu
+          key={user.index}
+          user={user}
+          isOwner={isOwner}
+          isManager={isManager}
+        />
       ) : null}
     </div>
   );

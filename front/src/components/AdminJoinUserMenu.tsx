@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  ThemeProvider,
+  unstable_createMuiStrictModeTheme,
+} from '@material-ui/core';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -42,20 +48,19 @@ interface UserdataProps {
 
 interface UserData {
   user: UserdataProps;
-  isOwner: boolean;
   chatData: ChatDataProps;
   setChatData: React.Dispatch<React.SetStateAction<ChatDataProps>>;
 }
 
 const AdminJoinUserMenu = ({
   user,
-  isOwner,
   chatData,
   setChatData,
 }: UserData) => {
   const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const theme = unstable_createMuiStrictModeTheme();
 
   useEffect(() => {
     const adminUser = chatData.adminUsers.find(
@@ -95,23 +100,8 @@ const AdminJoinUserMenu = ({
     setMenuAnchor(null);
   };
 
-  function adminMenu(): JSX.Element {
-    return (
-      <>
-        {!isAdmin && (
-          <MenuItem onClick={onClickAddAdmin}>채널 관리자 권한 부여</MenuItem>
-        )}
-        {isAdmin && (
-          <MenuItem onClick={onClickDeleteAdmin}>
-            채널 관리자 권한 해제
-          </MenuItem>
-        )}
-      </>
-    );
-  }
-
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <IconButton className={classes.menuIconLocation} onClick={onClickMenu}>
         <MenuIcon className={classes.menuIcon} />
       </IconButton>
@@ -120,9 +110,16 @@ const AdminJoinUserMenu = ({
         open={Boolean(menuAnchor)}
         onClose={() => setMenuAnchor(null)}
       >
-        {!isOwner && adminMenu()}
+        {!isAdmin && (
+          <MenuItem onClick={onClickAddAdmin}>채널 관리자 권한 부여</MenuItem>
+        )}
+        {isAdmin && (
+          <MenuItem onClick={onClickDeleteAdmin}>
+            채널 관리자 권한 해제
+          </MenuItem>
+        )}
       </Menu>
-    </>
+    </ThemeProvider>
   );
 };
 

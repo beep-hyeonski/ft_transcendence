@@ -35,7 +35,6 @@ function AdminBannedUser(): JSX.Element {
   useEffect(() => {
     getBanUsers()
       .then((res) => {
-        console.log(res);
         setBanUsers(res);
       })
       .catch((err: any) => {

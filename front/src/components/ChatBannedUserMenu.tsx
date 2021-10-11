@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Modal, Drawer, GridList, IconButton } from '@material-ui/core';
+import { Modal, Drawer, ImageList, IconButton } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { RootState } from '../modules';
@@ -102,11 +102,11 @@ function ChatBannedUserMenu({ open, setOpen }: ModalProps): JSX.Element {
             className={classes.content}
             variant="permanent"
           >
-            <GridList>
+            <ImageList>
               {chatData.bannedUsers.map((user: any) => (
                 <BannedUserElem user={user} key={user.index} />
               ))}
-            </GridList>
+            </ImageList>
           </Drawer>
         </div>
       </Modal>

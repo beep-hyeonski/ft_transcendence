@@ -200,7 +200,7 @@ function AdminChannelModal({
             <div className={classes.messageList}>
               <List>
                 {messages.map((data) => (
-                  <ChattingList data={data} />
+                  <ChattingList key={data.timestamp} data={data} />
                 ))}
               </List>
             </div>

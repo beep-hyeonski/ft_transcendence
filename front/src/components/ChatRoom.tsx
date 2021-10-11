@@ -10,7 +10,10 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import { useDispatch, useSelector } from 'react-redux';
-import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import {
+  IconButton, Menu, MenuItem,
+  ThemeProvider, unstable_createMuiStrictModeTheme,
+} from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import axios from 'axios';
 import { SettingsOutlined } from '@material-ui/icons';
@@ -111,6 +114,7 @@ export default function ChatRoom(): JSX.Element {
   const mydata = useSelector((state: RootState) => state.userModule);
   const [isOwner, setIsOwner] = useState(false);
   const dispatch = useDispatch();
+  const theme = unstable_createMuiStrictModeTheme();
 
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [inputs, setInputs] = useState('');
@@ -306,7 +310,7 @@ export default function ChatRoom(): JSX.Element {
     setMenuAnchor(null);
   };
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <AppBar position="fixed" className={classes.titlebar}>
         <IconButton
           className={classes.backButtonLocation}
@@ -340,7 +344,7 @@ export default function ChatRoom(): JSX.Element {
       <div className={classes.messages}>
         <List>
           {messages.map((data) => (
-            <ChattingList data={data} />
+            <ChattingList key={data.timestamp} data={data} />
           ))}
         </List>
       </div>
@@ -369,6 +373,6 @@ export default function ChatRoom(): JSX.Element {
       />
       <ChatSettingMenu open={openSettingMenu} setOpen={setOpenSettingMenu} />
       <ChatBannedUserMenu open={openBannedMenu} setOpen={setOpenBannedMenu} />
-    </>
+    </ThemeProvider>
   );
 }

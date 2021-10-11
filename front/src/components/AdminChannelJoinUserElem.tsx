@@ -72,12 +72,13 @@ const AdminChannelJoinUserElem = ({
     <div className={classes.root}>
       <Avatar className={classes.image} src={user.avatar} />
       <div className={classes.username}>{user.nickname}</div>
-      <AdminJoinUserMenu
-        user={user}
-        isOwner={isOwner}
-        chatData={chatData}
-        setChatData={setChatData}
-      />
+      {!isOwner &&
+        <AdminJoinUserMenu
+          user={user}
+          chatData={chatData}
+          setChatData={setChatData}
+        />
+      }
     </div>
   );
 };

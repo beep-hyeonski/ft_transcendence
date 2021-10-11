@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Modal, Drawer, GridList, IconButton } from '@material-ui/core';
+import { Modal, Drawer, ImageList, IconButton } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
 import ChatJoinedUser from './ChatJoinedUser';
@@ -112,16 +112,17 @@ function ChatUserMenu({ open, setOpen, isOwner }: ModalProps): JSX.Element {
             className={classes.content}
             variant="permanent"
           >
-            <GridList>
+            <ImageList>
               {chatData.joinUsers.map((user) => (
                 <ChatJoinedUser
+                  key={user.index}
                   user={user}
                   isInRoom={!false}
                   isOwner={isOwner}
                   isManager={isManager}
                 />
               ))}
-            </GridList>
+            </ImageList>
           </Drawer>
         </div>
       </Modal>

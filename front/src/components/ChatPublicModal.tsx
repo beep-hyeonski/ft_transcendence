@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Button, Modal, Drawer, GridList, IconButton } from '@material-ui/core';
+import { Button, Modal, Drawer, ImageList, IconButton } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
 import axios from 'axios';
@@ -193,7 +193,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps): JSX.Element {
             className={classes.content}
             variant="permanent"
           >
-            <GridList>
+            <ImageList>
               {modal.joinUsers.map((user) => (
                 <ChatJoinedUser
                   user={user}
@@ -202,7 +202,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps): JSX.Element {
                   isManager={false}
                 />
               ))}
-            </GridList>
+            </ImageList>
           </Drawer>
           <Button
             variant="contained"

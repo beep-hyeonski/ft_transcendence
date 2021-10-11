@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { GridList } from '@material-ui/core';
+import { ImageList } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
@@ -50,11 +50,11 @@ function SettingBlockedUsers(): JSX.Element {
     <>
       <div className={classes.title}>Blocked Users</div>
       <div className={classes.contentBox}>
-        <GridList>
+        <ImageList>
           {mydata.blockings.map((user: any) => (
             <BlockedUserElem key={user.index} user={user} />
           ))}
-        </GridList>
+        </ImageList>
       </div>
     </>
   );
