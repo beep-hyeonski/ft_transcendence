@@ -3,6 +3,7 @@ import { Interval } from '@nestjs/schedule';
 import { WsException } from '@nestjs/websockets';
 import { User } from 'src/users/entities/user.entity';
 import { Server } from 'socket.io';
+import { WsGameException } from 'src/filters/websocket-exception.filter';
 
 interface IBallInfo {
   x: number;
@@ -185,7 +186,7 @@ export class GameService {
     } else if (game.gameInfo.player2 === sender) {
       playerNumber = 1;
     } else {
-      throw new WsException('Invalid Player');
+      throw new WsGameException('Invalid Player');
     }
     switch (keyState) {
       case 'upKey':
@@ -205,7 +206,7 @@ export class GameService {
         }
         break;
       default:
-        throw new WsException('Invalid Key Event');
+        throw new WsGameException('Invalid Key Event');
     }
   }
 

@@ -13,7 +13,11 @@ import { Socket, Server } from 'socket.io';
 import { ChatService } from './chat/chat.service';
 import { UsersService } from './users/users.service';
 import { User, UserStatus } from './users/entities/user.entity';
-import { WebsocketExceptionFilter } from './filters/websocket-exception.filter';
+import {
+  WebsocketExceptionFilter,
+  WsChatException,
+  WsGameException,
+} from './filters/websocket-exception.filter';
 import { Chat } from './chat/entities/chat.entity';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { Message } from './chat/entities/message.entity';
@@ -97,7 +101,7 @@ export class AppGateway
       user.bannedChannels &&
       user.bannedChannels.find((chat) => chat.index === payload.chatIndex)
     )
-      throw new WsException('User has been banned from the chat');
+      throw new WsChatException('User has been banned from the chat');
 
     client.join(String(payload.chatIndex));
     client.emit('joined', { status: 'SUCCESS' });
@@ -130,7 +134,7 @@ export class AppGateway
     );
     const clients = this.server.sockets.adapter.rooms.get(roomName);
     if (!clients || !clients.has(client.id))
-      throw new WsException('User Not Joined in the Chat Socket');
+      throw new WsChatException('User Not Joined in the Chat Socket');
 
     if (
       !user.mutedChannels ||
@@ -150,7 +154,7 @@ export class AppGateway
         message: payload.message,
       });
     } else {
-      throw new WsException('User has been muted from this chat');
+      throw new WsChatException('User has been muted from this chat');
     }
   }
 
@@ -170,7 +174,7 @@ export class AppGateway
       receiveUser.blockings &&
       receiveUser.blockings.find((block) => block.index === user.index)
     )
-      throw new WsException('User has been blocked');
+      throw new WsChatException('User has been blocked');
     else {
       const dm = new DM();
       dm.message = payload.message;
@@ -352,7 +356,7 @@ export class AppGateway
     switch (payload.status) {
       case 'ACCEPT':
         const clients = this.server.sockets.adapter.rooms.has(payload.gameName);
-        if (!clients) throw new WsException('Bad Request');
+        if (!clients) throw new WsGameException('Bad Request');
         const player1 = await this.getUserByJwt(
           this.wsClients.get(payload.sendUserIndex).handshake.headers
             .authorization,
@@ -380,7 +384,7 @@ export class AppGateway
             );
             break;
           default:
-            throw new WsException('Not Valid Ball Speed');
+            throw new WsGameException('Not Valid Ball Speed');
         }
         this.server.to(payload.gameName).emit('matchComplete', {
           status: 'GAME_START',
@@ -414,7 +418,7 @@ export class AppGateway
           );
           await this.usersService.statusChange(user.index, 'ONLINE');
         }
-        throw new WsException('Bad Request');
+        throw new WsGameException('Bad Request');
     }
   }
 
@@ -425,7 +429,7 @@ export class AppGateway
       if (room.indexOf('game_') !== -1) gameName = room;
     });
     if (gameName === '') {
-      throw new WsException('Not in Game');
+      throw new WsGameException('Not in Game');
     }
     const game = this.gameService.getGame(gameName);
     client.emit('matchComplete', {
@@ -466,23 +470,23 @@ export class AppGateway
       user = await this.getUserWithChatByJwt(token);
     } catch (e) {
       if (e instanceof EntityNotFoundError)
-        throw new WsException('User Not Found');
+        throw new WsChatException('User Not Found');
       else throw e;
     }
     try {
       chat = await this.chatService.getChat(chatIndex);
     } catch (e) {
       if (e instanceof EntityNotFoundError)
-        throw new WsException('Chat Not Found');
+        throw new WsChatException('Chat Not Found');
       else throw e;
     }
     if (
       chat.bannedUsers &&
       chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
     )
-      throw new WsException('User Banned from the Chat');
+      throw new WsChatException('User Banned from the Chat');
     if (!chat.joinUsers.find((joinUser) => joinUser.index === user.index))
-      throw new WsException('User Not Joined in the Chat');
+      throw new WsChatException('User Not Joined in the Chat');
     return user;
   }
 }
