@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -23,10 +22,10 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const clickTest = async (e: React.MouseEvent<HTMLDivElement>) => {
+  const clickButton = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${index}`);
+      const { data } = await axios.get(`/chat/${index}`);
       dispatch(joinChatRoom({
         roomTitle: data.title,
         roomIndex: data.index,
@@ -37,8 +36,8 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
         roomMuted: data.mutedUsers,
         roomOwner: data.ownerUser.nickname,
       }));
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log(error.response);
     }
   };
 
@@ -46,7 +45,7 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
     <ListItem
       button
       key={index}
-      onClick={clickTest}
+      onClick={clickButton}
     >
       <ChatBubbleOutlineRounded style={{ fontSize: 40 }} />
       <ListItemText primary={title} className={classes.usernameMargin} />

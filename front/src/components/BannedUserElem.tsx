@@ -66,7 +66,7 @@ const BannedUserElem = ({ user } : UserData) : JSX.Element => {
 
 	const UnBanButton = async () => {
     try {
-      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/ban`, { data: { nickname: user.nickname } });
+      const res = await axios.delete(`/chat/${chatData.index}/ban`, { data: { nickname: user.nickname } });
 			dispatch(joinChatRoom({
 				roomTitle: res.data.title,
 				roomIndex: res.data.index,

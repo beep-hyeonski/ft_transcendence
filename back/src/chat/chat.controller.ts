@@ -64,7 +64,7 @@ export class ChatController {
   @ApiOperation({ summary: '채팅방 삭제' })
   @Delete(':chatIndex')
   async deleteChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
-    return await this.chatService.deleteChat(req.user, chatIndex);
+    return await this.chatService.deleteChat(req.userData, chatIndex);
   }
 
   @ApiOperation({ summary: '채팅방 입장' })
@@ -74,13 +74,13 @@ export class ChatController {
     @Param('chatIndex') chatIndex: number,
     @Body('password') password: string,
   ) {
-    return await this.chatService.joinChat(req.user, chatIndex, password);
+    return await this.chatService.joinChat(req.userData, chatIndex, password);
   }
 
   @ApiOperation({ summary: '채팅방 퇴장' })
   @Post(':chatIndex/leave')
   async leaveChat(@Req() req: any, @Param('chatIndex') chatIndex: number) {
-    return await this.chatService.leaveChat(req.user, chatIndex);
+    return await this.chatService.leaveChat(req.userData, chatIndex);
   }
 
   @ApiOperation({ summary: 'Admin User 등록' })
@@ -91,7 +91,11 @@ export class ChatController {
     @Param('chatIndex') chatIndex: number,
     @Body('nickname') nickname: string,
   ) {
-    return await this.chatService.registerAdmin(req.user, chatIndex, nickname);
+    return await this.chatService.registerAdmin(
+      req.userData,
+      chatIndex,
+      nickname,
+    );
   }
 
   @ApiOperation({ summary: 'Admin User 제거' })
@@ -102,7 +106,7 @@ export class ChatController {
     @Body('nickname') nickname: string,
   ) {
     return await this.chatService.unRegisterAdmin(
-      req.user,
+      req.userData,
       chatIndex,
       nickname,
     );
@@ -170,7 +174,7 @@ export class ChatController {
 
   @ApiOperation({ summary: '채팅방에 전송 된 메시지 리스트' })
   @Get(':chatIndex/messages')
-  async getMessages(@Param('chatIndex') chatIndex: number) {
-    return await this.chatService.getMessages(chatIndex);
+  async getMessages(@Param('chatIndex') chatIndex: number, @Req() req: any) {
+    return await this.chatService.getMessages(req.userData, chatIndex);
   }
 }

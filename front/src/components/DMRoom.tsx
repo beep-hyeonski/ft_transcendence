@@ -100,7 +100,7 @@ export default function DMRoom({ match }: RouteComponentProps<DMProps>): JSX.Ele
 		(async () => {
 			try {
 				const { data } = await axios.get(
-					`${String(process.env.REACT_APP_API_URL)}/dm/${nickname}`
+					`/dm/${nickname}`
 				);
 				const msgs = data.map((message: any) => ({
 					timestamp: message.createdAt,
@@ -130,13 +130,13 @@ export default function DMRoom({ match }: RouteComponentProps<DMProps>): JSX.Ele
 			setMsg((prev) => prev.concat(msg));
 		});
 
-		socket?.on('exception', (payload) => {
+		socket?.on('chatException', (payload) => {
 			console.log(payload);
 		});
 
     return () => {
 			socket?.off('onDM');
-			socket?.off('exception');
+			socket?.off('chatException');
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nickname, dispatch]);

@@ -110,19 +110,11 @@ function SignUpPage() {
     };
     try {
       const data = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/auth/signup`,
+        `/auth/signup`,
         signupForm,
       );
       localStorage.setItem('p_auth', String(data.data.jwt));
       await checkToken(dispatch);
-      if (isLoggedIn) {
-        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
-          extraHeaders: {
-            Authorization: `${String(authState.token)}`,
-          },
-        });
-        dispatch(initSocket(socket));
-      }
       history.push('/');
     } catch (error: any) {
       console.log(error.response);
@@ -151,7 +143,7 @@ function SignUpPage() {
       formData.set('image', file);
     }
     const ret = await axios.post(
-      `${String(process.env.REACT_APP_API_URL)}/images`,
+      `/images`,
       formData,
     );
     setImage(ret.data.image);

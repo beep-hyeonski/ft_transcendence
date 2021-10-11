@@ -1,43 +1,57 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
-export const getUserme = async (): Promise<AxiosResponse<any>> => {
+export const getUserme = async (): Promise<any> => {
   const response = await axios.get(
-    `${String(process.env.REACT_APP_API_URL)}/users/me`,
+    `/users/me`,
   );
-  return response;
+  return response.data;
 };
 
 export async function getUsers(): Promise<any> {
   const users = await axios.get(
-    `${String(process.env.REACT_APP_API_URL)}/users`,
+    `/users`,
   );
   return users.data;
 }
 
 export async function getUsermeChat(): Promise<any> {
   const response = await axios.get(
-    `${String(process.env.REACT_APP_API_URL)}/users/me/chat`,
+    `/users/me/chat`,
   );
   return response.data;
 }
 
 export async function getBlock(): Promise<any> {
   const response = await axios.get(
-    `${String(process.env.REACT_APP_API_URL)}/block`,
+    `/block`,
   );
   return response.data;
 }
 
 export async function getChats(): Promise<any> {
   const response = await axios.get(
-    `${String(process.env.REACT_APP_API_URL)}/chat`,
+    `/chat`,
   );
   return response.data;
 }
 
 export async function getDM(name: string): Promise<any> {
   const response = await axios.get(
-    `${String(process.env.REACT_APP_API_URL)}/dm/${name}`,
+    `/dm/${name}`,
+  );
+  return response.data;
+}
+
+export async function getChatInfo(index: number) {
+  const response = await axios.get(
+    `/chat/${index}`,
+  );
+  return response.data;
+}
+
+export async function getBanUsers() {
+  const response = await axios.get(
+    `/users/ban`,
   );
   return response.data;
 }

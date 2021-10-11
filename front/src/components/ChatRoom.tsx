@@ -17,7 +17,7 @@ import { SettingsOutlined } from '@material-ui/icons';
 import ChattingList from './ChattingList';
 import { RootState } from '../modules';
 import { exitChatRoom, joinChatRoom } from '../modules/chat';
-import { getUserme, getUsermeChat } from '../utils/Requests';
+import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 import ChatUserMenu from './ChatUserMenu';
 import ChatSettingMenu from './ChatSettingMenu';
@@ -32,7 +32,7 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column-reverse',
-    overflowY: 'auto',
+    overflow: 'auto',
   },
   chatInput: {
     border: '2px solid black',
@@ -124,7 +124,7 @@ export default function ChatRoom(): JSX.Element {
     (async () => {
       try{
         const { data } = await axios.get(
-          `${String(process.env.REACT_APP_API_URL)}/chat/${
+          `/chat/${
             chatData.index
           }/messages`,
         );
@@ -172,7 +172,7 @@ export default function ChatRoom(): JSX.Element {
         setMsg((prev) => prev.concat(msg));
     });
 
-    socket?.on('exception', async (payload) => {
+    socket?.on('chatException', async (payload) => {
       console.log(payload);
       if (payload.message === 'User has been muted from this chat')
         alert('채팅 금지 상태입니다.');
@@ -186,11 +186,27 @@ export default function ChatRoom(): JSX.Element {
         dispatch(updateUser(res));
         dispatch(exitChatRoom());
       }
+      if (payload.message === 'User Not Joined in the Chat') {
+        alert('채팅방에 입장된 상태가 아닙니다. 새로고침 후 다시 시도해 주세요');
+        dispatch(exitChatRoom());
+      }
+      if (payload.message === 'Chat Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+        getUsermeChat().then((res) => dispatch(updateUser(res)));
+        dispatch(exitChatRoom());
+      }
     });
+
+    socket?.on('deleteChat', () => {
+      alert('존재하지 않는 채팅방입니다.');
+      getUsermeChat().then((res) => dispatch(updateUser(res)));
+      dispatch(exitChatRoom());
+    })
 
     return () => {
       socket?.off('onMessage');
-      socket?.off('exception');
+      socket?.off('chatException');
+      socket?.off('deleteChat');
       socket?.emit('leave', {
         chatIndex: chatData.index,
       });
@@ -248,13 +264,13 @@ export default function ChatRoom(): JSX.Element {
     e.preventDefault();
     try {
       await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`,
+        `/chat/${chatData.index}/leave`,
       );
       dispatch(exitChatRoom());
-      const { data } = await getUserme();
+      const data = await getUsermeChat();
       dispatch(updateUser(data));
       setMenuAnchor(null);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
     }
   };
@@ -263,7 +279,7 @@ export default function ChatRoom(): JSX.Element {
     e.preventDefault();
     try {
       const { data } = await axios.get(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`,
+        `/chat/${chatData.index}`,
       );
       dispatch(
         joinChatRoom({
@@ -279,7 +295,7 @@ export default function ChatRoom(): JSX.Element {
       );
       setOpenJoinedMenu(true);
       setMenuAnchor(null);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
     }
   };
@@ -337,6 +353,7 @@ export default function ChatRoom(): JSX.Element {
       <input
         name="message"
         type="text"
+        autoComplete="off"
         className={classes.chatInput}
         onChange={onChange}
         onKeyPress={handleKeyPress}

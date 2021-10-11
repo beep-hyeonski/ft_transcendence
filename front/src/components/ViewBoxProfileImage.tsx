@@ -125,7 +125,7 @@ function ViewBoxProfileImage(): JSX.Element {
   const clickFollowButton = async () => {
     if (block) {
       try {
-        const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/block`, { data: { blockedUser: userdata.username } });
+        const res = await axios.delete(`/block`, { data: { blockedUser: userdata.username } });
         dispatch(updateUser(res.data));
         setBlock(false);
       } catch (err: any) {
@@ -134,7 +134,7 @@ function ViewBoxProfileImage(): JSX.Element {
       }
     }
     try {
-      const res = await axios.post(`${String(process.env.REACT_APP_API_URL)}/follow`, { followedUser: userdata.username });
+      const res = await axios.post(`/follow`, { followedUser: userdata.username });
       dispatch(updateUser(res.data));
       setFollow(true);
     } catch (err: any) {
@@ -145,7 +145,7 @@ function ViewBoxProfileImage(): JSX.Element {
 
   const clickUnfollowButton = async () => {
     try {
-      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, { data: { followedUser: userdata.username } });
+      const res = await axios.delete(`/follow`, { data: { followedUser: userdata.username } });
       dispatch(updateUser(res.data));
       setFollow(false);
     } catch (err: any) {
@@ -157,7 +157,7 @@ function ViewBoxProfileImage(): JSX.Element {
   const BlockButton = async () => {
     if (follow) {
       try {
-        const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/follow`, { data: { followedUser: userdata.username } });
+        const res = await axios.delete(`/follow`, { data: { followedUser: userdata.username } });
         dispatch(updateUser(res.data));
         setFollow(false);
       } catch (err: any) {
@@ -166,7 +166,7 @@ function ViewBoxProfileImage(): JSX.Element {
       }
     }
     try {
-      const res = await axios.post(`${String(process.env.REACT_APP_API_URL)}/block`, { blockedUser: userdata.username });
+      const res = await axios.post(`/block`, { blockedUser: userdata.username });
       dispatch(updateUser(res.data));
       setBlock(true);
     } catch (err: any) {
@@ -177,7 +177,7 @@ function ViewBoxProfileImage(): JSX.Element {
 
   const UnBlockButton = async () => {
     try {
-      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/block`, { data: { blockedUser: userdata.username } });
+      const res = await axios.delete(`/block`, { data: { blockedUser: userdata.username } });
       dispatch(updateUser(res.data));
       setBlock(false);
     } catch (err: any) {

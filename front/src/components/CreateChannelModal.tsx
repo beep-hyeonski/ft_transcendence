@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../modules/user';
-import { getUserme } from '../utils/Requests';
+import { getUsermeChat } from '../utils/Requests';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -127,14 +127,23 @@ interface CreateChannelProps {
 }
 
 const createChannel = async (data: CreateChannelProps) => {
-  const form = {
-    title: data.title,
-    status: data.status,
-    password: data.password,
-  };
+  if (data.password === '') {
+    const res = await axios.post(
+      `/chat`,
+      {
+        title: data.title,
+        status: data.status,
+      }
+    );
+    return res;
+  }
   const res = await axios.post(
-    `${String(process.env.REACT_APP_API_URL)}/chat`,
-    form,
+    `/chat`,
+    {
+      title: data.title,
+      status: data.status,
+      password: data.password,
+    },
   );
   return res.data;
 };
@@ -186,10 +195,10 @@ function CreateChannelModal({ create, setCreate }: CreateProps) {
     try {
       await createChannel(form);
       setCreate(false);
-      const { data } = await getUserme();
+      const data = await getUsermeChat();
       dispatch(updateUser(data));
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log(error.response);
     }
   };
 

@@ -63,8 +63,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '회원 가입' })
   @ApiCreatedResponse({
-    description:
-      '회원가입 성공, response로 jwt 발급',
+    description: '회원가입 성공, response로 jwt 발급',
   })
   @Permission(JwtPermission.SIGNUP)
   @UseGuards(JwtAuthGuard)
@@ -88,8 +87,7 @@ export class AuthController {
     description: '이메일로 전송된 2단계 인증 토큰으로 유저 확인, 로그인 처리',
   })
   @ApiCreatedResponse({
-    description:
-      '2단계 인증 성공, response로 jwt 발급',
+    description: '2단계 인증 성공, response로 jwt 발급',
   })
   @Permission(JwtPermission.TWOFA)
   @UseGuards(JwtAuthGuard)

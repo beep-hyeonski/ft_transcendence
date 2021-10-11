@@ -56,6 +56,49 @@ const useStyles = makeStyles(() =>
   }),
 );
 
+interface IMatchPlayerInfo {
+  index: number;
+  username: string;
+  nickname: string;
+  email: string;
+  avatar: string;
+}
+
+interface IMatchDataProps {
+  createdAt: string;
+  index: number;
+  loser: IMatchPlayerInfo;
+  loserScore: number;
+  winner: IMatchPlayerInfo;
+  winnerScore: number;
+}
+
+interface IMatchHistoryPlayerInfo {
+  avatar: string;
+  createdAt: string;
+  defeat: number;
+  email: string;
+  index: number;
+  isBanned: boolean;
+  nickname: string;
+  role: string;
+  score: number;
+  status: string;
+  twoFAToken: string;
+  useTwoFA: boolean;
+  username: string;
+  victory: number;
+}
+
+interface MatchHistoryListProps {
+  index: number;
+  loser: IMatchHistoryPlayerInfo;
+  loserScore: number;
+  winner: IMatchHistoryPlayerInfo;
+  winnerScore: string;
+  createdAt: Date;
+}
+
 function ViewBoxProfileInfo() {
   const classes = useStyles();
 
@@ -66,11 +109,11 @@ function ViewBoxProfileInfo() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     axios
       .get(
-        `${String(process.env.REACT_APP_API_URL)}/match/${userdata.username}`,
+        `/match/${userdata.username}`,
       )
       .then((res) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        res.data = res.data.map((match: any) => ({
+        res.data = res.data.map((match: IMatchDataProps) => ({
           ...match,
           createdAt: new Date(match.createdAt),
         }))
@@ -97,7 +140,7 @@ function ViewBoxProfileInfo() {
       </div>
       <div className={classes.historyBox}>
         <div className={classes.historyBoxTitle}>Match history</div>
-        {record.slice(record.length - 6, record.length).map((data: any) => (
+        {record.slice(0, 6).map((data: MatchHistoryListProps) => (
           <MatchHistoryList key={data.index} history={data} />
         ))}
       </div>

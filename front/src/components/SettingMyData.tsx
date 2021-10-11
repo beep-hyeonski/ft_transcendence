@@ -79,11 +79,11 @@ function SettingMyData() {
     }
     try {
       const ret = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/images`,
+        `/images`,
         formData,
       );
       setImage(ret.data.image);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       localStorage.removeItem('p_auth');
       alert('인증 정보가 유효하지 않습니다');
@@ -111,7 +111,7 @@ function SettingMyData() {
     };
     try {
       const ret = await axios.patch(
-        `${String(process.env.REACT_APP_API_URL)}/users/me`,
+        `/users/me`,
         inputForm,
       );
       dispatch(updateUser(ret.data));

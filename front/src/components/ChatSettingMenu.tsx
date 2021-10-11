@@ -177,7 +177,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
     }
     try {
       const res = await axios.patch(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`,
+        `/chat/${chatData.index}`,
         data,
       );
       dispatch(
@@ -193,7 +193,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
         }),
       );
       const userdata = await getUserme();
-      dispatch(updateUser(userdata.data));
+      dispatch(updateUser(userdata));
       setOpen(false);
       setForm({
         title: '',

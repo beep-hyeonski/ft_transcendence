@@ -51,7 +51,7 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/admin`,
+        `/chat/${chatData.index}/admin`,
         { nickname: user.nickname },
       );
       dispatch(
@@ -76,7 +76,7 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
     e.preventDefault();
     try {
       const { data } = await axios.delete(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/admin`,
+        `/chat/${chatData.index}/admin`,
         { data: { nickname: user.nickname } },
       );
       dispatch(
@@ -101,7 +101,7 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/mute`,
+        `/chat/${chatData.index}/mute`,
         { nickname: user.nickname },
       );
       dispatch(
@@ -126,7 +126,7 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
     e.preventDefault();
     try {
       const { data } = await axios.delete(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/mute`,
+        `/chat/${chatData.index}/mute`,
         { data: { nickname: user.nickname } },
       );
       dispatch(
@@ -185,10 +185,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const onClickBan = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/ban`,
+      const { data } = await axios.post(`/chat/${chatData.index}/ban`,
       {nickname: user.nickname}
       )
-      console.log(data);
       dispatch(joinChatRoom({
         roomTitle: data.title,
         roomIndex: data.index,

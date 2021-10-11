@@ -37,7 +37,7 @@ const NavBar = () => {
 
   const onClickLogout = async () => {
     try {
-      await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
+      await axios.post(`/auth/logout`);
       localStorage.removeItem('p_auth');
       dispatch(deleteUser());
       dispatch(logout());

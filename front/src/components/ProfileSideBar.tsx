@@ -56,7 +56,7 @@ function ProfileSideBar() {
   const mydata = useSelector((state: RootState) => state.userModule);
   useEffect(() => {
     axios
-      .get(`${String(process.env.REACT_APP_API_URL)}/users/${mydata.nickname}`)
+      .get(`/users/${mydata.nickname}`)
       .then((res: any) => {
         dispatch(updateUser(res.data));
       });

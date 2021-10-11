@@ -21,7 +21,7 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
   useEffect(() => {
     dispatch(changeSideBar({ type: FOLLOW }));
     axios
-      .get(`${String(process.env.REACT_APP_API_URL)}/users/${id}`)
+      .get(`/users/${id}`)
       .then((res) => {
         dispatch(changeUser(res.data));
         setIsValid(true);

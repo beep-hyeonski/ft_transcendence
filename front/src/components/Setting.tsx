@@ -90,9 +90,9 @@ function Setting(): JSX.Element {
     dispatch(changeSideBar({ type: FOLLOW }));
     getUserme()
       .then((res) => {
-        dispatch(updateUser(res.data));
+        dispatch(updateUser(res));
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.log(err);
         localStorage.removeItem('p_auth');
         alert('인증 정보가 유효하지 않습니다');

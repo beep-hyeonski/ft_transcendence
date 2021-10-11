@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Button, InputBase, Modal, IconButton } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { joinChatRoom } from '../modules/chat';
-import { getUserme } from '../utils/Requests';
+import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 
 const useStyles = makeStyles(() =>
@@ -117,10 +117,9 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
 
   const onClickJoinButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    console.log(password);
     try {
       await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`,
+        `/chat/${modal.index}/join`,
         {password},
       );
       dispatch(
@@ -136,7 +135,7 @@ function ChatProtectedModal({ modal, setModal }: ModalProps) {
         }),
       );
 
-      const { data } = await getUserme();
+      const data = await getUsermeChat();
       dispatch(updateUser(data));
     } catch (error: any) {
       console.log(error.response);

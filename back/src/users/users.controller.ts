@@ -6,6 +6,8 @@ import {
   Patch,
   UseGuards,
   Req,
+  Post,
+  Delete,
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -52,6 +54,50 @@ export class UsersController {
   @Get('me/chat')
   async getUserWithChat(@Req() req: any) {
     return await this.usersService.getUserWithChat(req.user.username);
+  }
+
+  @ApiOperation({ summary: 'user ban 목록 조회' })
+  @ApiOkResponse({ type: User, isArray: true })
+  @UseGuards(JwtAuthGuard)
+  @Get('ban')
+  async getBannedUsers(@Req() req: any) {
+    return await this.usersService.getBannedUsers(req.userData);
+  }
+
+  @ApiOperation({ summary: 'user ban 등록' })
+  @Post('ban/:username')
+  @UseGuards(JwtAuthGuard)
+  async banUser(@Req() req: any, @Param('username') username: string) {
+    return await this.usersService.banUser(req.userData, username);
+  }
+
+  @ApiOperation({ summary: 'user ban 해제' })
+  @Delete('ban/:username')
+  @UseGuards(JwtAuthGuard)
+  async unbanUser(@Req() req: any, @Param('username') username: string) {
+    return await this.usersService.unbanUser(req.userData, username);
+  }
+
+  @ApiOperation({ summary: 'user admin 목록 조회' })
+  @ApiOkResponse({ type: User, isArray: true })
+  @UseGuards(JwtAuthGuard)
+  @Get('admin')
+  async getAdminUsers(@Req() req: any) {
+    return await this.usersService.getAdminUsers(req.userData);
+  }
+
+  @ApiOperation({ summary: 'user admin 등록' })
+  @Post('admin/:username')
+  @UseGuards(JwtAuthGuard)
+  async registerAdmin(@Req() req: any, @Param('username') username: string) {
+    return await this.usersService.registerAdmin(req.userData, username);
+  }
+
+  @ApiOperation({ summary: 'user admin 해제' })
+  @Delete('admin/:username')
+  @UseGuards(JwtAuthGuard)
+  async unregisterAdmin(@Req() req: any, @Param('username') username: string) {
+    return await this.usersService.unregisterAdmin(req.userData, username);
   }
 
   @ApiOperation({

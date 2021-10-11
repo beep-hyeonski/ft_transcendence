@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { GridList } from '@material-ui/core';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import { updateUser } from '../modules/user';
-import { getBlock, getUserme } from '../utils/Requests';
-import { changeSideBar, FOLLOW } from '../modules/sidebar';
+import { getBlock } from '../utils/Requests';
 import BlockedUserElem from './BlockedUserElem';
 
 const useStyles = makeStyles(() =>

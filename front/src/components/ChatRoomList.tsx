@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from 'react';
-import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LockRounded, LockOpenRounded } from '@material-ui/icons';
 import { ListItem } from '@material-ui/core';
+import { getChatInfo } from '../utils/Requests';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -64,13 +64,6 @@ interface Roomdata {
   >;
 }
 
-async function getChatInfo(index: number) {
-  const response = await axios.get(
-    `${String(process.env.REACT_APP_API_URL)}/chat/${index}`,
-  );
-  return response.data;
-}
-
 function ChatRoomList({ roomdata, setModal }: Roomdata) {
   const classes = useStyles();
 
@@ -89,7 +82,7 @@ function ChatRoomList({ roomdata, setModal }: Roomdata) {
         adminUsers: res.adminUsers,
         ownerUser: res.ownerUser.nickname,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
     }
   };
@@ -97,7 +90,7 @@ function ChatRoomList({ roomdata, setModal }: Roomdata) {
   return (
     <ListItem
       button
-      key={roomdata.title}
+      key={roomdata.index}
       className={classes.root}
       onClick={onClick}
     >

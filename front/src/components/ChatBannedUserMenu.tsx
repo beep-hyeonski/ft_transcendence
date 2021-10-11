@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Modal, Drawer, GridList, IconButton } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import CancelIcon from '@material-ui/icons/Cancel';
-import ChatJoinedUser from './ChatJoinedUser';
 import { RootState } from '../modules';
 import BannedUserElem from './BannedUserElem';
 

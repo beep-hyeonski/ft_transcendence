@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { List } from '@material-ui/core';
 import { getChats } from '../utils/Requests';
-
-const useStyles = makeStyles(() =>
-  createStyles({
-  }),
-);
+import AdminChannelsElem from './AdminChannelsElem';
+import AdminChannelModal from './AdminChannelModal';
 
 interface ChatInfoProps {
   index: number;
@@ -16,8 +13,11 @@ interface ChatInfoProps {
 }
 
 function AdminUsers(): JSX.Element {
-  const classes = useStyles();
   const [chats, setChats] = useState<ChatInfoProps[]>([]);
+  const [modalOpen, setModalOpen] = useState({
+    open: false,
+    chatIndex: -1,
+  });
 
 	useEffect(() => {
     getChats()
@@ -30,11 +30,18 @@ function AdminUsers(): JSX.Element {
 	}, []);
 
   return (
-    <>
+    <div>
 			<List>
-        ssss
+        {chats.map((roomdata) => (
+          <AdminChannelsElem
+            key={roomdata.index}
+            roomdata={roomdata}
+            setModal={setModalOpen}
+          />
+        ))}
       </List>
-    </>
+      <AdminChannelModal chatModal={modalOpen} setModal={setModalOpen} setChats={setChats} />
+    </div>
   );
 }
 

@@ -29,12 +29,29 @@ const useStyles = makeStyles(() =>
   }),
 );
 
+interface IMatchHistoryPlayerInfo {
+  avatar: string;
+  createdAt: string;
+  defeat: number;
+  email: string;
+  index: number;
+  isBanned: boolean;
+  nickname: string;
+  role: string;
+  score: number;
+  status: string;
+  twoFAToken: string;
+  useTwoFA: boolean;
+  username: string;
+  victory: number;
+}
+
 interface MatchHistoryListProps {
   history: {
     index: number;
-    loser: any;
+    loser: IMatchHistoryPlayerInfo;
     loserScore: number;
-    winner: any;
+    winner: IMatchHistoryPlayerInfo;
     winnerScore: string;
     createdAt: Date;
   };

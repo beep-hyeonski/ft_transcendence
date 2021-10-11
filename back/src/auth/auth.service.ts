@@ -62,6 +62,8 @@ export class AuthService {
         TEMPORARY_TOKEN_INDEX,
       );
       return new LoginStatusDto(signUpToken, LoginStatus.SIGNUP);
+    } else if (existingUser.isBanned) {
+      throw new ForbiddenException('User is banned');
     } else if (existingUser.useTwoFA == true) {
       this.logger.log(`User [${existingUser.username}] Loged in: Requires 2fa`);
       existingUser.twoFAToken = await this.generateTwoFactorToken();
@@ -123,6 +125,7 @@ export class AuthService {
     if (user.twoFAToken !== twoFactorTokenDto.TwoFAToken) {
       throw new UnauthorizedException('Invalid 2-Factor Token');
     }
+    if (user.isBanned) throw new ForbiddenException('User is banned');
 
     this.logger.log(`User [${user.username}] Loged In`);
     if (user.status !== UserStatus.ONLINE) {

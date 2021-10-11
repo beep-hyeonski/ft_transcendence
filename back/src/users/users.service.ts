@@ -1,9 +1,15 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserStatus } from './entities/user.entity';
+import { User, UserRole, UserStatus } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import {
   LoginStatus,
@@ -28,15 +34,7 @@ export class UsersService {
 
   async getUser(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      relations: [
-        'followings',
-        'blockings',
-        // 'ownerChannels',
-        // 'adminChannels',
-        // 'joinChannels',
-        // 'mutedChannels',
-        // 'bannedChannels',
-      ],
+      relations: ['followings', 'blockings'],
       where: { username: username },
     });
 
@@ -49,11 +47,11 @@ export class UsersService {
       relations: [
         'followings',
         'blockings',
-        'ownerChannels',
-        'adminChannels',
-        'joinChannels',
-        'mutedChannels',
-        'bannedChannels',
+        // 'ownerChannels',
+        // 'adminChannels',
+        // 'joinChannels',
+        // 'mutedChannels',
+        // 'bannedChannels',
       ],
       where: { index },
     });
@@ -64,14 +62,7 @@ export class UsersService {
 
   async getUserWithChat(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      relations: [
-        // 'blockings',
-        'ownerChannels',
-        'adminChannels',
-        'joinChannels',
-        'mutedChannels',
-        'bannedChannels',
-      ],
+      relations: ['joinChannels'],
       where: { username: username },
     });
 
@@ -145,5 +136,69 @@ export class UsersService {
     }
     const res = await this.userRepository.save(user);
     this.logger.debug(`${user.nickname} - ${status}`);
+  }
+
+  async getBannedUsers(user: User) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('You are not admin');
+    }
+    return await this.userRepository.find({
+      where: { isBanned: true },
+    });
+  }
+
+  async banUser(user: User, username: string) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('You are not admin');
+    }
+
+    const targetUser = await this.getUser(username);
+    if (targetUser.role !== UserRole.USER) {
+      throw new BadRequestException('You cannot ban admin or owner');
+    }
+    targetUser.isBanned = true;
+    return await this.userRepository.save(targetUser);
+  }
+
+  async unbanUser(user: User, username: string) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('You are not admin');
+    }
+
+    const targetUser = await this.getUser(username);
+    targetUser.isBanned = false;
+    return await this.userRepository.save(targetUser);
+  }
+
+  async getAdminUsers(user: User) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('You are not admin');
+    }
+    return await this.userRepository.find({
+      where: [{ role: UserRole.ADMIN }, { role: UserRole.OWNER }],
+    });
+  }
+
+  async registerAdmin(user: User, username: string) {
+    if (user.role !== UserRole.OWNER) {
+      throw new ForbiddenException('You are not owner');
+    }
+
+    const targetUser = await this.getUser(username);
+    targetUser.role = UserRole.ADMIN;
+    return await this.userRepository.save(targetUser);
+  }
+
+  async unregisterAdmin(user: User, username: string) {
+    if (user.role !== UserRole.OWNER) {
+      throw new ForbiddenException('You are not owner');
+    }
+    if (user.username === username) {
+      throw new BadRequestException('You cannot unregister admin yourself');
+    }
+
+    const targetUser = await this.getUser(username);
+    targetUser.role = UserRole.USER;
+    return await this.userRepository.save(targetUser);
   }
 }

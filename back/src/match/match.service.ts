@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { getManager, Repository, TypeORMError } from 'typeorm';
+import { getConnection, getManager, Repository, TypeORMError } from 'typeorm';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { Match } from './entities/match.entity';
 
@@ -16,7 +16,7 @@ export class MatchService {
     return await this.matchRepository.find({
       relations: ['winner', 'loser'],
       order: {
-        'createdAt': 'DESC',
+        createdAt: 'DESC',
       },
     });
   }
@@ -32,30 +32,32 @@ export class MatchService {
 
     const createMatch = new Match();
 
-    if (createMatchDto.player1Score > createMatchDto.player2Score) {
-      player1.victory = player1.victory + 1;
-      player1.score = player1.score + 10;
-      player2.defeat = player2.defeat + 1;
-      player2.score = player2.score - 10;
-      createMatch.winner = player1;
-      createMatch.loser = player2;
-      createMatch.winnerScore = createMatchDto.player1Score;
-      createMatch.loserScore = createMatchDto.player2Score;
-    } else {
-      player2.victory = player2.victory + 1;
-      player2.score = player2.score + 10;
-      player1.defeat = player1.defeat + 1;
-      player1.score = player1.score - 10;
-      createMatch.winner = player2;
-      createMatch.loser = player1;
-      createMatch.winnerScore = createMatchDto.player2Score;
-      createMatch.loserScore = createMatchDto.player1Score;
-    }
-
     try {
       await getManager().transaction(async (transactionalEntityManager) => {
-        await transactionalEntityManager.save(player1);
-        await transactionalEntityManager.save(player2);
+        const { player1Score, player2Score } = createMatchDto;
+        const winner = player1Score > player2Score ? player1 : player2;
+        const loser = player1Score > player2Score ? player2 : player1;
+        const updater = getConnection().createQueryBuilder().update(User);
+
+        await updater
+          .set({
+            victory: () => 'victory + 1',
+            score: () => 'score + 10',
+          })
+          .where('index = :index', { index: winner.index })
+          .execute();
+        await updater
+          .set({
+            defeat: () => 'defeat + 1',
+            score: () => 'score - 10',
+          })
+          .where('index = :index', { index: loser.index })
+          .execute();
+
+        createMatch.winner = winner;
+        createMatch.loser = loser;
+        createMatch.winnerScore = player1Score;
+        createMatch.loserScore = player2Score;
         await transactionalEntityManager.save(createMatch);
       });
     } catch (e) {
@@ -73,7 +75,7 @@ export class MatchService {
       where: [{ winner: user.index }, { loser: user.index }],
       relations: ['winner', 'loser'],
       order: {
-        'createdAt': 'DESC',
+        createdAt: 'DESC',
       },
     });
   }

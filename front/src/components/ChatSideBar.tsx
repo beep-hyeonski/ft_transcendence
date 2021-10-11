@@ -57,19 +57,20 @@ interface ChannelProps {
 // TODO: 채팅 채널 입장 또는 퇴장 시 sidebar 업데이트 안되는 문제 잡기
 function ChatSideBar(): JSX.Element {
   const classes = useStyles();
-  const { joinChannels } = useSelector((state: RootState) => state.userModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
 
   useEffect(() => {
     getUsermeChat()
       .then((res) => {
+        console.log(res);
         dispatch(updateUser(res));
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.log(err.response);
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+  }, []);
 
   return (
     <Drawer
@@ -81,7 +82,7 @@ function ChatSideBar(): JSX.Element {
       anchor="right"
     >
       <List>
-        {joinChannels.map((channel: ChannelProps) => (
+        {mydata.joinChannels.map((channel: ChannelProps) => (
           <ChatJoinedList
             key={channel.index}
             index={channel.index}

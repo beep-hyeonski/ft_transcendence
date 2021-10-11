@@ -101,21 +101,14 @@ function EmailVerifyPage() {
     };
     try {
       const ret = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/auth/twofa`,
+        `/auth/twofa`,
         twofaForm,
       );
       localStorage.setItem('p_auth', String(ret.data.jwt));
       await checkToken(dispatch);
-      if (isLoggedIn) {
-        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
-          extraHeaders: {
-            Authorization: `${String(authState.token)}`,
-          },
-        });
-        dispatch(initSocket(socket));
-      }
       history.push('/');
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error.response);
       alert('코드를 다시 확인해주세요.');
     }
   };

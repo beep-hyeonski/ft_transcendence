@@ -35,7 +35,7 @@ import { DM } from './dm/entities/dm.entity';
       entities: [User, Chat, Message, Match, DM],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Message, DM]),
+    TypeOrmModule.forFeature([Message, DM, User]),
     UsersModule,
     AuthModule,
     FollowModule,
