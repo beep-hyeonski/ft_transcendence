@@ -104,7 +104,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
     setMenuAnchor(null);
   };
 
-  function adminMenu() {
+  function adminMenu(): JSX.Element {
     return (
       <>
         {mydata.role === 'owner' && !isAdmin && (

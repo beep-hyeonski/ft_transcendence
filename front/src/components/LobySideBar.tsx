@@ -50,7 +50,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function LobySideBar() {
+function LobySideBar(): JSX.Element {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();

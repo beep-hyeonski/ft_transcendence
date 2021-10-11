@@ -95,7 +95,7 @@ interface ModalProps {
   >;
 }
 
-function ChatProtectedModal({ modal, setModal }: ModalProps) {
+function ChatProtectedModal({ modal, setModal }: ModalProps): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [password, setPassword] = useState('');

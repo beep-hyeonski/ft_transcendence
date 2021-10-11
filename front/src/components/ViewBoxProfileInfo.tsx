@@ -99,7 +99,7 @@ interface MatchHistoryListProps {
   createdAt: Date;
 }
 
-function ViewBoxProfileInfo() {
+function ViewBoxProfileInfo(): JSX.Element {
   const classes = useStyles();
 
   const userdata = useSelector((state: RootState) => state.profileModule);

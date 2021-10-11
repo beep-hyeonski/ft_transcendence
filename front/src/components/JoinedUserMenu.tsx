@@ -159,14 +159,14 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
     setIsMuted(mutedUser === undefined);
   }, [chatData.adminUsers, chatData.mutedUsers, menuAnchor, user.nickname]);
 
-  function adminMenu() {
+  function adminMenu(): JSX.Element {
     if (isAdmin) {
       return <MenuItem onClick={onClickAddAdmin}>관리자 권한 부여 </MenuItem>;
     }
     return <MenuItem onClick={onClickDeleteAdmin}>관리자 권한 해제</MenuItem>;
   }
 
-  function muteMenu() {
+  function muteMenu(): JSX.Element {
     if (isMuted) {
       return <MenuItem onClick={onClickMuteUser}>채팅 금지</MenuItem>;
     }

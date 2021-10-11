@@ -78,7 +78,7 @@ function SignUpInputs({
   buttonName,
   username,
   isTwofa,
-}: UserSignUpProps) {
+}: UserSignUpProps): JSX.Element {
   const classes = useStyles();
 
   const [form, setForm] = useState({

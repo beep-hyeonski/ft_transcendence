@@ -127,7 +127,7 @@ interface CreateProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function ChatSettingMenu({ open, setOpen }: CreateProps) {
+function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
   const dispatch = useDispatch();

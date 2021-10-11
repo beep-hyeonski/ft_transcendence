@@ -67,7 +67,7 @@ interface UserSignUpProps {
   buttonName: string;
 }
 
-function SignUpInputs({ onSubmit, buttonName }: UserSignUpProps) {
+function SignUpInputs({ onSubmit, buttonName }: UserSignUpProps): JSX.Element {
   const classes = useStyles();
 
   const [form, setForm] = useState({

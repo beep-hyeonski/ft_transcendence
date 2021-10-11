@@ -38,16 +38,15 @@ const useStyles = makeStyles(() =>
     },
   }),
 );
-// https://thumbs.gfycat.com/LightCautiousAlbino-size_restricted.gif 슬기
 
-function LoginPage() {
+function LoginPage(): JSX.Element {
   const classes = useStyles();
 
   return (
     <>
       <Avatar
         className={classes.loginLogo}
-        src="https://thumbs.gfycat.com/EthicalTornElephantseal-size_restricted.gif"
+        src="/logo.png"
       />
       <Button
         className={classes.loginButton}

@@ -95,7 +95,7 @@ const AdminJoinUserMenu = ({
     setMenuAnchor(null);
   };
 
-  function adminMenu() {
+  function adminMenu(): JSX.Element {
     return (
       <>
         {!isAdmin && (

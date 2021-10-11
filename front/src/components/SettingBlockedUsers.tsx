@@ -30,7 +30,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function SettingBlockedUsers() {
+function SettingBlockedUsers(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
 

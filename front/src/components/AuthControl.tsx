@@ -5,7 +5,7 @@ import { Cookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import checkToken from '../utils/checkToken';
 
-function AuthControl() {
+function AuthControl(): JSX.Element {
   const dispatch = useDispatch();
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 

@@ -124,7 +124,7 @@ function AdminChannelModal({
   chatModal,
   setModal,
   setChats,
-}: AdminChannelModalProps) {
+}: AdminChannelModalProps): JSX.Element {
   const classes = useStyles();
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [chatData, setChatData] = useState<ChatDataProps>({

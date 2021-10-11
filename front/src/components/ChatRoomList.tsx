@@ -64,7 +64,7 @@ interface Roomdata {
   >;
 }
 
-function ChatRoomList({ roomdata, setModal }: Roomdata) {
+function ChatRoomList({ roomdata, setModal }: Roomdata): JSX.Element {
   const classes = useStyles();
 
   const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {

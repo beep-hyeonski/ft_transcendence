@@ -78,7 +78,7 @@ interface ModalProps {
   isOwner: boolean;
 }
 
-function ChatUserMenu({ open, setOpen, isOwner }: ModalProps) {
+function ChatUserMenu({ open, setOpen, isOwner }: ModalProps): JSX.Element {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
   const mydata = useSelector((state: RootState) => state.userModule);

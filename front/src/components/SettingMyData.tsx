@@ -61,7 +61,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function SettingMyData() {
+function SettingMyData(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();

@@ -57,7 +57,7 @@ interface MatchHistoryListProps {
   };
 }
 
-function MatchHistoryList({ history }: MatchHistoryListProps) {
+function MatchHistoryList({ history }: MatchHistoryListProps): JSX.Element {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);
 

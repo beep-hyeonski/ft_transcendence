@@ -43,7 +43,7 @@ function ChatBanner({
   clickCreateChannelButton,
   create,
   setCreate,
-}: ChatBannerProps) {
+}: ChatBannerProps): JSX.Element {
   const classes = useStyles();
 
   return (

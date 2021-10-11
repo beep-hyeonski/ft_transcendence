@@ -64,7 +64,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function EmailVerifyPage() {
+function EmailVerifyPage(): JSX.Element {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();

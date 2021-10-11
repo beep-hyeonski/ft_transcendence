@@ -41,7 +41,7 @@ interface UserDataProps {
   isValid: boolean;
 }
 
-function ViewBoxProfileTitle({ changeId, isValid }: UserDataProps) {
+function ViewBoxProfileTitle({ changeId, isValid }: UserDataProps): JSX.Element {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();

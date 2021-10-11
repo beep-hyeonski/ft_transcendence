@@ -64,7 +64,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function SignUpPage() {
+function SignUpPage(): JSX.Element {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -79,7 +79,7 @@ function SignUpPage() {
   }, [history]);
 
   const [image, setImage] = useState(
-    'https://www.google.com/imgres?imgurl=https%3A%2F%2Fcdn-lostark.game.onstove.com%2F2021%2Fevent%2F210324_landing%2Fimages%2Fm%2Fmokoko_01.gif&imgrefurl=https%3A%2F%2Flostark.game.onstove.com%2FPromotion%2FCollaboration%2F210324&tbnid=qY-K2B9aiqi3pM&vet=12ahUKEwiZrrX8kbDzAhWLwIsBHWl1DqEQMygGegUIARDZAQ..i&docid=1FhuBCigzzRcyM&w=360&h=360&q=%EB%AA%A8%EC%BD%94%EC%BD%94%20gif&ved=2ahUKEwiZrrX8kbDzAhWLwIsBHWl1DqEQMygGegUIARDZAQ',
+    `${String(process.env.REACT_APP_URL)}/signup_mococo.png`,
   );
 
   const clickSignUpButton = async (form: {

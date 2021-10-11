@@ -147,7 +147,7 @@ interface CreateProps {
   setCreate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function CreateChannelModal({ create, setCreate }: CreateProps) {
+function CreateChannelModal({ create, setCreate }: CreateProps): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
 

@@ -25,7 +25,7 @@ interface FuncProps {
   isValid: boolean;
 }
 
-function ViewBox({ changeId, isValid }: FuncProps) {
+function ViewBox({ changeId, isValid }: FuncProps): JSX.Element {
   const classes = useStyles();
 
   return (

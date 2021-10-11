@@ -49,7 +49,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function ProfileSideBar() {
+function ProfileSideBar(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
 

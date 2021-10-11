@@ -17,7 +17,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-function ViewBoxContentsBox() {
+function ViewBoxContentsBox(): JSX.Element {
   const classes = useStyles();
 
   return (

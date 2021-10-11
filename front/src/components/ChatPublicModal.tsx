@@ -102,7 +102,7 @@ interface ModalProps {
   >;
 }
 
-function ChatPublicModal({ modal, setModal }: ModalProps) {
+function ChatPublicModal({ modal, setModal }: ModalProps): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
 

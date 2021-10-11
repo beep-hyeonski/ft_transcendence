@@ -34,7 +34,7 @@ interface SearchProps {
 }
 
 // onSubmit : search버튼이 눌렸을 때 input에 따라 redirect 해줄 함수
-function SearchBar({ onSubmit }: SearchProps) {
+function SearchBar({ onSubmit }: SearchProps): JSX.Element {
   const classes = useStyles();
 
   const [form, setForm] = useState({ input: '' });
