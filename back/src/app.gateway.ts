@@ -232,6 +232,11 @@ export class AppGateway
 
   @SubscribeMessage('matchQueue')
   async onMatchQueue(client: Socket) {
+    const requestUser = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    if (requestUser.isBanned) throw new WsException('User is Banned');
+
     const isExistsInQueue = this.gameQueue.findIndex(
       (inQueueClient) => inQueueClient.id === client.id,
     );
@@ -240,10 +245,9 @@ export class AppGateway
       this.logger.log('Duplicate Queue Request');
     }
     this.gameQueue.push(client);
-    const requestUser = await this.getUserByJwt(
-      client.handshake.headers.authorization,
-    );
+
     await this.usersService.statusChange(requestUser.index, 'INQUEUE');
+
     if (this.gameQueue.length >= 2) {
       const gameName = String(`game_${v1()}`);
       const player1 = await this.getUserByJwt(
