@@ -221,7 +221,7 @@ export class ChatService {
       where: { index: chatIndex },
     });
 
-    if (user.index !== chat.ownerUser.index || user.role === UserRole.USER)
+    if (user.index !== chat.ownerUser.index && user.role === UserRole.USER)
       throw new ForbiddenException('Permission Denied');
 
     if (!this.existUserInChat(toBeAdmin.index, chat))
@@ -247,7 +247,7 @@ export class ChatService {
       where: { index: chatIndex },
     });
 
-    if (user.index !== chat.ownerUser.index || user.role === UserRole.USER)
+    if (user.index !== chat.ownerUser.index && user.role === UserRole.USER)
       throw new ForbiddenException('Permission Denied');
 
     if (
