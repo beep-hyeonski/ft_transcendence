@@ -11,6 +11,7 @@ import {
   WbSunnyRounded,
   NightsStayRounded,
   AdbRounded,
+  Clear,
 } from '@material-ui/icons';
 import DrawAvatar from './Avatar';
 import { ingGame, settingGame } from '../modules/gamestate';
@@ -27,9 +28,13 @@ const useStyles = makeStyles(() =>
 
 interface StatusIconProps {
   status: string;
+  isBanned: boolean;
 }
 
-function StatusIcon({ status }: StatusIconProps): JSX.Element {
+function StatusIcon({ status, isBanned }: StatusIconProps): JSX.Element {
+  if (isBanned) {
+    return <Clear style={{ color: 'red' }} />;
+  }
   if (status === 'offline') {
     return <NightsStayRounded style={{ color: '#666666' }} />;
   }
@@ -41,11 +46,20 @@ function StatusIcon({ status }: StatusIconProps): JSX.Element {
 
 interface UserdataProps {
   user: {
-    username: string;
-    nickname: string;
     avatar: string;
-    status: string;
+    createdAt: string;
+    defeat: number;
+    email: string;
     index: number;
+    isBanned: boolean;
+    nickname: string;
+    role: string;
+    score: number;
+    status: string;
+    twoFAToken: string;
+    useTwoFA: boolean;
+    username: string;
+    victory: number;
   };
 }
 
@@ -129,8 +143,9 @@ function FollowList({ user }: UserdataProps): JSX.Element {
         primary={user.nickname}
         className={classes.usernameMargin}
       />
-      <StatusIcon status={user.status} />
-      <Menu
+      <StatusIcon status={user.status} isBanned={user.isBanned}/>
+      { !user.isBanned &&
+        <Menu
         id="menu"
         open={menu}
         anchorEl={menuAnchor}
@@ -142,7 +157,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
         <MenuItem onClick={clickDM}>DM</MenuItem>
         {gamestate === 'WAIT' && user.status === 'online' && <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>}
         {gamestate === 'WAIT' && user.status === 'ingame' && <MenuItem onClick={clickObserve}>관전하기</MenuItem>}
-      </Menu>
+      </Menu>}
     </ListItem>
   );
 }

@@ -5,6 +5,7 @@ import {
   WbSunnyRounded,
   NightsStayRounded,
   AdbRounded,
+  Clear,
 } from '@material-ui/icons';
 import { Menu, MenuItem } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -26,19 +27,32 @@ const useStyles = makeStyles(() =>
 
 interface UserdataProps {
   user: {
-    username: string;
-    nickname: string;
     avatar: string;
-    status: string;
+    createdAt: string;
+    defeat: number;
+    email: string;
     index: number;
+    isBanned: boolean;
+    nickname: string;
+    role: string;
+    score: number;
+    status: string;
+    twoFAToken: string;
+    useTwoFA: boolean;
+    username: string;
+    victory: number;
   };
 }
 
 interface StatusIconProps {
   status: string;
+  isBanned: boolean;
 }
 
-function StatusIcon({ status }: StatusIconProps): JSX.Element {
+function StatusIcon({ status, isBanned }: StatusIconProps): JSX.Element {
+  if (isBanned) {
+    return <Clear style={{ color: 'red' }} />;
+  }
   if (status === 'offline') {
     return <NightsStayRounded style={{ color: '#666666' }} />;
   }
@@ -126,7 +140,8 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
         primary={user.nickname}
         className={classes.usernameMargin}
       />
-      <StatusIcon status={user.status} />
+      <StatusIcon status={user.status} isBanned={user.isBanned}/>
+      { !user.isBanned &&
       <Menu
         id="menu"
         open={Boolean(menuAnchor)}
@@ -139,7 +154,7 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
         <MenuItem onClick={clickDM}>DM</MenuItem>
         {gamestate === 'WAIT' && user.status === 'online' && <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>}
         {gamestate === 'WAIT' && user.status === 'ingame' && <MenuItem onClick={clickObserve}>관전하기</MenuItem>}
-      </Menu>
+      </Menu>}
     </ListItem>
   );
 }
