@@ -28,7 +28,7 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
           'invalid token',
         ];
 
-        if (error.response.data.message === 'User is Banned') {
+        if (error.response.data.message === 'User is banned') {
           bannedUserHandler(dispatch);
         } else if (unauthMessages.includes(error.response.data.message)) {
           tokenErrorHandler(dispatch);
@@ -47,7 +47,7 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
     });
     socketInstance?.on('exception', ({ message }) => {
       console.log(message);
-      if (message === 'User is Banned') {
+      if (message === 'User is banned') {
         bannedUserHandler(dispatch);
       }
     });
