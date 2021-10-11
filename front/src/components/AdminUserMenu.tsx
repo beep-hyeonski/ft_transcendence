@@ -106,14 +106,14 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
 
   function adminMenu(): JSX.Element {
     return (
-      <>
+      <div>
         {mydata.role === 'owner' && !isAdmin && (
           <MenuItem onClick={onClickAdminGive}>관리자 등록</MenuItem>
         )}
         {mydata.role === 'owner' && isAdmin && (
           <MenuItem onClick={onClickAdminRemove}>관리자 해제</MenuItem>
         )}
-      </>
+      </div>
     );
   }
 

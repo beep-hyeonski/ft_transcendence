@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { GridList } from '@material-ui/core';
+import { ImageList } from '@material-ui/core';
 import { getBanUsers, getUsers } from '../utils/Requests';
 import AdminUsersElem from './AdminUsersElem';
 
@@ -53,7 +53,7 @@ function AdminUsers(): JSX.Element {
 
   return (
     <div className={classes.root}>
-      <GridList>
+      <ImageList>
         {users.map((user) => (
           <AdminUsersElem
             key={user.index}
@@ -63,7 +63,7 @@ function AdminUsers(): JSX.Element {
             setBanUsers={setBanUsers}
           />
         ))}
-      </GridList>
+      </ImageList>
     </div>
   );
 }

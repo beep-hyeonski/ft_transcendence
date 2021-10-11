@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { GridList } from '@material-ui/core';
+import { ImageList} from '@material-ui/core';
 import { getBanUsers } from '../utils/Requests';
 import AdminBannedUserElem from './AdminBannedUserElem';
 
@@ -45,7 +45,7 @@ function AdminBannedUser(): JSX.Element {
 
   return (
     <div className={classes.root}>
-      <GridList>
+      <ImageList>
         {banUsers.map((user) => (
           <AdminBannedUserElem
             key={user.index}
@@ -53,7 +53,7 @@ function AdminBannedUser(): JSX.Element {
             setBanUsers={setBanUsers}
           />
         ))}
-      </GridList>
+      </ImageList>
     </div>
   );
 }
