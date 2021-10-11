@@ -3,7 +3,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -69,15 +68,12 @@ const AdminJoinUserMenu = ({ user, isOwner, chatData, setChatData }: UserData) =
 		e.preventDefault();
     try {
       const { data } = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/admin`,
+        `/chat/${chatData.index}/admin`,
         { nickname: user.nickname },
       );
       setChatData(data);
     } catch (error: any) {
       console.log(error.response);
-      if (error.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
     setMenuAnchor(null);
 	};
@@ -86,15 +82,12 @@ const AdminJoinUserMenu = ({ user, isOwner, chatData, setChatData }: UserData) =
 		e.preventDefault();
     try {
       const { data } = await axios.delete(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/admin`,
+        `/chat/${chatData.index}/admin`,
         { data: { nickname: user.nickname } },
       );
       setChatData(data);
     } catch (error: any) {
       console.log(error.response);
-      if (error.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
     setMenuAnchor(null);
 	};

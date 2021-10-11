@@ -6,16 +6,15 @@ import { useSelector } from 'react-redux';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import { getBanUsers, getUsers } from '../utils/Requests';
 import { RootState } from '../modules';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
     menuIconLocation: {
       width: '1rem',
       height: '1rem',
-			marginLeft: '26%',
-			marginTop: '2.6vh',
-			position: 'absolute',
+      marginLeft: '26%',
+      marginTop: '2.6vh',
+      position: 'absolute',
     },
     menuIcon: {
       fontSize: '2rem',
@@ -28,7 +27,7 @@ interface UserdataProps {
   avatar: string;
   index: number;
   nickname: string;
-  username: string,
+  username: string;
   status: string;
   role: string;
 }
@@ -55,46 +54,40 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
     e.preventDefault();
     setMenuAnchor(e.currentTarget);
   };
-  
-	const onClickAdminGive = async (e: React.MouseEvent<HTMLLIElement>) => {
+
+  const onClickAdminGive = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     setMenuAnchor(null);
     try {
       const { data } = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/users/admin/${user.username}`,
+        `/users/admin/${user.username}`,
       );
       const newUsers = await getUsers();
       setUsers(newUsers);
     } catch (err: any) {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
-	};
+  };
 
   const onClickAdminRemove = async (e: React.MouseEvent<HTMLLIElement>) => {
-		e.preventDefault();
-		setMenuAnchor(null);
+    e.preventDefault();
+    setMenuAnchor(null);
     try {
       const { data } = await axios.delete(
-        `${String(process.env.REACT_APP_API_URL)}/users/admin/${user.username}`,
+        `/users/admin/${user.username}`,
       );
       const newUsers = await getUsers();
       setUsers(newUsers);
     } catch (err: any) {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
-	};
+  };
 
   const onClickUserBan = async (e: React.MouseEvent<HTMLLIElement>) => {
-		e.preventDefault();
+    e.preventDefault();
     try {
       const res = await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/users/ban/${user.username}`,
+        `/users/ban/${user.username}`,
       );
       const newUsers = await getUsers();
       setUsers(newUsers);
@@ -102,36 +95,34 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
       setBanUsers(newBanUsers);
     } catch (err: any) {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
-		setMenuAnchor(null);
-	};
+    setMenuAnchor(null);
+  };
 
   const onClickUserUnBan = async (e: React.MouseEvent<HTMLLIElement>) => {
-		e.preventDefault();
+    e.preventDefault();
     try {
       const res = await axios.delete(
-        `${String(process.env.REACT_APP_API_URL)}/users/ban/${user.username}`,
+        `/users/ban/${user.username}`,
       );
       console.log(res);
     } catch (err: any) {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
-		setMenuAnchor(null);
-	};
+    setMenuAnchor(null);
+  };
 
   function adminMenu() {
     return (
       <>
-        {mydata.role === 'owner' && !isAdmin && <MenuItem onClick={onClickAdminGive}>관리자 등록</MenuItem>}
-        {mydata.role === 'owner' && isAdmin && <MenuItem onClick={onClickAdminRemove}>관리자 해제</MenuItem>}
+        {mydata.role === 'owner' && !isAdmin && (
+          <MenuItem onClick={onClickAdminGive}>관리자 등록</MenuItem>
+        )}
+        {mydata.role === 'owner' && isAdmin && (
+          <MenuItem onClick={onClickAdminRemove}>관리자 해제</MenuItem>
+        )}
       </>
-    )
+    );
   }
 
   return (
@@ -145,7 +136,9 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
         onClose={() => setMenuAnchor(null)}
       >
         {isOwner ? null : adminMenu()}
-        {isOwner || isAdmin ? null : <MenuItem onClick={onClickUserBan}>유저 추방</MenuItem>}
+        {isOwner || isAdmin ? null : (
+          <MenuItem onClick={onClickUserBan}>유저 추방</MenuItem>
+        )}
       </Menu>
     </>
   );

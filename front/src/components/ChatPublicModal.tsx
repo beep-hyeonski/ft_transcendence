@@ -8,7 +8,6 @@ import ChatJoinedUser from './ChatJoinedUser';
 import { joinChatRoom } from '../modules/chat';
 import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -129,7 +128,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
     // 클릭 시 해당 채팅 채널로 이동
     try {
       await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${modal.index}/join`,
+        `/chat/${modal.index}/join`,
       );
       dispatch(
         joinChatRoom({
@@ -147,9 +146,6 @@ function ChatPublicModal({ modal, setModal }: ModalProps) {
       dispatch(updateUser(data));
     } catch (error: any) {
       console.log(error.response);
-      if (error.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
       if (error.response.data.message === 'User Banned')
         alert('채팅방에 참여할 수 없습니다.');
     }

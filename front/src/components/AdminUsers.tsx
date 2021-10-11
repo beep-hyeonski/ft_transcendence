@@ -3,7 +3,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { GridList } from '@material-ui/core';
 import { getBanUsers, getUsers } from '../utils/Requests';
 import AdminUsersElem from './AdminUsersElem';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,18 +38,12 @@ function AdminUsers(): JSX.Element {
       setUsers(res);
     }).catch((err: any) => {
       console.log(err);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     });
 
     getBanUsers().then((res) => {
       setBanUsers(res);
     }).catch((err: any) => {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     });
   }, []);
 

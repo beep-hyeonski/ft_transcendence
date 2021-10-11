@@ -4,7 +4,6 @@ import axios from 'axios';
 import { Avatar, Button } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../modules/user';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -65,13 +64,10 @@ const BlockedUserElem = ({ user } : UserData) : JSX.Element => {
 
 	const UnBlockButton = async () => {
     try {
-      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/block`, { data: { blockedUser: user.username } });
+      const res = await axios.delete(`/block`, { data: { blockedUser: user.username } });
       dispatch(updateUser(res.data));
     } catch (err: any) {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
   };
 

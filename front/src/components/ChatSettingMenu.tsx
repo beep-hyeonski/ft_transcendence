@@ -13,7 +13,6 @@ import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';
 import { updateUser } from '../modules/user';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -178,7 +177,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
     }
     try {
       const res = await axios.patch(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`,
+        `/chat/${chatData.index}`,
         data,
       );
       dispatch(
@@ -203,9 +202,6 @@ function ChatSettingMenu({ open, setOpen }: CreateProps) {
       });
     } catch (error: any) {
       console.log(error.response);
-      if (error.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
       if (
         error.response.data.message ===
         'Valid Password Required, length more than 8'

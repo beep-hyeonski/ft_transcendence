@@ -4,7 +4,6 @@ import { List } from '@material-ui/core';
 import { getChats } from '../utils/Requests';
 import AdminChannelsElem from './AdminChannelsElem';
 import AdminChannelModal from './AdminChannelModal';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 interface ChatInfoProps {
   index: number;
@@ -27,9 +26,6 @@ function AdminUsers(): JSX.Element {
     })
     .catch((err) => {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     });
 	}, []);
 

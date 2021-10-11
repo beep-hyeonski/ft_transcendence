@@ -5,7 +5,6 @@ import { Avatar, Button } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -67,7 +66,7 @@ const BannedUserElem = ({ user } : UserData) : JSX.Element => {
 
 	const UnBanButton = async () => {
     try {
-      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/ban`, { data: { nickname: user.nickname } });
+      const res = await axios.delete(`/chat/${chatData.index}/ban`, { data: { nickname: user.nickname } });
 			dispatch(joinChatRoom({
 				roomTitle: res.data.title,
 				roomIndex: res.data.index,
@@ -80,9 +79,6 @@ const BannedUserElem = ({ user } : UserData) : JSX.Element => {
 			}));
     } catch (err: any) {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
   };
 

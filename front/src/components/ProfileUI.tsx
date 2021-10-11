@@ -8,7 +8,6 @@ import axios from 'axios';
 import { changeUser } from '../modules/profile';
 import ViewBox from './ViewBox';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
   const dispatch = useDispatch();
@@ -22,16 +21,13 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
   useEffect(() => {
     dispatch(changeSideBar({ type: FOLLOW }));
     axios
-      .get(`${String(process.env.REACT_APP_API_URL)}/users/${id}`)
+      .get(`/users/${id}`)
       .then((res) => {
         dispatch(changeUser(res.data));
         setIsValid(true);
       })
       .catch((err) => {
         console.log(err);
-        if (err.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
         if (err.response.status === 404) {
           setIsValid(false);
         }

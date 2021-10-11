@@ -12,7 +12,6 @@ import { deleteUser } from '../modules/user';
 import { deleteSideData } from '../modules/sidebar';
 import { logout } from '../modules/auth';
 import { exitChatRoom } from '../modules/chat';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -38,15 +37,12 @@ const NavBar = () => {
 
   const onClickLogout = async () => {
     try {
-      await axios.post(`${String(process.env.REACT_APP_API_URL)}/auth/logout`);
+      await axios.post(`/auth/logout`);
       localStorage.removeItem('p_auth');
       dispatch(deleteUser());
       dispatch(logout());
       dispatch(deleteSideData());
     } catch (error: any) {
-      if (error.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
       console.log(error.response);
     }
   };

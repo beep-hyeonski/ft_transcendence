@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 import ListItemText from '@material-ui/core/ListItemText';
 import { ChatBubbleOutlineRounded } from '@material-ui/icons';
 import { joinChatRoom } from '../modules/chat';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => createStyles({
   usernameMargin: {
@@ -26,7 +25,7 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
   const clickButton = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/chat/${index}`);
+      const { data } = await axios.get(`/chat/${index}`);
       dispatch(joinChatRoom({
         roomTitle: data.title,
         roomIndex: data.index,
@@ -39,9 +38,6 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
       }));
     } catch (error: any) {
       console.log(error.response);
-      if (error.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
   };
 

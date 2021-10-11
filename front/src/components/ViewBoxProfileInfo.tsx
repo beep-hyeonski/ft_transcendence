@@ -4,7 +4,6 @@ import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import MatchHistoryList from './MatchHistoryList';
 import { RootState } from '../modules';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 // TODO: CSS 설정하기
 const useStyles = makeStyles(() =>
@@ -110,7 +109,7 @@ function ViewBoxProfileInfo() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     axios
       .get(
-        `${String(process.env.REACT_APP_API_URL)}/match/${userdata.username}`,
+        `/match/${userdata.username}`,
       )
       .then((res) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -122,9 +121,6 @@ function ViewBoxProfileInfo() {
       })
       .catch((err) => {
         console.log(err);
-        if (err.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userdata.username]);

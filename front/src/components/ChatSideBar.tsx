@@ -7,7 +7,6 @@ import ChatJoinedList from './ChatJoinedList';
 import { RootState } from '../modules';
 import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const drawerWidth = 250;
 
@@ -69,9 +68,6 @@ function ChatSideBar(): JSX.Element {
       })
       .catch((err: any) => {
         console.log(err.response);
-        if (err.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

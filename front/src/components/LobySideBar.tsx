@@ -8,7 +8,6 @@ import LobyUserList from './LobyUserList';
 import { getUsers } from '../utils/Requests';
 import checkToken from '../utils/checkToken';
 import { RootState } from '../modules';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const drawerWidth = 250;
 
@@ -69,9 +68,6 @@ function LobySideBar() {
         setUsers(onlineUsers);
       } catch (err: any) {
         console.log(err.response);
-        if (err.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
         checkToken(dispatch);
         alert('인증 정보가 유효하지 않습니다');
         history.push('/');

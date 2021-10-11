@@ -9,7 +9,6 @@ import ChatRoomList from './ChatRoomList';
 import ChatPublicModal from './ChatPublicModal';
 import ChatProtectedModal from './ChatProtectedModal';
 import { RootState } from '../modules';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -83,9 +82,6 @@ function ChatTable({ create }: ChatTableProps): JSX.Element {
       })
       .catch((err) => {
         console.log(err);
-        if (err.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
       });
   }, [create, mydata.index, mydata.joinChannels]);
 

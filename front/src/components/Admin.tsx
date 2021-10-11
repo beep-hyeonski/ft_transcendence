@@ -9,7 +9,6 @@ import AdminChannels from './AdminChannels';
 import AdminUsers from './AdminUsers';
 import { getUserme } from '../utils/Requests';
 import AdminBannedUser from './AdminBannedUser';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -66,9 +65,6 @@ function Admin(): JSX.Element {
         }
       } catch (error: any) {
         console.log(error.response);
-        if (error.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
       }
     })();
   }, [history]);

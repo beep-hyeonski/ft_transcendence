@@ -10,7 +10,6 @@ import axios from 'axios';
 import { RootState } from '../modules';
 import { waitGame } from '../modules/gamestate';
 import { IGameDataProps } from '../modules/gamedata';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -250,7 +249,7 @@ function PongGame(): JSX.Element {
         (async () => {
           try {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            const { data } = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/${gamedata.gameInfo.player2Nickname}`);
+            const { data } = await axios.get(`/users/${gamedata.gameInfo.player2Nickname}`);
             socket?.socket?.emit('matchResult', {
               gameName: gamedata.gameName,
               createMatchDto: {
@@ -262,9 +261,6 @@ function PongGame(): JSX.Element {
             });
           } catch (err: any) {
             console.log(err);
-            if (err.response.data.message === 'User is Banned') {
-              BannedUserHandler();
-            }
           }
         })();
       }

@@ -6,7 +6,6 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import { getChatInfo, getChats } from '../utils/Requests';
 import ChattingList from './ChattingList';
 import AdminChannelJoinUserElem from './AdminChannelJoinUserElem';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -143,24 +142,18 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
 				setChatData(res);
 			}).catch((err:any) => {
         console.log(err.response);
-				if (err.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
 			});
 
 			(async () => {
 				try {
 					const { data } = await axios.get(
-						`${String(process.env.REACT_APP_API_URL)}/chat/${
+						`/chat/${
 							chatModal.chatIndex
 						}/messages`,
 					);
 					setMsg(data);
 				} catch (err: any) {
 					console.log(err.response);
-          if (err.response.data.message === 'User is Banned') {
-            BannedUserHandler();
-          }
 				}
 			})();
 		}
@@ -174,14 +167,11 @@ function AdminChannelModal({ chatModal, setModal, setChats }: AdminChannelModalP
   const onClickDeleteButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      const res = await axios.delete(`${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`);
+      const res = await axios.delete(`/chat/${chatData.index}`);
       const newChats = await getChats();
       setChats(newChats);
     } catch (err: any) {
       console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
     setModal({ open: false, chatIndex: -1 });
   };

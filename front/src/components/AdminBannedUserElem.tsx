@@ -5,7 +5,6 @@ import { Avatar, Button } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { getBanUsers } from '../utils/Requests';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => createStyles({
   root: {
@@ -72,15 +71,12 @@ const AdminBannedUserElem = ({ banUser, setBanUsers } : UserData) : JSX.Element 
 		e.preventDefault();
     try {
 			const res = await axios.delete(
-				`${String(process.env.REACT_APP_API_URL)}/users/ban/${banUser.username}`,
+				`/users/ban/${banUser.username}`,
 			);
 			const newBanUsers = await getBanUsers();
 			setBanUsers(newBanUsers);
 		} catch (err: any) {
 			console.log(err.response);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
 		}
   };
 

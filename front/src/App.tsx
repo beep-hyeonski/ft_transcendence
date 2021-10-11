@@ -7,7 +7,6 @@ import {
   Redirect,
   withRouter,
 } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import ProfileUI from './components/ProfileUI';
 import LoginPage from './components/LoginPage';
 import SignUpPage from './components/SignUpPage';
@@ -20,7 +19,6 @@ import Setting from './components/Setting';
 import SideMenu from './components/SideMenu';
 import { RootState } from './modules';
 import checkToken from './utils/checkToken';
-import { initSocket } from './modules/socket';
 import GameManager from './components/GameManager';
 import PongGame from './components/PongGame';
 import GameSpeedDialog from './components/GameSpeedDialog';
@@ -31,19 +29,12 @@ function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
   const authState = useSelector((state: RootState) => state.authModule);
   const userState = useSelector((state: RootState) => state.userModule);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
   const dispatch = useDispatch();
 
   useEffect(() => {
     checkToken(dispatch);
-    if (authState.isLoggedIn) {
-      const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
-        extraHeaders: {
-          Authorization: `${String(authState.token)}`,
-        },
-      });
-      dispatch(initSocket(socket));
-    }
-  }, [authState.isLoggedIn, authState.token, dispatch]);
+  }, [dispatch]);
 
   return (
     <Switch>

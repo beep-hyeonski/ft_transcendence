@@ -8,7 +8,6 @@ import { getUserme } from '../utils/Requests';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
 import SettingMyData from './SettingMyData';
 import SettingBlockedUsers from './SettingBlockedUsers';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -95,9 +94,6 @@ function Setting(): JSX.Element {
       })
       .catch((err: any) => {
         console.log(err);
-        if (err.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
         localStorage.removeItem('p_auth');
         alert('인증 정보가 유효하지 않습니다');
         history.push('/');

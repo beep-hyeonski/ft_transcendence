@@ -18,19 +18,8 @@ function AuthControl() {
     const token = cookie.get('p_auth');
     localStorage.setItem('p_auth', String(token));
     cookie.remove('p_auth');
-    (async () => {
-      await checkToken(dispatch);
-      if (isLoggedIn) {
-        console.log(token);
-        const socket = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
-          extraHeaders: {
-            Authorization: `${String(token)}`,
-          },
-        });
-        dispatch(initSocket(socket));
-      }
-    })();
-  }, [query, isLoggedIn, dispatch]);
+    checkToken(dispatch);
+  }, [query, dispatch]);
 
   switch (query.type) {
     case 'success':

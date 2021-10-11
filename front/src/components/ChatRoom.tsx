@@ -22,7 +22,6 @@ import { updateUser } from '../modules/user';
 import ChatUserMenu from './ChatUserMenu';
 import ChatSettingMenu from './ChatSettingMenu';
 import ChatBannedUserMenu from './ChatBannedUserMenu';
-import { BannedUserHandler } from '../utils/errorHandler';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -125,7 +124,7 @@ export default function ChatRoom(): JSX.Element {
     (async () => {
       try{
         const { data } = await axios.get(
-          `${String(process.env.REACT_APP_API_URL)}/chat/${
+          `/chat/${
             chatData.index
           }/messages`,
         );
@@ -147,9 +146,6 @@ export default function ChatRoom(): JSX.Element {
         );
       } catch (error: any) {
         console.log(error.response);
-        if (error.response.data.message === 'User is Banned') {
-          BannedUserHandler();
-        }
         alert('접근할 수 없습니다');
         dispatch(exitChatRoom());
       }
@@ -176,7 +172,7 @@ export default function ChatRoom(): JSX.Element {
         setMsg((prev) => prev.concat(msg));
     });
 
-    socket?.on('exception', async (payload) => {
+    socket?.on('chatException', async (payload) => {
       console.log(payload);
       if (payload.message === 'User has been muted from this chat')
         alert('채팅 금지 상태입니다.');
@@ -209,7 +205,7 @@ export default function ChatRoom(): JSX.Element {
 
     return () => {
       socket?.off('onMessage');
-      socket?.off('exception');
+      socket?.off('chatException');
       socket?.off('deleteChat');
       socket?.emit('leave', {
         chatIndex: chatData.index,
@@ -268,7 +264,7 @@ export default function ChatRoom(): JSX.Element {
     e.preventDefault();
     try {
       await axios.post(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}/leave`,
+        `/chat/${chatData.index}/leave`,
       );
       dispatch(exitChatRoom());
       const data = await getUsermeChat();
@@ -276,9 +272,6 @@ export default function ChatRoom(): JSX.Element {
       setMenuAnchor(null);
     } catch (err: any) {
       console.log(err);
-      if (err.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
   };
 
@@ -286,7 +279,7 @@ export default function ChatRoom(): JSX.Element {
     e.preventDefault();
     try {
       const { data } = await axios.get(
-        `${String(process.env.REACT_APP_API_URL)}/chat/${chatData.index}`,
+        `/chat/${chatData.index}`,
       );
       dispatch(
         joinChatRoom({
@@ -304,9 +297,6 @@ export default function ChatRoom(): JSX.Element {
       setMenuAnchor(null);
     } catch (error: any) {
       console.log(error);
-      if (error.response.data.message === 'User is Banned') {
-        BannedUserHandler();
-      }
     }
   };
 
