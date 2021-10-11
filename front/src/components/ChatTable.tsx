@@ -80,8 +80,8 @@ function ChatTable({ create }: ChatTableProps): JSX.Element {
           ),
         );
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((err: any) => {
+        console.log(err.response);
       });
   }, [create, mydata.index, mydata.joinChannels]);
 

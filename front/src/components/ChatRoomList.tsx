@@ -83,7 +83,7 @@ function ChatRoomList({ roomdata, setModal }: Roomdata): JSX.Element {
         ownerUser: res.ownerUser.nickname,
       });
     } catch (error: any) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 

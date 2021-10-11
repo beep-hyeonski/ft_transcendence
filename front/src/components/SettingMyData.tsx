@@ -81,7 +81,7 @@ function SettingMyData(): JSX.Element {
       const ret = await axios.post(`/images`, formData);
       setImage(ret.data.image);
     } catch (error: any) {
-      console.log(error);
+      console.log(error.response);
       localStorage.removeItem('p_auth');
       alert('인증 정보가 유효하지 않습니다');
       history.push('/');
@@ -111,6 +111,7 @@ function SettingMyData(): JSX.Element {
       dispatch(updateUser(ret.data));
       alert('저장되었습니다.');
     } catch (error: any) {
+      console.log(error.response);
       if (error.response.data.message === 'Duplicated Nickname') {
         alert('이미 사용중인 닉네임입니다');
       } else {

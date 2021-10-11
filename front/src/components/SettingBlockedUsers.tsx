@@ -39,7 +39,7 @@ function SettingBlockedUsers(): JSX.Element {
       .then((res) => {
         dispatch(updateUser(res.data));
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.log(err.response);
       });
   }, [dispatch]);

@@ -23,7 +23,7 @@ function AdminUsers(): JSX.Element {
       .then((res) => {
         setChats(res);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.log(err.response);
       });
   }, []);

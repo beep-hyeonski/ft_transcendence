@@ -93,7 +93,7 @@ function Setting(): JSX.Element {
         dispatch(updateUser(res));
       })
       .catch((err: any) => {
-        console.log(err);
+        console.log(err.response);
         localStorage.removeItem('p_auth');
         alert('인증 정보가 유효하지 않습니다');
         history.push('/');

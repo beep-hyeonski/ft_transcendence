@@ -267,7 +267,7 @@ export default function ChatRoom(): JSX.Element {
       dispatch(updateUser(data));
       setMenuAnchor(null);
     } catch (err: any) {
-      console.log(err);
+      console.log(err.response);
     }
   };
 
@@ -290,7 +290,7 @@ export default function ChatRoom(): JSX.Element {
       setOpenJoinedMenu(true);
       setMenuAnchor(null);
     } catch (error: any) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 

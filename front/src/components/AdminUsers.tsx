@@ -39,7 +39,7 @@ function AdminUsers(): JSX.Element {
         setUsers(res);
       })
       .catch((err: any) => {
-        console.log(err);
+        console.log(err.response);
       });
 
     getBanUsers()

@@ -117,8 +117,8 @@ function ViewBoxProfileInfo(): JSX.Element {
         }));
         setRecord(res.data);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((err: any) => {
+        console.log(err.response);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userdata.username]);
