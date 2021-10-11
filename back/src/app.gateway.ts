@@ -96,6 +96,7 @@ export class AppGateway
       client.handshake.headers.authorization,
       payload.chatIndex,
     );
+    if (user.isBanned) throw new WsException('User is Banned');
 
     if (
       user.bannedChannels &&
@@ -132,6 +133,8 @@ export class AppGateway
       client.handshake.headers.authorization,
       payload.chatIndex,
     );
+    if (user.isBanned) throw new WsException('User is Banned');
+
     const clients = this.server.sockets.adapter.rooms.get(roomName);
     if (!clients || !clients.has(client.id))
       throw new WsChatException('User Not Joined in the Chat Socket');
@@ -169,6 +172,8 @@ export class AppGateway
     const receiveUser = await this.usersService.getUserByNickname(
       payload.receiveUser,
     );
+
+    if (user.isBanned) throw new WsException('User is Banned');
 
     if (
       receiveUser.blockings &&
@@ -310,6 +315,14 @@ export class AppGateway
       payload.receiveUserIndex,
     );
 
+    if (sender.isBanned) {
+      client.emit('matchReject', {
+        status: 'MATCH_REJECT',
+        message: 'User is Banned',
+      });
+      throw new WsException('User is Banned');
+    }
+
     if (receiver.status !== UserStatus.ONLINE) {
       client.emit('matchReject', {
         status: 'MATCH_REJECT',
@@ -424,6 +437,12 @@ export class AppGateway
 
   @SubscribeMessage('observeMatch')
   async observeMatch(client: Socket, payload: { matchInUserIndex: number }) {
+    const user = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+
+    if (user.isBanned) throw new WsException('User is Banned');
+
     let gameName = '';
     this.wsClients.get(payload.matchInUserIndex).rooms.forEach((room) => {
       if (room.indexOf('game_') !== -1) gameName = room;
@@ -443,9 +462,6 @@ export class AppGateway
     });
     client.join(gameName);
 
-    const user = await this.getUserByJwt(
-      client.handshake.headers.authorization,
-    );
     await this.usersService.statusChange(user.index, 'INGAME');
   }
 
