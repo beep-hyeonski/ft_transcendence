@@ -370,10 +370,10 @@ export class AppGateway
       ballSpeed: 'NORMAL' | 'FAST';
     },
   ) {
+    const clients = this.server.sockets.adapter.rooms.has(payload.gameName);
+    if (!clients) throw new WsGameException('Game does not exist');
     switch (payload.status) {
       case 'ACCEPT':
-        const clients = this.server.sockets.adapter.rooms.has(payload.gameName);
-        if (!clients) throw new WsGameException('Bad Request');
         const player1 = await this.getUserByJwt(
           this.wsClients.get(payload.sendUserIndex).handshake.headers
             .authorization,
