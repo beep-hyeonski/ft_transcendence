@@ -78,7 +78,7 @@ function GameManager(): JSX.Element {
       socket?.off('matchRequest');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     socket?.on('cancelComplete', (payload) => {
@@ -90,7 +90,7 @@ function GameManager(): JSX.Element {
       socket?.off('cancleComplete');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     socket?.on('matchReject', (payload) => {
@@ -106,7 +106,7 @@ function GameManager(): JSX.Element {
       socket?.off('matchReject');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [answer]);
+  }, [answer, socket]);
 
   useEffect(() => {
     console.log('state: ', gamestate);

@@ -210,7 +210,7 @@ export default function ChatRoom(): JSX.Element {
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatData.index]);
+  }, [chatData.index, socket]);
 
   useEffect(() => {
     setIsOwner(chatData.ownerUser === mydata.nickname);

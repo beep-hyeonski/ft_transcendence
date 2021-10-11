@@ -72,10 +72,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
   const dispatch = useDispatch();
   const socket = useSelector((state: RootState) => state.socketModule);
 
-  // useEffect(() => {
-  //   console.log('Mount!!');
-  //   return () => console.log('Un Mount!!');
-  // }, []);
+  console.log(data);
 
   const autoReject = useCallback(() => {
     if (data.status === 'REQUEST_MATCH') {

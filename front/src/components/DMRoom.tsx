@@ -139,7 +139,7 @@ export default function DMRoom({
       socket?.off('chatException');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nickname, dispatch]);
+  }, [nickname, dispatch, socket]);
 
   const onChange = (e: any) => {
     setInputs(e.target.value);

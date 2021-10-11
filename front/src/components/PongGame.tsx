@@ -72,7 +72,7 @@ const keyState = {
 function PongGame(): JSX.Element {
   const classes = useStyles();
   const history = useHistory();
-  const socket = useSelector((state: RootState) => state.socketModule);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
   const mydata = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
   const { gamedata } = useSelector((state: RootState) => state.gameDataMoudle);
@@ -136,7 +136,7 @@ function PongGame(): JSX.Element {
 
     return () => {
       dispatch(waitGame());
-      socket?.socket?.emit('quitGame', {
+      socket?.emit('quitGame', {
         gameName: gamedata.gameName,
       });
       window.removeEventListener('keydown', getKeyDown);
@@ -159,7 +159,7 @@ function PongGame(): JSX.Element {
       setGame(gameData);
     };
 
-    socket?.socket?.on('gameLoop', callback);
+    socket?.on('gameLoop', callback);
 
     if (game.frameInfo.frameHeight === 0) {
       // 게임 하다가 새로고침 눌렀을 때 처리
@@ -190,14 +190,14 @@ function PongGame(): JSX.Element {
 
     function drawPong() {
       if (keyState.upKey === true) {
-        socket?.socket?.emit('sendKeyEvent', {
+        socket?.emit('sendKeyEvent', {
           sender: mydata.username,
           gameName: gamedata.gameName,
           keyState: 'upKey',
         });
       }
       if (keyState.downKey === true) {
-        socket?.socket?.emit('sendKeyEvent', {
+        socket?.emit('sendKeyEvent', {
           sender: mydata.username,
           gameName: gamedata.gameName,
           keyState: 'downKey',
@@ -260,7 +260,7 @@ function PongGame(): JSX.Element {
             const { data } = await axios.get(
               `/users/${gamedata.gameInfo.player2Nickname}`,
             );
-            socket?.socket?.emit('matchResult', {
+            socket?.emit('matchResult', {
               gameName: gamedata.gameName,
               createMatchDto: {
                 player1Index: mydata.index,
@@ -278,7 +278,7 @@ function PongGame(): JSX.Element {
       history.push('/');
     }
     return () => {
-      socket?.socket?.off('gameLoop');
+      socket?.off('gameLoop');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

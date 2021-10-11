@@ -8,7 +8,7 @@ import { setGameData, IGameDataProps } from '../modules/gamedata';
 function GameQueuing(): JSX.Element {
   const dispatch = useDispatch();
   const history = useHistory();
-  const socket = useSelector((state: RootState) => state.socketModule);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
   const { gamestate } = useSelector(
     (state: RootState) => state.gameStateMoudle,
   );
@@ -22,13 +22,13 @@ function GameQueuing(): JSX.Element {
     };
 
     if (gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') {
-      socket?.socket?.on('matchComplete', callback);
+      socket?.on('matchComplete', callback);
     }
     if (gamestate === 'ING') {
       history.push('/game');
     }
     return () => {
-      socket?.socket?.off('matchComplete');
+      socket?.off('matchComplete');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, gamestate, dispatch]);
