@@ -54,11 +54,18 @@ export class AuthController {
   @UseGuards(FtAuthGuard)
   @Get('callback')
   async callback(@Req() req: any, @Res({ passthrough: true }) res: Response) {
-    const loginRet: LoginStatusDto = await this.authService.logIn(req.user);
-    res
-      .cookie('p_auth', loginRet.jwt)
-      .redirect(`${process.env.CLIENT_APP_URL}/auth?type=${loginRet.status}`);
-    return;
+    try {
+      const loginRet = await this.authService.logIn(req.user);
+      res
+        .cookie('p_auth', loginRet.jwt)
+        .redirect(`${process.env.CLIENT_APP_URL}/auth?type=${loginRet.status}`);
+    } catch (error) {
+      if (error.message === 'User is banned') {
+        res.redirect(`${process.env.CLIENT_APP_URL}/auth?type=banned`);
+      } else {
+        throw error;
+      }
+    }
   }
 
   @ApiOperation({ summary: '회원 가입' })
