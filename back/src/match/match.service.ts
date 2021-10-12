@@ -56,8 +56,10 @@ export class MatchService {
 
         createMatch.winner = winner;
         createMatch.loser = loser;
-        createMatch.winnerScore = player1Score;
-        createMatch.loserScore = player2Score;
+        createMatch.winnerScore =
+          player1Score > player2Score ? player1Score : player2Score;
+        createMatch.loserScore =
+          player1Score > player2Score ? player2Score : player1Score;
         await transactionalEntityManager.save(createMatch);
       });
     } catch (e) {
