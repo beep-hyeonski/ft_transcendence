@@ -8,7 +8,7 @@ import { RootState } from '../modules';
 import { getUsermeChat } from '../utils/Requests';
 import { updateUser } from '../modules/user';
 
-const drawerWidth = 250;
+const drawerWidth = '17%';
 
 const useStyles = makeStyles(() =>
   createStyles({

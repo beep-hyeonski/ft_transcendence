@@ -8,7 +8,7 @@ import { RootState } from '../modules';
 import FollowList from './FollowList';
 import { updateUser } from '../modules/user';
 
-const drawerWidth = 250;
+const drawerWidth = '17%';
 
 const useStyles = makeStyles(() =>
   createStyles({

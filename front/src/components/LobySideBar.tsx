@@ -9,7 +9,7 @@ import { getUsers } from '../utils/Requests';
 import checkToken from '../utils/checkToken';
 import { RootState } from '../modules';
 
-const drawerWidth = 250;
+const drawerWidth = '17%';
 
 const useStyles = makeStyles(() =>
   createStyles({
