@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const SETDATA = 'gamedata/SET' as const;
+const INITDATA = 'gamedata/INIT' as const;
 
 interface IBallInfo {
   x: number;
@@ -49,11 +50,17 @@ export const setGameData = (data: IGameDataProps) => ({
   payload: { data },
 });
 
+export const initGameData = () => ({
+  type: INITDATA,
+});
+
 type GameData = {
   gamedata: IGameDataProps;
 };
 
-type GameDataAction = ReturnType<typeof setGameData>;
+type GameDataAction =
+  | ReturnType<typeof setGameData>
+  | ReturnType<typeof initGameData>;
 
 const initialState: GameData = {
   gamedata: {
@@ -106,6 +113,8 @@ export default function gameDataMoudle(
   switch (action.type) {
     case SETDATA:
       return { ...state, gamedata: action.payload.data };
+    case INITDATA:
+      return { ...initialState };
     default:
       return state;
   }

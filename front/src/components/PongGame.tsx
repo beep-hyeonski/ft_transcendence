@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { RootState } from '../modules';
 import { waitGame } from '../modules/gamestate';
-import { IGameDataProps } from '../modules/gamedata';
+import { IGameDataProps, initGameData } from '../modules/gamedata';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -25,49 +25,6 @@ const keyState = {
   upKey: false,
   downKey: false,
 };
-
-// interface IBallInfo {
-//   x: number;
-//   y: number;
-//   radius: number;
-//   velocityX: number;
-//   velocityY: number;
-//   speed: number;
-//   color: string;
-// }
-
-// interface IFrameInfo {
-//   frameWidth: number;
-//   frameHeight: number;
-// }
-
-// interface IGameInfo {
-//   ballSpeed: number;
-//   stickMoveSpeed: number;
-//   player1: string;
-//   player1Nickname: string;
-//   player2: string;
-//   player2Nickname: string;
-// }
-
-// interface IPlayerInfo {
-//   x: number;
-//   y: number;
-//   stickWidth: number;
-//   stickHeight: number;
-//   score: number;
-//   color: string;
-// }
-
-// interface ILoopGameDataProps {
-//   status: string;
-//   gameName: string;
-//   ballInfo: IBallInfo;
-//   frameInfo: IFrameInfo;
-//   gameInfo: IGameInfo;
-//   player1Info: IPlayerInfo;
-//   player2Info: IPlayerInfo;
-// }
 
 function PongGame(): JSX.Element {
   const classes = useStyles();
@@ -105,6 +62,11 @@ function PongGame(): JSX.Element {
   };
 
   useEffect(() => {
+    if (gamedata.gameName === '') {
+      alert('잘못된 접근입니다.');
+      history.push('/');
+    }
+
     function getKeyDown(evt: KeyboardEvent) {
       switch (evt.code) {
         case 'ArrowUp':
@@ -167,6 +129,7 @@ function PongGame(): JSX.Element {
       // 이때 남아있는 상대가 플레이어1이면 전적이 남는데 플레이어2라면 전적 안남음..
       // 이긴 사람이 전적남기게 하도록 고쳐도 팅긴사람이 이겨버리면 ?
       dispatch(waitGame());
+      dispatch(initGameData());
       history.push('/');
     }
 
@@ -279,6 +242,7 @@ function PongGame(): JSX.Element {
     }
     return () => {
       socket?.off('gameLoop');
+      dispatch(initGameData());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
