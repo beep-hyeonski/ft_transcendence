@@ -5,6 +5,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  ThemeProvider,
+  unstable_createMuiStrictModeTheme,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
@@ -12,6 +14,7 @@ import { pvpQueueGame, settingGame } from '../modules/gamestate';
 
 function GameSpeedDialog(): JSX.Element {
   const socket = useSelector((state: RootState) => state.socketModule);
+  const theme = unstable_createMuiStrictModeTheme();
   const { dialog, receiveUserIndex } = useSelector(
     (state: RootState) => state.gameStateMoudle,
   );
@@ -34,17 +37,19 @@ function GameSpeedDialog(): JSX.Element {
   };
 
   return (
-    <Dialog onClose={handleClose} open={dialog}>
-      <DialogTitle>SELECT GAME SPEED</DialogTitle>
-      <List>
-        <ListItem button onClick={() => handleListItemClick('NORMAL')}>
-          <ListItemText primary="NORMAL" />
-        </ListItem>
-        <ListItem button onClick={() => handleListItemClick('FAST')}>
-          <ListItemText primary="FAST" />
-        </ListItem>
-      </List>
-    </Dialog>
+    <ThemeProvider theme={theme}>
+      <Dialog onClose={handleClose} open={dialog}>
+        <DialogTitle>SELECT GAME SPEED</DialogTitle>
+        <List>
+          <ListItem button onClick={() => handleListItemClick('NORMAL')}>
+            <ListItemText primary="NORMAL" />
+          </ListItem>
+          <ListItem button onClick={() => handleListItemClick('FAST')}>
+            <ListItemText primary="FAST" />
+          </ListItem>
+        </List>
+      </Dialog>
+    </ThemeProvider>
   );
 }
 

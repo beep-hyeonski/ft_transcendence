@@ -161,8 +161,7 @@ function GameManager(): JSX.Element {
             </div>
           </>
         )}
-      {(gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') &&
-        answer === 'MATCH_REJECT' && <RejectAlarm />}
+      {answer === 'MATCH_REJECT' && <RejectAlarm />}
       {data.status === 'REQUEST_MATCH' && (
         <MatchAlarm data={data} setData={setData} />
       )}
