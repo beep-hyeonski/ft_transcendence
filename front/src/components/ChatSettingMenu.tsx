@@ -127,6 +127,12 @@ interface CreateProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+interface ChangeChannelData {
+  title: string;
+  status: string;
+  password: string;
+}
+
 function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
@@ -165,6 +171,23 @@ function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
     });
   };
 
+
+  const changeChannel = async (data: ChangeChannelData) => {
+    if (data.password === '') {
+      const res = await axios.patch(`/chat/${chatData.index}`, {
+        title: data.title,
+        status: data.status,
+      });
+      return res;
+    }
+    const res = await axios.patch(`/chat/${chatData.index}`, {
+      title: data.title,
+      status: data.status,
+      password: data.password,
+    });
+    return res;
+  };
+
   const clickChangeButton = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = {
@@ -176,7 +199,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
       data.title = chatData.title;
     }
     try {
-      const res = await axios.patch(`/chat/${chatData.index}`, data);
+      const res = await changeChannel(data);
       dispatch(
         joinChatRoom({
           roomTitle: res.data.title,
@@ -204,6 +227,10 @@ function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
         'Valid Password Required, length more than 8'
       ) {
         alert('비밀번호는 8자 이상이어야 합니다.');
+        setForm({
+          ...form,
+          password: '',
+        });
       }
     }
   };

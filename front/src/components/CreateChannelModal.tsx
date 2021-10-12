@@ -132,7 +132,7 @@ const createChannel = async (data: CreateChannelProps) => {
       title: data.title,
       status: data.status,
     });
-    return res;
+    return res.data;
   }
   const res = await axios.post(`/chat`, {
     title: data.title,
@@ -193,6 +193,13 @@ function CreateChannelModal({ create, setCreate }: CreateProps): JSX.Element {
       dispatch(updateUser(data));
     } catch (error: any) {
       console.log(error.response);
+      if (error.response.data.message[0] === 'Invaid Password Length') {
+        alert('비밀번호는 8자 이상이어야 합니다.');
+        setForm({
+          ...form,
+          password: '',
+        });
+      }
     }
   };
 
@@ -252,6 +259,7 @@ function CreateChannelModal({ create, setCreate }: CreateProps): JSX.Element {
               className={classes.channelPassword}
               placeholder="Password"
               name="password"
+              value={form.password}
               onChange={onChange}
               disabled={form.status === 'public'}
             />
