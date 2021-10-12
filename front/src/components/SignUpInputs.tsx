@@ -77,10 +77,20 @@ function SignUpInputs({ onSubmit, buttonName }: UserSignUpProps): JSX.Element {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm({
-      ...form,
-      [name]: value,
-    });
+    const notNum = /[^a-z0-9|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/gi;
+    if (value.search(notNum) !== -1) {
+      alert('닉네임에는 특수문자를 사용할 수 없습니다.');
+      setForm({
+        ...form,
+        nickname: value.replace(notNum, ''),
+      })
+      e.currentTarget.value = value.replace(notNum, '');
+    } else {
+      setForm({
+        ...form,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
