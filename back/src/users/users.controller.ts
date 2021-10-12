@@ -11,7 +11,14 @@ import {
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiForbiddenResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/strategy/jwt-auth.guard';
 
@@ -34,6 +41,7 @@ export class UsersController {
 
   @ApiOperation({ summary: '내 정보 검색' })
   @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ description: '내 정보가 없는 경우 (User Not Found)' })
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@Req() req: any) {
@@ -42,6 +50,7 @@ export class UsersController {
 
   @ApiOperation({ summary: '내 정보 수정' })
   @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ description: '내 정보가 없는 경우 (User Not Found)' })
   @UseGuards(JwtAuthGuard)
   @Patch('me')
   patchUser(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
@@ -50,6 +59,7 @@ export class UsersController {
 
   @ApiOperation({ summary: '내 채팅 정보 조회' })
   @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ description: '내 정보가 없는 경우 (User Not Found)' })
   @UseGuards(JwtAuthGuard)
   @Get('me/chat')
   async getUserWithChat(@Req() req: any) {
@@ -58,6 +68,10 @@ export class UsersController {
 
   @ApiOperation({ summary: 'user ban 목록 조회' })
   @ApiOkResponse({ type: User, isArray: true })
+  @ApiForbiddenResponse({
+    description:
+      '웹 owner 또는 admin이 아닌 경우 권한 없음 (You are not admin)',
+  })
   @UseGuards(JwtAuthGuard)
   @Get('ban')
   async getBannedUsers(@Req() req: any) {
@@ -65,6 +79,13 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'user ban 등록' })
+  @ApiForbiddenResponse({
+    description:
+      '웹 owner 또는 admin이 아닌 경우 권한 없음 (You are not admin)',
+  })
+  @ApiBadRequestResponse({
+    description: '웹 owner 또는 admin ban 불가 (You cannot ban admin or owner)',
+  })
   @Post('ban/:username')
   @UseGuards(JwtAuthGuard)
   async banUser(@Req() req: any, @Param('username') username: string) {
@@ -72,6 +93,13 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'user ban 해제' })
+  @ApiForbiddenResponse({
+    description:
+      '웹 owner 또는 admin이 아닌 경우 권한 없음 (You are not admin)',
+  })
+  @ApiNotFoundResponse({
+    description: 'ban 해제할 유저의 정보가 없는 경우 (User Not Found)',
+  })
   @Delete('ban/:username')
   @UseGuards(JwtAuthGuard)
   async unbanUser(@Req() req: any, @Param('username') username: string) {
@@ -80,6 +108,10 @@ export class UsersController {
 
   @ApiOperation({ summary: 'user admin 목록 조회' })
   @ApiOkResponse({ type: User, isArray: true })
+  @ApiForbiddenResponse({
+    description:
+      '웹 owner 또는 admin이 아닌 경우 권한 없음 (You are not admin)',
+  })
   @UseGuards(JwtAuthGuard)
   @Get('admin')
   async getAdminUsers(@Req() req: any) {
@@ -87,6 +119,12 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'user admin 등록' })
+  @ApiForbiddenResponse({
+    description: '웹 owner가 아닌 경우 권한 없음 (You are not owner)',
+  })
+  @ApiNotFoundResponse({
+    description: 'admin으로 등록할 유저의 정보가 없는 경우 (User Not Found)',
+  })
   @Post('admin/:username')
   @UseGuards(JwtAuthGuard)
   async registerAdmin(@Req() req: any, @Param('username') username: string) {
@@ -94,6 +132,16 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'user admin 해제' })
+  @ApiForbiddenResponse({
+    description: '웹 owner가 아닌 경우 권한 없음 (You are not owner)',
+  })
+  @ApiNotFoundResponse({
+    description: 'admin 해제할 유저의 정보가 없는 경우 (User Not Found)',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'owner 자기 자신 admin 해제 불가 (You cannot unregister admin yourself)',
+  })
   @Delete('admin/:username')
   @UseGuards(JwtAuthGuard)
   async unregisterAdmin(@Req() req: any, @Param('username') username: string) {
@@ -105,6 +153,9 @@ export class UsersController {
     description: 'nickname에 해당하는 user의 정보를 조회한다.',
   })
   @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({
+    description: '조회할 유저 정보 없음 (User Not Found)',
+  })
   @UseGuards(JwtAuthGuard)
   @Get(':nickname')
   getUser(@Param('nickname') nickname: string) {

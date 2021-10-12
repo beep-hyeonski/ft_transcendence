@@ -258,7 +258,7 @@ export class ChatService {
     }
 
     if (chat.ownerUser.index === toNotBeAdmin.index) {
-      throw new BadRequestException('Owner can not be admin');
+      throw new BadRequestException('Owner cannot be removed from admin');
     }
 
     chat.adminUsers = chat.adminUsers.filter(

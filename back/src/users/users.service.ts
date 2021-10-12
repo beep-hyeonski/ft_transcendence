@@ -44,15 +44,7 @@ export class UsersService {
 
   async getUserByIndex(index: number): Promise<User> {
     const user = await this.userRepository.findOne({
-      relations: [
-        'followings',
-        'blockings',
-        // 'ownerChannels',
-        // 'adminChannels',
-        // 'joinChannels',
-        // 'mutedChannels',
-        // 'bannedChannels',
-      ],
+      relations: ['followings', 'blockings'],
       where: { index },
     });
 

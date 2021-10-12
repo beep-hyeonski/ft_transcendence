@@ -8,7 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -33,6 +35,7 @@ export class BlockController {
     type: User,
     isArray: true,
   })
+  @ApiNotFoundResponse({ description: '등록되지 않은 유저 (Not Found)' })
   @Get()
   async getBlockedUsers(@Req() req: any) {
     return await this.blockService.getBlockings(req.user);
@@ -43,6 +46,12 @@ export class BlockController {
     description: '차단 성공, user 자신의 정보 response',
     type: User,
   })
+  @ApiBadRequestResponse({
+    description:
+      '자기 자신 차단 불가 (You cannot block yourself) && \
+      이미 차단하고 있는 유저 (You are already blocking this user)',
+  })
+  @ApiNotFoundResponse({ description: '등록되지 않은 유저 (Not Found)' })
   @Post()
   async registerBlockUser(@Req() req: any, @Body() blockDto: BlockDto) {
     return await this.blockService.registerBlocking(req.user, blockDto);
@@ -54,6 +63,7 @@ export class BlockController {
     description: '차단 해제 성공, user 자신의 정보 response',
     type: User,
   })
+  @ApiNotFoundResponse({ description: '등록되지 않은 유저 (Not Found)' })
   async unRegisterBlockedUser(@Req() req: any, @Body() blockDto: BlockDto) {
     return await this.blockService.unRegisterBlocking(req.user, blockDto);
   }
