@@ -101,26 +101,28 @@ interface MatchHistoryListProps {
 
 function ViewBoxProfileInfo(): JSX.Element {
   const classes = useStyles();
-
   const userdata = useSelector((state: RootState) => state.profileModule);
   const [record, setRecord] = useState([]);
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    axios
-      .get(`/match/${userdata.username}`)
-      .then((res) => {
+    setSubscribed(true);
+    (async () => {
+      try {
+        let { data } = await axios.get(`/match/${userdata.username}`);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        res.data = res.data.map((match: IMatchDataProps) => ({
+        data = data.map((match: IMatchDataProps) => ({
           ...match,
           createdAt: new Date(match.createdAt),
         }));
-        setRecord(res.data);
-      })
-      .catch((err: any) => {
+        if (isSubscribed) setRecord(data);
+      } catch (err: any) {
         if (err.response.data.message === 'Not Found') {
           alert('존재하지 않는 유저입니다.');
         }
-      });
+      }
+    })();
+    return () => setSubscribed(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userdata.username]);
 

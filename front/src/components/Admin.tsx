@@ -58,6 +58,7 @@ function Admin(): JSX.Element {
   const [value, setValue] = React.useState(1);
 
   useEffect(() => {
+    dispatch(deleteSideData());
     (async () => {
       try {
         const response = await getUserme();
@@ -78,10 +79,6 @@ function Admin(): JSX.Element {
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history]);
-
-  useEffect(() => {
-    dispatch(deleteSideData());
-  }, [dispatch]);
 
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);

@@ -68,18 +68,23 @@ function ChatTable({ create }: ChatTableProps): JSX.Element {
     ownerUser: '',
   });
   const [chats, setChats] = useState<ChatInfoProps[]>([]);
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
   const mydata = useSelector((state: RootState) => state.userModule);
 
   useEffect(() => {
-    getChats()
-      .then((res) => {
-        setChats(
-          res.filter(
-            (chat: ChatInfoProps) =>
-              !chat.joinUsers.find((user: any) => user.index === mydata.index),
-          ),
-        );
-      });
+    setSubscribed(true);
+    (async () => {
+      const res = await getChats();
+      const joinedChats = res.filter(
+        (chat: ChatInfoProps) =>
+          !chat.joinUsers.find((user: any) => user.index === mydata.index),
+      );
+      if (isSubscribed) {
+        setChats(joinedChats);
+      }
+    })();
+    return () => setSubscribed(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [create, mydata.index, mydata.joinChannels]);
 
   return (

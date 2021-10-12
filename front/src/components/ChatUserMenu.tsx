@@ -83,6 +83,7 @@ function ChatUserMenu({ open, setOpen, isOwner }: ModalProps): JSX.Element {
   const chatData = useSelector((state: RootState) => state.chatModule);
   const mydata = useSelector((state: RootState) => state.userModule);
   const [isManager, setIsManager] = useState(false);
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -90,10 +91,13 @@ function ChatUserMenu({ open, setOpen, isOwner }: ModalProps): JSX.Element {
   };
 
   useEffect(() => {
+    setSubscribed(true);
     const res = chatData.adminUsers.find(
       (user: any) => user.nickname === mydata.nickname,
     );
-    setIsManager(res !== undefined);
+    if (isSubscribed) setIsManager(res !== undefined);
+    return () => setSubscribed(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatData.adminUsers, mydata.nickname]);
 
   return (

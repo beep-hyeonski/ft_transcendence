@@ -56,22 +56,25 @@ function LobySideBar(): JSX.Element {
   const dispatch = useDispatch();
   const [users, setUsers] = useState<any[]>([]);
   const { index } = useSelector((state: RootState) => state.userModule);
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   // TODO: 에러 분기 나눠주기
   useEffect(() => {
+    setSubscribed(true);
     (async () => {
       try {
         const data: any[] = await getUsers();
         const onlineUsers = data.filter(
           (user: any) => user.index !== index && user.status !== 'offline',
         );
-        setUsers(onlineUsers);
+        if (isSubscribed) setUsers(onlineUsers);
       } catch (err: any) {
         checkToken(dispatch);
         alert('인증 정보가 유효하지 않습니다');
         history.push('/');
       }
     })();
+    return () => setSubscribed(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

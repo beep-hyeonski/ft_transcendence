@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { List } from '@material-ui/core';
@@ -56,12 +56,14 @@ function ProfileSideBar(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-
   const mydata = useSelector((state: RootState) => state.userModule);
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
+
   useEffect(() => {
+    setSubscribed(true);
     getUserme()
       .then((res) => {
-        dispatch(updateUser(res));
+        if (isSubscribed) dispatch(updateUser(res));
       })
       .catch((err: any) => {
         if (err.response.data.message === 'User Not Found') {
@@ -73,6 +75,7 @@ function ProfileSideBar(): JSX.Element {
           history.push('/');
         }
       });
+    return () => setSubscribed(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

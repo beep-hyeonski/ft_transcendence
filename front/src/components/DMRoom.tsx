@@ -96,8 +96,10 @@ export default function DMRoom({
 
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [inputs, setInputs] = useState('');
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
+    setSubscribed(true);
     dispatch(deleteSideData());
     (async () => {
       try {
@@ -110,7 +112,7 @@ export default function DMRoom({
           },
           messageContent: message.message,
         }));
-        setMsg(msgs);
+        if (isSubscribed) setMsg(msgs);
       } catch (error: any) {
         if (error.response.data.message === 'Not Found') {
           alert('접근할 수 없습니다');
@@ -132,6 +134,7 @@ export default function DMRoom({
     });
 
     return () => {
+      setSubscribed(false);
       socket?.off('onDM');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

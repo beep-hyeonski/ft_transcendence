@@ -34,12 +34,18 @@ function AdminUsers(): JSX.Element {
   const [users, setUsers] = useState<UserdataProps[]>([]);
   const [banUsers, setBanUsers] = useState<UserdataProps[]>([]);
   const history = useHistory();
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
+    setSubscribed(true);
     (async () => {
       try {
-        setUsers(await getUsers());
-        setBanUsers(await getBanUsers());
+        const usersRes = await getUsers();
+        const banUsersRes = await getBanUsers();
+        if (isSubscribed) {
+          setUsers(usersRes);
+          setBanUsers(banUsersRes);
+        }
       } catch (error: any) {
         if (error.response.data.message === 'You are not admin') {
           alert('권한이 없습니다.');
@@ -47,6 +53,7 @@ function AdminUsers(): JSX.Element {
         }
       }
     })();
+    return () => setSubscribed(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

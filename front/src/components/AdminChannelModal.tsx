@@ -140,13 +140,15 @@ function AdminChannelModal({
     },
     mutedUsers: [],
   });
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
+    setSubscribed(true);
     if (chatModal.open) {
       (async () => {
         try {
           const res = await getChatInfo(chatModal.chatIndex)
-          setChatData(res);
+          if (isSubscribed) setChatData(res);
         } catch (err: any) {
           if (err.response.data.message === 'Not Found') {
             alert('존재하지 않는 채팅방입니다.');
@@ -166,7 +168,7 @@ function AdminChannelModal({
             },
             messageContent: message.messageContent,
           }));
-          setMsg(msgs);
+          if (isSubscribed) setMsg(msgs);
         } catch (err: any) {
           if (err.response.data.message === 'Permission Denied') {
             alert('권한이 없습니다.');
@@ -177,6 +179,7 @@ function AdminChannelModal({
         }
       })();
     }
+    return () => setSubscribed(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatModal.chatIndex, chatModal.open, setChats]);
 

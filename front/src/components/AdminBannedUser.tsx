@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { ImageList} from '@material-ui/core';
+import { ImageList } from '@material-ui/core';
 import { getBanUsers } from '../utils/Requests';
 import AdminBannedUserElem from './AdminBannedUserElem';
 
@@ -33,11 +33,13 @@ function AdminBannedUser(): JSX.Element {
   const classes = useStyles();
   const [banUsers, setBanUsers] = useState<UserdataProps[]>([]);
   const history = useHistory();
+  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
+    setSubscribed(true);
     getBanUsers()
       .then((res) => {
-        setBanUsers(res);
+        if (isSubscribed) setBanUsers(res);
       })
       .catch((err: any) => {
         if (err.response.data.message === 'You are not admin') {
@@ -45,7 +47,8 @@ function AdminBannedUser(): JSX.Element {
           history.push('/');
         }
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => setSubscribed(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
