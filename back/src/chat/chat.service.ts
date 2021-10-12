@@ -114,7 +114,6 @@ export class ChatService {
       updateChatDto.password
     ) {
       if (
-        updateChatDto.password !== '' &&
         !(
           updateChatDto.password.length >= 8 &&
           updateChatDto.password.length <= 20
