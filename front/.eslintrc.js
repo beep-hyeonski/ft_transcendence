@@ -26,5 +26,6 @@ module.exports = {
     'no-restricted-globals': 'off',
     '@typescript-eslint/no-floating-promises': 'off',
     'no-alert': 'off',
+    '@typescript-eslint/ban-types': 'off',
   },
 };

@@ -73,7 +73,7 @@ function Admin(): JSX.Element {
     dispatch(deleteSideData());
   }, [dispatch]);
 
-  const changeTab = (event: any, newValue: number) => {
+  const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
 

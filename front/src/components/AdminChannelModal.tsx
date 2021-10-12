@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -91,7 +92,7 @@ interface ChatDataProps {
 }
 
 interface MessageProps {
-  timestamp: string;
+  timestamp: Date;
   sendUser: {
     nickname: string;
     avatar: string;
@@ -155,12 +156,21 @@ function AdminChannelModal({
           const { data } = await axios.get(
             `/chat/${chatModal.chatIndex}/messages`,
           );
-          setMsg(data);
+          const msgs = data.map((message: any) => ({
+            timestamp: new Date(message.createdAt),
+            sendUser: {
+              nickname: message.sendUser.nickname,
+              avatar: message.sendUser.avatar,
+            },
+            messageContent: message.messageContent,
+          }));
+          setMsg(msgs);
         } catch (err: any) {
           console.log(err.response);
         }
       })();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatModal.chatIndex, chatModal.open, setChats]);
 
   const onClickCloseButton = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -200,7 +210,7 @@ function AdminChannelModal({
             <div className={classes.messageList}>
               <List>
                 {messages.map((data) => (
-                  <ChattingList key={data.timestamp} data={data} />
+                  <ChattingList key={data.timestamp.toISOString()} data={data} />
                 ))}
               </List>
             </div>

@@ -73,7 +73,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface MessageProps {
-  timestamp: string;
+  timestamp: Date;
   sendUser: {
     nickname: string;
     avatar: string;
@@ -103,7 +103,7 @@ export default function DMRoom({
       try {
         const { data } = await axios.get(`/dm/${nickname}`);
         const msgs = data.map((message: any) => ({
-          timestamp: message.createdAt,
+          timestamp: new Date(message.createdAt),
           sendUser: {
             nickname: message.sendUser.nickname,
             avatar: message.sendUser.avatar,
@@ -119,16 +119,8 @@ export default function DMRoom({
     })();
 
     socket?.on('onDM', ({ sendUser, message }) => {
-      const date = new Date();
-      const d = `Date: ${date.getDate()
-        }/${date.getMonth()+1
-        }/${date.getFullYear()
-        } ${date.getHours()
-        }:${date.getMinutes()
-        }:${date.getSeconds()
-        }:${date.getMilliseconds()}`;
       const msg = {
-        timestamp: d,
+        timestamp: new Date(),
         sendUser: {
           nickname: sendUser.nickname,
           avatar: sendUser.avatar,
@@ -200,7 +192,7 @@ export default function DMRoom({
       <div className={classes.messages}>
         <List>
           {messages.map((data) => (
-            <ChattingList key={data.timestamp} data={data} />
+            <ChattingList key={data.timestamp.toISOString()} data={data} />
           ))}
         </List>
       </div>
