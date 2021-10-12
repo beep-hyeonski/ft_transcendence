@@ -116,6 +116,7 @@ function EmailVerifyPage(): JSX.Element {
           placeholder="Enter your verification code."
           type="text"
           name="verifyCode"
+          autoComplete="off"
           onChange={onChange}
         />
         <Button type="submit" className={classes.submitButton}>
