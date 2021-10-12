@@ -26,11 +26,7 @@ export class CreateChatDto {
   })
   @IsOptional()
   @IsString()
-  @MinLength(8, {
-    message: 'Invaid Password Length',
-  })
-  @MaxLength(20, {
-    message: 'Invalid Password Length',
-  })
+  @MinLength(8, { message: 'Invaild Password Length' })
+  @MaxLength(20, { message: 'Invaild Password Length' })
   password: string;
 }
