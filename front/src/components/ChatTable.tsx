@@ -42,9 +42,21 @@ interface ChatInfoProps {
   joinUsers: any[];
 }
 
+interface ModalProps {
+  index: number;
+  open: boolean;
+  status: string;
+  title: string;
+  joinUsers: any[];
+  bannedUsers: any[];
+  mutedUsers: any[];
+  adminUsers: any[];
+  ownerUser: string;
+}
+
 function ChatTable({ create }: ChatTableProps): JSX.Element {
   const classes = useStyles();
-  const [modal, setModal] = useState({
+  const [modal, setModal] = useState<ModalProps>({
     index: -1,
     open: false,
     status: '',

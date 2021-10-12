@@ -83,10 +83,10 @@ interface ModalProps {
     open: boolean;
     status: string;
     title: string;
-    joinUsers: never[];
-    bannedUsers: never[];
-    mutedUsers: never[];
-    adminUsers: never[];
+    joinUsers: any[];
+    bannedUsers: any[];
+    mutedUsers: any[];
+    adminUsers: any[];
     ownerUser: string;
   };
   setModal: React.Dispatch<
@@ -95,10 +95,10 @@ interface ModalProps {
       open: boolean;
       status: string;
       title: string;
-      joinUsers: never[];
-      bannedUsers: never[];
-      mutedUsers: never[];
-      adminUsers: never[];
+      joinUsers: any[];
+      bannedUsers: any[];
+      mutedUsers: any[];
+      adminUsers: any[];
       ownerUser: string;
     }>
   >;
@@ -229,6 +229,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps): JSX.Element {
             <ImageList>
               {modal.joinUsers.map((user) => (
                 <ChatJoinedUser
+                  key={user.index}
                   user={user}
                   isInRoom={false}
                   isOwner={false}

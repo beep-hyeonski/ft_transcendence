@@ -76,10 +76,10 @@ interface ModalProps {
     open: boolean;
     status: string;
     title: string;
-    joinUsers: never[];
-    mutedUsers: never[];
-    bannedUsers: never[];
-    adminUsers: never[];
+    joinUsers: any[];
+    mutedUsers: any[];
+    bannedUsers: any[];
+    adminUsers: any[];
     ownerUser: string;
   };
   setModal: React.Dispatch<
@@ -88,10 +88,10 @@ interface ModalProps {
       open: boolean;
       status: string;
       title: string;
-      joinUsers: never[];
-      bannedUsers: never[];
-      mutedUsers: never[];
-      adminUsers: never[];
+      joinUsers: any[];
+      bannedUsers: any[];
+      mutedUsers: any[];
+      adminUsers: any[];
       ownerUser: string;
     }>
   >;
