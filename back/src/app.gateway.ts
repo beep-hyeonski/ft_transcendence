@@ -220,6 +220,11 @@ export class AppGateway
     await this.usersService.statusChange(user.index, 'ONLINE');
   }
 
+  @SubscribeMessage('cancelGameRequest')
+  async cancelGameRequest(client: Socket, payload: { gameName: string }) {
+
+  }
+
   @SubscribeMessage('quitGame')
   async quitGame(client: Socket, payload: { gameName: string }) {
     client.leave(payload.gameName);
@@ -302,7 +307,6 @@ export class AppGateway
     this.server.to(payload.gameName).emit('endGame', {
       status: 'GAME_END',
     });
-    this.gameService.closeGame(payload.gameName);
     this.server.socketsLeave(payload.gameName);
   }
 
@@ -356,8 +360,21 @@ export class AppGateway
       gameName: gameName,
       ballSpeed: payload.ballSpeed,
     });
+    client.emit('requestedGame', {
+      status: 'SUCCESS',
+      gameName: gameName,
+    })
     await this.usersService.statusChange(payload.receiveUserIndex, 'INQUEUE');
     await this.usersService.statusChange(sender.index, 'INQUEUE');
+  }
+
+  @SubscribeMessage('cancelRequest')
+  async cancelRequest(client: Socket, payload: { gameName: string }) {
+    const sender = await this.getUserByJwt(
+      client.handshake.headers.authorization,
+    );
+    this.server.socketsLeave(payload.gameName);
+    await this.usersService.statusChange(sender.index, 'ONLINE');
   }
 
   @SubscribeMessage('matchResponse')
@@ -371,7 +388,13 @@ export class AppGateway
     },
   ) {
     const clients = this.server.sockets.adapter.rooms.has(payload.gameName);
-    if (!clients) throw new WsGameException('Game does not exist');
+    if (!clients) {
+      const receiver = await this.getUserByJwt(
+        client.handshake.headers.authorization,
+      );
+      await this.usersService.statusChange(receiver.index, 'ONLINE');
+      throw new WsGameException('Game does not exist');
+    }
     switch (payload.status) {
       case 'ACCEPT':
         const player1 = await this.getUserByJwt(
