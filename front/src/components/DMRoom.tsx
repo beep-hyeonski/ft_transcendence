@@ -119,8 +119,16 @@ export default function DMRoom({
     })();
 
     socket?.on('onDM', ({ sendUser, message }) => {
+      const date = new Date();
+      const d = `Date: ${date.getDate()
+        }/${date.getMonth()+1
+        }/${date.getFullYear()
+        } ${date.getHours()
+        }:${date.getMinutes()
+        }:${date.getSeconds()
+        }:${date.getMilliseconds()}`;
       const msg = {
-        timestamp: new Date().toUTCString(),
+        timestamp: d,
         sendUser: {
           nickname: sendUser.nickname,
           avatar: sendUser.avatar,

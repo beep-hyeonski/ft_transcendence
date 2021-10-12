@@ -155,9 +155,16 @@ export default function ChatRoom(): JSX.Element {
     });
 
     socket?.on('onMessage', ({ sendUser, message }) => {
-      console.log(sendUser, message);
+      const date = new Date();
+      const d = `Date: ${date.getDate()
+        }/${date.getMonth()+1
+        }/${date.getFullYear()
+        } ${date.getHours()
+        }:${date.getMinutes()
+        }:${date.getSeconds()
+        }:${date.getMilliseconds()}`;
       const msg = {
-        timestamp: new Date().toUTCString(),
+        timestamp: d,
         sendUser: {
           nickname: sendUser.nickname,
           avatar: sendUser.avatar,
