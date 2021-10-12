@@ -19,6 +19,7 @@ import PongGame from './components/PongGame';
 import GameSpeedDialog from './components/GameSpeedDialog';
 import Admin from './components/Admin';
 import DMRoom from './components/DMRoom';
+import ServerError from './components/ServerError';
 
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
@@ -57,10 +58,13 @@ function App(): JSX.Element {
             <GameSpeedDialog />
           </>
         ) : (
-          <LoginPage />
+          <>
+            <Route path="/" exact component={LoginPage} />
+            <Route path="/server_error" component={ServerError} />
+            <Route path="/notfound" component={NotFoundPage} />
+          </>
         )}
       </Route>
-      <Route component={NotFoundPage} />
     </Switch>
   );
 }

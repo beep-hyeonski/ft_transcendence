@@ -27,7 +27,9 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
           'Token Expired',
           'invalid token',
         ];
-
+        if (!error.response) {
+          window.location.href = '/server_error';
+        }
         if (error.response.data.message === 'User is banned') {
           bannedUserHandler(dispatch);
         } else if (unauthMessages.includes(error.response.data.message)) {

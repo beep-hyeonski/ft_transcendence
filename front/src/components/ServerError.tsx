@@ -35,7 +35,7 @@ const useStyles = makeStyles(() => ({
     left: '17%',
     transform: 'translate(-50%, -50%)',
   },
-  homeButton: {
+	homeButton: {
 		position: 'absolute',
 		top: '85%',
 		left: '50%',
@@ -53,9 +53,9 @@ function NotFoundPage(): JSX.Element {
       <img className={classes.mococo} src="/notfound_mococo.png" alt="mococo" />
       <img className={classes.runcoco} src="/run_mococo.png" alt="run_mococo" />
       <img className={classes.avrel} src="/avrel.png" alt="run_mococo" />
-      <div className={classes.text}>404 나빠운드</div>
-      <div className={classes.backcoco}>길을 잘못찾은 모코코는 돌아가세요.</div>
-      <Button
+      <div className={classes.text}>500 서버에러</div>
+      <div className={classes.backcoco}>우리 서버가 좀 아파요....</div>
+			<Button
 				type="button"
 				variant="text"
 				className={classes.homeButton}
