@@ -220,11 +220,6 @@ export class AppGateway
     await this.usersService.statusChange(user.index, 'ONLINE');
   }
 
-  @SubscribeMessage('cancelGameRequest')
-  async cancelGameRequest(client: Socket, payload: { gameName: string }) {
-
-  }
-
   @SubscribeMessage('quitGame')
   async quitGame(client: Socket, payload: { gameName: string }) {
     client.leave(payload.gameName);
@@ -375,6 +370,9 @@ export class AppGateway
     );
     this.server.socketsLeave(payload.gameName);
     await this.usersService.statusChange(sender.index, 'ONLINE');
+    client.emit('cancelComplete', {
+      status: 'CANCELED',
+    });
   }
 
   @SubscribeMessage('matchResponse')

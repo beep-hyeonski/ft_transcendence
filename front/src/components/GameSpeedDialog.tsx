@@ -23,12 +23,14 @@ function GameSpeedDialog(): JSX.Element {
 
   const handleListItemClick = (value: string) => {
     console.log(value);
+    socket?.socket?.on('requestedGame', (payload: any) => {
+      dispatch(pvpQueueGame(payload.gameName));
+    })
     socket?.socket?.emit('matchRequest', {
       receiveUserIndex,
       ballSpeed: value,
     });
     dispatch(settingGame(false));
-    dispatch(pvpQueueGame());
   };
 
   return (

@@ -13,8 +13,9 @@ export const matchQueueGame = () => ({
   type: MATCHGAMEQUEUE,
 });
 
-export const pvpQueueGame = () => ({
+export const pvpQueueGame = (gameName: string) => ({
   type: PVPGAMEQUEUE,
+  gameName,
 });
 
 export const ingGame = () => ({
@@ -31,6 +32,7 @@ type GameState = {
   gamestate: string;
   dialog: boolean;
   receiveUserIndex: number;
+  gameName: string;
 };
 
 type GameStateAction =
@@ -44,6 +46,7 @@ const initialState: GameState = {
   gamestate: 'WAIT',
   dialog: false,
   receiveUserIndex: -1,
+  gameName: '',
 };
 
 export default function gameStateMoudle(
@@ -52,11 +55,11 @@ export default function gameStateMoudle(
 ) {
   switch (action.type) {
     case GAMEWAIT:
-      return { ...state, gamestate: 'WAIT' };
+      return { ...state, gamestate: 'WAIT', };
     case MATCHGAMEQUEUE:
       return { ...state, gamestate: 'MATCHQUEUE' };
     case PVPGAMEQUEUE:
-      return { ...state, gamestate: 'PVPQUEUE' };
+      return { ...state, gamestate: 'PVPQUEUE', gameName: action.gameName };
     case GAMEING:
       return { ...state, gamestate: 'ING' };
     case SETTING_GAME:

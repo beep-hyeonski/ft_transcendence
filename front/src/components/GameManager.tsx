@@ -48,7 +48,7 @@ const useStyles = makeStyles({
 function GameManager(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { gamestate } = useSelector(
+  const { gamestate, gameName } = useSelector(
     (state: RootState) => state.gameStateMoudle,
   );
   const { socket } = useSelector((state: RootState) => state.socketModule);
@@ -65,13 +65,22 @@ function GameManager(): JSX.Element {
   const [answer, setAnswer] = useState('');
 
   useEffect(() => {
+    socket?.on('gameException', (payload) => {
+      if (payload.message === 'Game does not exist') {
+        dispatch(waitGame());
+        alert('취소 된 게임입니다.');
+      }
+    })
+  }, [dispatch, socket]);
+
+  useEffect(() => {
     console.log(socket);
     socket?.on('matchRequest', (gamedata) => {
       setData({
         status: gamedata.status,
         matchData: gamedata,
       });
-      dispatch(pvpQueueGame());
+      dispatch(pvpQueueGame(data.matchData.gameName));
       console.log(gamedata);
     });
     return () => {
@@ -115,6 +124,10 @@ function GameManager(): JSX.Element {
   const clickCancleButton = () => {
     socket?.emit('cancelQueue', () => {});
   };
+  
+  const clickPVPCancleButton = () => {
+    socket?.emit('cancelRequest', { gameName, });
+  }
 
   return (
     <>
@@ -131,6 +144,14 @@ function GameManager(): JSX.Element {
                   <Button
                     className={classes.cancleButton}
                     onClick={clickCancleButton}
+                  >
+                    x
+                  </Button>
+                )}
+                {gamestate === 'PVPQUEUE' && (
+                  <Button
+                    className={classes.cancleButton}
+                    onClick={clickPVPCancleButton}
                   >
                     x
                   </Button>
