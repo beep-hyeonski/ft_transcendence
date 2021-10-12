@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { ImageList } from '@material-ui/core';
 import { getBanUsers, getUsers } from '../utils/Requests';
@@ -32,23 +33,21 @@ function AdminUsers(): JSX.Element {
   const classes = useStyles();
   const [users, setUsers] = useState<UserdataProps[]>([]);
   const [banUsers, setBanUsers] = useState<UserdataProps[]>([]);
+  const history = useHistory();
 
   useEffect(() => {
-    getUsers()
-      .then((res) => {
-        setUsers(res);
-      })
-      .catch((err: any) => {
-        console.log(err.response);
-      });
-
-    getBanUsers()
-      .then((res) => {
-        setBanUsers(res);
-      })
-      .catch((err: any) => {
-        console.log(err.response);
-      });
+    (async () => {
+      try {
+        setUsers(await getUsers());
+        setBanUsers(await getBanUsers());
+      } catch (error: any) {
+        if (error.response.data.message === 'You are not admin') {
+          alert('권한이 없습니다.');
+          history.push('/');
+        }
+      }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

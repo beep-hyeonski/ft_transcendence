@@ -9,8 +9,10 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { updateUser } from '../modules/user';
+import { deleteUser, updateUser } from '../modules/user';
 import { getUsermeChat } from '../utils/Requests';
+import { logout } from '../modules/auth';
+import { deleteSideData } from '../modules/sidebar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -192,13 +194,34 @@ function CreateChannelModal({ create, setCreate }: CreateProps): JSX.Element {
       const data = await getUsermeChat();
       dispatch(updateUser(data));
     } catch (error: any) {
-      console.log(error.response);
       if (error.response.data.message[0] === 'Invaid Password Length') {
         alert('비밀번호는 8자 이상이어야 합니다.');
         setForm({
           ...form,
           password: '',
         });
+      }
+      if (error.response.data.message === 'Password Required') {
+        alert('비밀번호를 입력해 주세요.');
+        setForm({
+          ...form,
+          password: '',
+        });
+      }
+      if (error.response.data.message === 'Invalid Chat Status') {
+        alert('공개방에는 비밀번호를 사용할 수 없습니다.');
+        setForm({
+          ...form,
+          password: '',
+        });
+      }
+      if (error.response.data.message === 'User Not Found') {
+        alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+        localStorage.removeItem('p_auth');
+        dispatch(logout());
+        dispatch(deleteUser());
+        dispatch(deleteSideData());
+        window.location.href = '/';
       }
     }
   };

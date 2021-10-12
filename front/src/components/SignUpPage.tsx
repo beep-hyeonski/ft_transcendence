@@ -111,7 +111,6 @@ function SignUpPage(): JSX.Element {
       await checkToken(dispatch);
       history.push('/');
     } catch (error: any) {
-      console.log(error.response);
       if (error.response.data.message === 'Duplicated Nickname') {
         alert('이미 사용중인 닉네임입니다');
       } else if (error.response.data.message[0] === 'email must be an email') {

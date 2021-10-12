@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { ImageList} from '@material-ui/core';
 import { getBanUsers } from '../utils/Requests';
@@ -31,6 +32,7 @@ interface UserdataProps {
 function AdminBannedUser(): JSX.Element {
   const classes = useStyles();
   const [banUsers, setBanUsers] = useState<UserdataProps[]>([]);
+  const history = useHistory();
 
   useEffect(() => {
     getBanUsers()
@@ -38,8 +40,12 @@ function AdminBannedUser(): JSX.Element {
         setBanUsers(res);
       })
       .catch((err: any) => {
-        console.log(err.response);
+        if (err.response.data.message === 'You are not admin') {
+          alert('권한이 없습니다.');
+          history.push('/');
+        }
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -21,10 +21,12 @@ import ChattingList from './ChattingList';
 import { RootState } from '../modules';
 import { exitChatRoom, joinChatRoom } from '../modules/chat';
 import { getUsermeChat } from '../utils/Requests';
-import { updateUser } from '../modules/user';
+import { deleteUser, updateUser } from '../modules/user';
 import ChatUserMenu from './ChatUserMenu';
 import ChatSettingMenu from './ChatSettingMenu';
 import ChatBannedUserMenu from './ChatBannedUserMenu';
+import { logout } from '../modules/auth';
+import { deleteSideData } from '../modules/sidebar';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -145,8 +147,12 @@ export default function ChatRoom(): JSX.Element {
           ),
         );
       } catch (error: any) {
-        console.log(error.response);
-        alert('접근할 수 없습니다');
+        if (error.response.data.message === 'Permission Denied') {
+          alert('권한이 없습니다.');
+        }
+        if (error.response.data.message === 'Not Found') {
+          alert('존재하지 않는 채팅방입니다.');
+        }
         dispatch(exitChatRoom());
       }
     })();
@@ -172,7 +178,6 @@ export default function ChatRoom(): JSX.Element {
     });
 
     socket?.on('chatException', async (payload) => {
-      console.log(payload);
       if (payload.message === 'User has been muted from this chat')
         alert('채팅 금지 상태입니다.');
       if (payload.message === 'User Not Joined in the Chat Socket') {
@@ -181,9 +186,20 @@ export default function ChatRoom(): JSX.Element {
       }
       if (payload.message === 'User Banned from the Chat') {
         alert('채팅방에서 추방되었습니다.');
-        const res = await getUsermeChat();
-        dispatch(updateUser(res));
-        dispatch(exitChatRoom());
+        try {
+          const res = await getUsermeChat();
+          dispatch(updateUser(res));
+          dispatch(exitChatRoom());
+        } catch (error: any) {
+          if (error.response.data.message === 'User Not Found') {
+            alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+            localStorage.removeItem('p_auth');
+            dispatch(logout());
+            dispatch(deleteUser());
+            dispatch(deleteSideData());
+            window.location.href = '/';
+          }
+        }
       }
       if (payload.message === 'User Not Joined in the Chat') {
         alert(
@@ -193,15 +209,39 @@ export default function ChatRoom(): JSX.Element {
       }
       if (payload.message === 'Chat Not Found') {
         alert('존재하지 않는 채팅방입니다.');
-        getUsermeChat().then((res) => dispatch(updateUser(res)));
-        dispatch(exitChatRoom());
+        try {
+          const res = await getUsermeChat();
+          dispatch(updateUser(res));
+          dispatch(exitChatRoom());
+        } catch (error: any) {
+          if (error.response.data.message === 'User Not Found') {
+            alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+            localStorage.removeItem('p_auth');
+            dispatch(logout());
+            dispatch(deleteUser());
+            dispatch(deleteSideData());
+            window.location.href = '/';
+          }
+        }
       }
     });
 
-    socket?.on('deleteChat', () => {
+    socket?.on('deleteChat', async () => {
       alert('존재하지 않는 채팅방입니다.');
-      getUsermeChat().then((res) => dispatch(updateUser(res)));
-      dispatch(exitChatRoom());
+      try {
+        const res = await getUsermeChat();
+        dispatch(updateUser(res));
+        dispatch(exitChatRoom());
+      } catch (error: any) {
+        if (error.response.data.message === 'User Not Found') {
+          alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+          localStorage.removeItem('p_auth');
+          dispatch(logout());
+          dispatch(deleteUser());
+          dispatch(deleteSideData());
+          window.location.href = '/';
+        }
+      }
     });
 
     return () => {
@@ -266,11 +306,27 @@ export default function ChatRoom(): JSX.Element {
     try {
       await axios.post(`/chat/${chatData.index}/leave`);
       dispatch(exitChatRoom());
-      const data = await getUsermeChat();
-      dispatch(updateUser(data));
       setMenuAnchor(null);
     } catch (err: any) {
-      console.log(err.response);
+      if (err.response.data.message === 'User Not Entered this chat') {
+        alert('이미 나간 채팅방입니다.');
+      }
+      if (err.response.data.message === 'Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+      }
+    }
+    try {
+      const data = await getUsermeChat();
+      dispatch(updateUser(data));
+    } catch (err: any) {
+      if (err.response.data.message === 'User Not Found') {
+        alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+        localStorage.removeItem('p_auth');
+        dispatch(logout());
+        dispatch(deleteUser());
+        dispatch(deleteSideData());
+        window.location.href = '/';
+      }
     }
   };
 
@@ -293,7 +349,10 @@ export default function ChatRoom(): JSX.Element {
       setOpenJoinedMenu(true);
       setMenuAnchor(null);
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+        window.location.reload();
+      }
     }
   };
 

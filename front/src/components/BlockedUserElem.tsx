@@ -71,7 +71,9 @@ const BlockedUserElem = ({ user }: UserData): JSX.Element => {
       });
       dispatch(updateUser(res.data));
     } catch (err: any) {
-      console.log(err.response);
+      if (err.response.data.message === 'Not Found') {
+        window.location.reload();
+      }
     }
   };
 

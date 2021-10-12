@@ -3,6 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import { Avatar, Button } from '@material-ui/core';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import { getBanUsers } from '../utils/Requests';
 
@@ -67,6 +68,7 @@ const AdminBannedUserElem = ({
 }: UserData): JSX.Element => {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);
+  const history = useHistory();
 
   if (mydata.nickname === banUser.nickname) {
     return <></>;
@@ -79,7 +81,13 @@ const AdminBannedUserElem = ({
       const newBanUsers = await getBanUsers();
       setBanUsers(newBanUsers);
     } catch (err: any) {
-      console.log(err.response);
+      if (err.response.data.message === 'You are not admin') {
+        alert('권한이 없습니다.');
+        history.push('/');
+      }
+      if (err.response.data.message === 'User Not Found') {
+        window.location.reload();
+      }
     }
   };
 

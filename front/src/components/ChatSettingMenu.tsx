@@ -13,6 +13,9 @@ import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';
 import { updateUser } from '../modules/user';
+import { logout } from '../modules/auth';
+import { deleteUser } from '../modules/profile';
+import { deleteSideData } from '../modules/sidebar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -221,16 +224,31 @@ function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
         status: res.data.status,
       });
     } catch (error: any) {
-      console.log(error.response);
-      if (
-        error.response.data.message ===
-        'Valid Password Required, length more than 8'
-      ) {
+      if (error.response.data.message === 'Do Not set Password if not protected') {
+        alert('공개 채널에서는 비밀번호를 사용할 수 없습니다.');
+        setForm({
+          ...form,
+          password: '',
+        });
+      }
+      if (error.response.data.message === 'Permission Denied') {
+        alert('권한이 없습니다.');
+        setOpen(false);
+      }
+      if (error.response.data.message === 'Valid 8 ~ 20 Characters of Password Required') {
         alert('비밀번호는 8자 이상이어야 합니다.');
         setForm({
           ...form,
           password: '',
         });
+      }
+      if (error.response.data.message === 'User Not Found') {
+        alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+        localStorage.removeItem('p_auth');
+        dispatch(logout());
+        dispatch(deleteUser());
+        dispatch(deleteSideData());
+        window.location.href = '/';
       }
     }
   };

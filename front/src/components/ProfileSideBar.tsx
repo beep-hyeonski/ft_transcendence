@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { List } from '@material-ui/core';
-import axios from 'axios';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import FollowList from './FollowList';
-import { updateUser } from '../modules/user';
+import { deleteUser, updateUser } from '../modules/user';
+import { getUserme } from '../utils/Requests';
+import { logout } from '../modules/auth';
+import { deleteSideData } from '../modules/sidebar';
 
 const drawerWidth = '17%';
 
@@ -52,12 +55,24 @@ const useStyles = makeStyles(() =>
 function ProfileSideBar(): JSX.Element {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const mydata = useSelector((state: RootState) => state.userModule);
   useEffect(() => {
-    axios.get(`/users/${mydata.nickname}`).then((res: any) => {
-      dispatch(updateUser(res.data));
-    });
+    getUserme()
+      .then((res) => {
+        dispatch(updateUser(res));
+      })
+      .catch((err: any) => {
+        if (err.response.data.message === 'User Not Found') {
+          alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+          localStorage.removeItem('p_auth');
+          dispatch(logout());
+          dispatch(deleteUser());
+          dispatch(deleteSideData());
+          history.push('/');
+        }
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

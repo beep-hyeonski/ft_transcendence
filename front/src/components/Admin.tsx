@@ -9,6 +9,8 @@ import AdminChannels from './AdminChannels';
 import AdminUsers from './AdminUsers';
 import { getUserme } from '../utils/Requests';
 import AdminBannedUser from './AdminBannedUser';
+import { logout } from '../modules/auth';
+import { deleteUser } from '../modules/profile';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -64,9 +66,17 @@ function Admin(): JSX.Element {
           history.push('/');
         }
       } catch (error: any) {
-        console.log(error.response);
+        if (error.response.data.message === 'User Not Found') {
+          alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+          localStorage.removeItem('p_auth');
+          dispatch(logout());
+          dispatch(deleteUser());
+          dispatch(deleteSideData());
+          history.push('/');
+        }
       }
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history]);
 
   useEffect(() => {

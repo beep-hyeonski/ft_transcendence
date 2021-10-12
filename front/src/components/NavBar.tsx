@@ -36,15 +36,11 @@ const NavBar = () => {
   const mydata = useSelector((state: RootState) => state.userModule);
 
   const onClickLogout = async () => {
-    try {
-      await axios.post(`/auth/logout`);
-      localStorage.removeItem('p_auth');
-      dispatch(deleteUser());
-      dispatch(logout());
-      dispatch(deleteSideData());
-    } catch (error: any) {
-      console.log(error.response);
-    }
+    await axios.post(`/auth/logout`);
+    localStorage.removeItem('p_auth');
+    dispatch(deleteUser());
+    dispatch(logout());
+    dispatch(deleteSideData());
   };
 
   const onClickChat = () => {

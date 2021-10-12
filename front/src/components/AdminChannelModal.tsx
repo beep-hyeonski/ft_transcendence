@@ -143,15 +143,17 @@ function AdminChannelModal({
 
   useEffect(() => {
     if (chatModal.open) {
-      getChatInfo(chatModal.chatIndex)
-        .then((res) => {
-          setChatData(res);
-        })
-        .catch((err: any) => {
-          console.log(err.response);
-        });
-
       (async () => {
+        try {
+          const res = await getChatInfo(chatModal.chatIndex)
+          setChatData(res);
+        } catch (err: any) {
+          if (err.response.data.message === 'Not Found') {
+            alert('존재하지 않는 채팅방입니다.');
+            window.location.reload();
+          }
+        }
+
         try {
           const { data } = await axios.get(
             `/chat/${chatModal.chatIndex}/messages`,
@@ -166,7 +168,12 @@ function AdminChannelModal({
           }));
           setMsg(msgs);
         } catch (err: any) {
-          console.log(err.response);
+          if (err.response.data.message === 'Permission Denied') {
+            alert('권한이 없습니다.');
+          }
+          if (err.response.data.message === 'Not Found') {
+            alert('존재하지 않는 채팅방입니다.');
+          }
         }
       })();
     }
@@ -186,8 +193,15 @@ function AdminChannelModal({
       await axios.delete(`/chat/${chatData.index}`);
       const newChats = await getChats();
       setChats(newChats);
-    } catch (err: any) {
-      console.log(err.response);
+    } catch (error: any) {
+      if (error.response.data.message === 'Permission Denied') {
+        alert('권한이 없습니다.');
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+        const newChats = await getChats();
+        setChats(newChats);
+      }
     }
     setModal({ open: false, chatIndex: -1 });
   };

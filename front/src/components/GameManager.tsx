@@ -74,14 +74,12 @@ function GameManager(): JSX.Element {
   }, [dispatch, socket]);
 
   useEffect(() => {
-    console.log(socket);
     socket?.on('matchRequest', (gamedata) => {
       setData({
         status: gamedata.status,
         matchData: gamedata,
       });
       dispatch(pvpQueueGame(data.matchData.gameName));
-      console.log(gamedata);
     });
     return () => {
       socket?.off('matchRequest');
@@ -116,10 +114,6 @@ function GameManager(): JSX.Element {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [answer, socket]);
-
-  useEffect(() => {
-    console.log('state: ', gamestate);
-  }, [gamestate]);
 
   const clickCancleButton = () => {
     socket?.emit('cancelQueue', () => {});

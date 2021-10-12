@@ -6,7 +6,9 @@ import { Button, InputBase, Modal, IconButton } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { joinChatRoom } from '../modules/chat';
 import { getUsermeChat } from '../utils/Requests';
-import { updateUser } from '../modules/user';
+import { deleteUser, updateUser } from '../modules/user';
+import { logout } from '../modules/auth';
+import { deleteSideData } from '../modules/sidebar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -133,13 +135,15 @@ function ChatProtectedModal({ modal, setModal }: ModalProps): JSX.Element {
           roomMuted: modal.mutedUsers,
         }),
       );
-
-      const data = await getUsermeChat();
-      dispatch(updateUser(data));
     } catch (error: any) {
-      console.log(error.response);
-      if (error.response.data.message === 'User Banned')
+      if (error.response.data.message === 'User Banned') {
         alert('채팅방에 참여할 수 없습니다.');
+        return;
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+        return;
+      }
       if (
         error.response.data.message === 'Password Required' ||
         error.response.data.message === 'Invalid Password'
@@ -147,6 +151,35 @@ function ChatProtectedModal({ modal, setModal }: ModalProps): JSX.Element {
         setPassword('');
         alert('Wrong password');
         return;
+      }
+      if (error.response.data.message === 'Already joined user') {
+        alert('이미 참여한 채팅방 입니다.');
+        setModal({
+          index: -1,
+          open: false,
+          status: '',
+          title: '',
+          joinUsers: [],
+          bannedUsers: [],
+          mutedUsers: [],
+          adminUsers: [],
+          ownerUser: '',
+        });
+        return;
+      }
+
+    }
+    try {
+      const data = await getUsermeChat();
+      dispatch(updateUser(data));
+    } catch (error: any) {
+      if (error.response.data.message === 'User Not Found') {
+        alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+        localStorage.removeItem('p_auth');
+        dispatch(logout());
+        dispatch(deleteUser());
+        dispatch(deleteSideData());
+        window.location.href = '/';
       }
     }
     setPassword('');

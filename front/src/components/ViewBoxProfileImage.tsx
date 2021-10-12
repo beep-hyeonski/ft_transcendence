@@ -132,8 +132,10 @@ function ViewBoxProfileImage(): JSX.Element {
         dispatch(updateUser(res.data));
         setBlock(false);
       } catch (err: any) {
-        console.log(err.response);
         setBlock(true);
+        if (err.response.data.message === 'Not Found') {
+          window.location.reload();
+        }
       }
     }
     try {
@@ -143,8 +145,16 @@ function ViewBoxProfileImage(): JSX.Element {
       dispatch(updateUser(res.data));
       setFollow(true);
     } catch (err: any) {
-      console.log(err.response);
       setFollow(false);
+      if (err.response.data.message === 'You cannot follow yourself') {
+        alert('자기 자신을 팔로우할 수 없습니다.');
+      }
+      if (err.response.data.message === 'You are already following this user') {
+        alert('이미 팔로우 중인 유저입니다.');
+      }
+      if (err.response.data.message === 'Not Found') {
+        alert('존재하지 않는 유저입니다.');
+      }
     }
   };
 
@@ -156,8 +166,10 @@ function ViewBoxProfileImage(): JSX.Element {
       dispatch(updateUser(res.data));
       setFollow(false);
     } catch (err: any) {
-      console.log(err.response);
       setFollow(true);
+      if (err.response.data.message === 'Not Found') {
+        alert('존재하지 않는 유저입니다.');
+      }
     }
   };
 
@@ -170,8 +182,10 @@ function ViewBoxProfileImage(): JSX.Element {
         dispatch(updateUser(res.data));
         setFollow(false);
       } catch (err: any) {
-        console.log(err.response);
         setFollow(true);
+        if (err.response.data.message === 'Not Found') {
+          alert('존재하지 않는 유저입니다.');
+        }
       }
     }
     try {
@@ -181,8 +195,18 @@ function ViewBoxProfileImage(): JSX.Element {
       dispatch(updateUser(res.data));
       setBlock(true);
     } catch (err: any) {
-      console.log(err.response);
       setBlock(false);
+      if (err.response.data.message === 'Not Found') {
+        window.location.reload();
+      }
+      if (err.response.data.message === 'You cannot block yourself') {
+        alert('자기 자신을 차단할 수 없습니다.');
+        window.location.reload();
+      }
+      if (err.response.data.message === 'You are already blocking this user') {
+        alert('이미 차단된 유저입니다.');
+        window.location.reload();
+      }
     }
   };
 
@@ -194,8 +218,10 @@ function ViewBoxProfileImage(): JSX.Element {
       dispatch(updateUser(res.data));
       setBlock(false);
     } catch (err: any) {
-      console.log(err.response);
       setBlock(true);
+      if (err.response.data.message === 'Not Found') {
+        window.location.reload();
+      }
     }
   };
 

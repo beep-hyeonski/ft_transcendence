@@ -67,7 +67,22 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       );
       setMenuAnchor(null);
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'User is not in the chat') {
+        alert('채팅방에 참여하지 않은 유저입니다.');
+        window.location.reload();
+      }
+      if (error.response.data.message === 'User is already admin') {
+        alert('조작할 수 없는 유저입니다.');
+        window.location.reload();
+      }
+      if (error.response.data.message === 'Permission Denied') {
+        alert('권한이 없습니다.');
+        window.location.reload();
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않습니다.');
+        window.location.reload();
+      }
     }
   };
 
@@ -91,7 +106,20 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       );
       setMenuAnchor(null);
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'User is not admin') {
+        alert('관리자가 아닌 유저입니다.');
+      }
+      if (error.response.data.message === 'Owner cannot be removed from admin') {
+        alert('오너 유저는 권한 제거가 불가능 합니다.');
+      }
+      if (error.response.data.message === 'Permission Denied') {
+        alert('권한이 없습니다.');
+        window.location.reload();
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않습니다.');
+        window.location.reload();
+      }
     }
   };
 
@@ -115,7 +143,22 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       );
       setMenuAnchor(null);
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'Impossible to mute owner or admin') {
+        alert('관리자는 채팅 금지할 수 없습니다.');
+      }
+      if (error.response.data.message === 'User have already been muted') {
+        alert('이미 채팅이 금지된 유저입니다.');
+      }
+      if (error.response.data.message === 'User is not in the chat') {
+        alert('채팅방에 있지 않은 유저입니다.');
+      }
+      if (error.response.data.message === 'Permission Denied') {
+        alert('권한이 없습니다.');
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않습니다.');
+      }
+
     }
   };
 
@@ -139,7 +182,15 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       );
       setMenuAnchor(null);
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'User have not been muted') {
+        alert('채팅 금지되어있지 않은 유저입니다.');
+      }
+      if (error.response.data.message === 'Permission Denied') {
+        alert('권한이 없습니다.');
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않습니다.');
+      }
     }
   };
 
@@ -197,7 +248,22 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         }),
       );
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'Impossible to ban owner or admin') {
+        alert('관리자는 추방할 수 없습니다.');
+      }
+      if (error.response.data.message === 'User have already been banned') {
+        alert('이미 추방된 유저입니다.');
+      }
+      if (error.response.data.message === 'User is not in the chat') {
+        alert('채팅방에 있지 않은 유저입니다.');
+      }
+      if (error.response.data.message === 'Permission Denied') {
+        alert('권한이 없습니다.');
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않습니다.');
+      }
+      
     }
   };
 

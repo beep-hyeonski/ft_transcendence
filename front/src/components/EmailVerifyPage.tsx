@@ -102,8 +102,18 @@ function EmailVerifyPage(): JSX.Element {
       await checkToken(dispatch);
       history.push('/');
     } catch (error: any) {
-      console.log(error.response);
-      alert('코드를 다시 확인해주세요.');
+      if (error.response.data.message === 'Invalid 2-Factor Token') {
+        alert('코드를 다시 확인해주세요.');
+      }
+      if (error.response.data.message === 'Did Not Turn On 2-Factor Authorization') {
+        alert('2단계 인증이 활성화 되어있지 않습니다.');
+        history.push('/');
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('등록되어있지 않은 유저입니다.');
+        history.push('/');
+      }
+
     }
   };
 

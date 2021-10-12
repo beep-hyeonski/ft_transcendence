@@ -72,8 +72,6 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
   const dispatch = useDispatch();
   const socket = useSelector((state: RootState) => state.socketModule);
 
-  console.log(data);
-
   const autoReject = useCallback(() => {
     if (data.status === 'REQUEST_MATCH') {
       socket?.socket?.emit('matchResponse', {

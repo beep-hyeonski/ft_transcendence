@@ -41,7 +41,10 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
         }),
       );
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+        window.location.reload();
+      }
     }
   };
 

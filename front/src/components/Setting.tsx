@@ -5,9 +5,11 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { updateUser } from '../modules/user';
 import { getUserme } from '../utils/Requests';
-import { changeSideBar, FOLLOW } from '../modules/sidebar';
+import { changeSideBar, FOLLOW, deleteSideData } from '../modules/sidebar';
 import SettingMyData from './SettingMyData';
 import SettingBlockedUsers from './SettingBlockedUsers';
+import { logout } from '../modules/auth';
+import { deleteUser } from '../modules/profile';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -93,10 +95,14 @@ function Setting(): JSX.Element {
         dispatch(updateUser(res));
       })
       .catch((err: any) => {
-        console.log(err.response);
-        localStorage.removeItem('p_auth');
-        alert('인증 정보가 유효하지 않습니다');
-        history.push('/');
+        if (err.response.data.message === 'User Not Found') {
+          alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+          localStorage.removeItem('p_auth');
+          dispatch(logout());
+          dispatch(deleteUser());
+          dispatch(deleteSideData());
+          history.push('/');
+        }
       });
   }, [history, dispatch]);
 

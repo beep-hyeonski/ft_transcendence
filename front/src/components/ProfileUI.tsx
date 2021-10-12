@@ -27,7 +27,6 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
         setIsValid(true);
       })
       .catch((err: any) => {
-        console.log(err.response);
         if (err.response.status === 404) {
           setIsValid(false);
         }

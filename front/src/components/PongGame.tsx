@@ -218,23 +218,18 @@ function PongGame(): JSX.Element {
     if (player1.score >= 3 || player2.score >= 3) {
       if (gamedata.gameInfo.player1 === mydata.username) {
         (async () => {
-          try {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            const { data } = await axios.get(
-              `/users/${gamedata.gameInfo.player2Nickname}`,
-            );
-            socket?.emit('matchResult', {
-              gameName: gamedata.gameName,
-              createMatchDto: {
-                player1Index: mydata.index,
-                player2Index: data.index,
-                player1Score: player1.score,
-                player2Score: player2.score,
-              },
-            });
-          } catch (err: any) {
-            console.log(err.response);
-          }
+          const { data } = await axios.get(
+            `/users/${gamedata.gameInfo.player2Nickname}`,
+          );
+          socket?.emit('matchResult', {
+            gameName: gamedata.gameName,
+            createMatchDto: {
+              player1Index: mydata.index,
+              player2Index: data.index,
+              player1Score: player1.score,
+              player2Score: player2.score,
+            },
+          });
         })();
       }
       dispatch(waitGame());

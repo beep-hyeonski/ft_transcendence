@@ -25,11 +25,6 @@ export async function getChats(): Promise<any> {
   return response.data;
 }
 
-export async function getDM(name: string): Promise<any> {
-  const response = await axios.get(`/dm/${name}`);
-  return response.data;
-}
-
 export async function getChatInfo(index: number): Promise<any> {
   const response = await axios.get(`/chat/${index}`);
   return response.data;

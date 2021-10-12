@@ -112,9 +112,10 @@ export default function DMRoom({
         }));
         setMsg(msgs);
       } catch (error: any) {
-        console.log(error.response);
-        alert('접근할 수 없습니다');
-        history.goBack();
+        if (error.response.data.message === 'Not Found') {
+          alert('접근할 수 없습니다');
+          history.goBack();
+        }
       }
     })();
 
@@ -130,13 +131,8 @@ export default function DMRoom({
       setMsg((prev) => prev.concat(msg));
     });
 
-    socket?.on('chatException', (payload) => {
-      console.log(payload);
-    });
-
     return () => {
       socket?.off('onDM');
-      socket?.off('chatException');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nickname, dispatch, socket]);

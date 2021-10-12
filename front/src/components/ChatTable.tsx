@@ -42,18 +42,6 @@ interface ChatInfoProps {
   joinUsers: any[];
 }
 
-interface ModalProps {
-  index: number;
-  open: boolean;
-  status: string;
-  title: string;
-  joinUsers: never[];
-  bannedUsers: never[];
-  mutedUsers: never[];
-  adminUsers: never[];
-  ownerUser: string;
-}
-
 function ChatTable({ create }: ChatTableProps): JSX.Element {
   const classes = useStyles();
   const [modal, setModal] = useState({
@@ -79,9 +67,6 @@ function ChatTable({ create }: ChatTableProps): JSX.Element {
               !chat.joinUsers.find((user: any) => user.index === mydata.index),
           ),
         );
-      })
-      .catch((err: any) => {
-        console.log(err.response);
       });
   }, [create, mydata.index, mydata.joinChannels]);
 

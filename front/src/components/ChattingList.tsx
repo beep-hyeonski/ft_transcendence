@@ -37,8 +37,6 @@ interface ChattingListProps {
 function ChattingList({ data }: ChattingListProps): JSX.Element {
   const classes = useStyles();
 
-  console.log(data.messageContent);
-
   return (
     <ListItem className={classes.root}>
       <DrawAvatar

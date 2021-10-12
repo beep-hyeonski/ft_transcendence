@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import MenuIcon from '@material-ui/icons/Menu';
+import { useHistory } from 'react-router';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
@@ -44,6 +45,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const mydata = useSelector((state: RootState) => state.userModule);
+  const history = useHistory();
 
   useEffect(() => {
     setIsOwner(user.role === 'owner');
@@ -63,7 +65,13 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
       const newUsers = await getUsers();
       setUsers(newUsers);
     } catch (err: any) {
-      console.log(err.response);
+      if (err.response.data.message === 'You are not owner') {
+        alert('권한이 없습니다.');
+        history.push('/');
+      }
+      if (err.response.data.message === 'User Not Found') {
+        window.location.reload();
+      }
     }
   };
 
@@ -75,7 +83,16 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
       const newUsers = await getUsers();
       setUsers(newUsers);
     } catch (err: any) {
-      console.log(err.response);
+      if (err.response.data.message === 'You are not owner') {
+        alert('권한이 없습니다.');
+        history.push('/');
+      }
+      if (err.response.data.message === 'User Not Found') {
+        window.location.reload();
+      }
+      if (err.response.data.message === 'You cannot unregister admin yourself') {
+        window.location.reload();
+      }
     }
   };
 
@@ -88,18 +105,13 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
       const newBanUsers = await getBanUsers();
       setBanUsers(newBanUsers);
     } catch (err: any) {
-      console.log(err.response);
-    }
-    setMenuAnchor(null);
-  };
-
-  const onClickUserUnBan = async (e: React.MouseEvent<HTMLLIElement>) => {
-    e.preventDefault();
-    try {
-      const res = await axios.delete(`/users/ban/${user.username}`);
-      console.log(res);
-    } catch (err: any) {
-      console.log(err.response);
+      if (err.response.data.message === 'You are not admin') {
+        alert('권한이 없습니다.');
+        history.push('/');
+      }
+      if (err.response.data.message === 'You cannot ban admin or owner') {
+        alert('관리할 수 없는 유저입니다.');
+      }
     }
     setMenuAnchor(null);
   };

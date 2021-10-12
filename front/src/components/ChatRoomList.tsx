@@ -83,7 +83,10 @@ function ChatRoomList({ roomdata, setModal }: Roomdata): JSX.Element {
         ownerUser: res.ownerUser.nickname,
       });
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+        window.location.reload();
+      }
     }
   };
 

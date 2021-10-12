@@ -3,10 +3,11 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 import { updateUser } from '../modules/user';
 import { getUserme } from './Requests';
-import { loginCheck, loginSuccess } from '../modules/auth';
+import { loginCheck, loginSuccess, logout } from '../modules/auth';
 import { deleteUser } from '../modules/profile';
 import { bannedUserHandler, tokenErrorHandler } from './errorHandler';
 import { initSocket } from '../modules/socket';
+import { deleteSideData } from '../modules/sidebar';
 
 async function checkToken(dispatch: Dispatch): Promise<void> {
   const token = localStorage.getItem('p_auth');
@@ -48,7 +49,6 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
       extraHeaders: { Authorization: `${String(token)}` },
     });
     socketInstance?.on('exception', ({ message }) => {
-      console.log(message);
       if (message === 'User is banned') {
         bannedUserHandler(dispatch);
       }
@@ -59,7 +59,14 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
     if (err?.response?.status !== 403) {
       localStorage.removeItem('p_auth');
     }
-    // 서버 꺼져있을 경우 에러 핸들링 필요
+    if (err.response.data.message === 'User Not Found') {
+      alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+      localStorage.removeItem('p_auth');
+      dispatch(logout());
+      dispatch(deleteUser());
+      dispatch(deleteSideData());
+      window.location.href = '/';
+    }
     dispatch(loginCheck());
   }
 }

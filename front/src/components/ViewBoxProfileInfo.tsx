@@ -106,7 +106,6 @@ function ViewBoxProfileInfo(): JSX.Element {
   const [record, setRecord] = useState([]);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     axios
       .get(`/match/${userdata.username}`)
       .then((res) => {
@@ -118,7 +117,9 @@ function ViewBoxProfileInfo(): JSX.Element {
         setRecord(res.data);
       })
       .catch((err: any) => {
-        console.log(err.response);
+        if (err.response.data.message === 'Not Found') {
+          alert('존재하지 않는 유저입니다.');
+        }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userdata.username]);

@@ -25,7 +25,6 @@ function GameSpeedDialog(): JSX.Element {
   };
 
   const handleListItemClick = (value: string) => {
-    console.log(value);
     socket?.socket?.on('requestedGame', (payload: any) => {
       dispatch(pvpQueueGame(payload.gameName));
     })

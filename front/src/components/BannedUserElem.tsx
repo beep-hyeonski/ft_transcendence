@@ -84,7 +84,15 @@ const BannedUserElem = ({ user }: UserData): JSX.Element => {
         }),
       );
     } catch (err: any) {
-      console.log(err.response);
+      if (err.response.data.message === 'User have not been banned') {
+        alert('추방되지 않은 유저는 추방할 수 없습니다.');
+      }
+      if (err.response.data.message === 'Permission Denied') {
+        alert('권한이 없습니다.');
+      }
+      if (err.response.data.message === 'Not Found') {
+        alert('존재하지 않습니다.');
+      }
     }
   };
 

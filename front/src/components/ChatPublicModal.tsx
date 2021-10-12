@@ -7,7 +7,9 @@ import axios from 'axios';
 import ChatJoinedUser from './ChatJoinedUser';
 import { joinChatRoom } from '../modules/chat';
 import { getUsermeChat } from '../utils/Requests';
-import { updateUser } from '../modules/user';
+import { deleteUser, updateUser } from '../modules/user';
+import { logout } from '../modules/auth';
+import { deleteSideData } from '../modules/sidebar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -140,12 +142,43 @@ function ChatPublicModal({ modal, setModal }: ModalProps): JSX.Element {
           roomMuted: modal.mutedUsers,
         }),
       );
+    } catch (error: any) {
+      if (error.response.data.message === 'User Banned') {
+        alert('채팅방에 참여할 수 없습니다.');
+        return;
+      }
+      if (error.response.data.message === 'Not Found') {
+        alert('존재하지 않는 채팅방입니다.');
+        return;
+      }
+      if (error.response.data.message === 'Already joined user') {
+        alert('이미 참여한 채팅방 입니다.');
+        setModal({
+          index: -1,
+          open: false,
+          status: '',
+          title: '',
+          joinUsers: [],
+          bannedUsers: [],
+          mutedUsers: [],
+          adminUsers: [],
+          ownerUser: '',
+        });
+        return;
+      }
+    }
+    try {
       const data = await getUsermeChat();
       dispatch(updateUser(data));
     } catch (error: any) {
-      console.log(error.response);
-      if (error.response.data.message === 'User Banned')
-        alert('채팅방에 참여할 수 없습니다.');
+      if (error.response.data.message === 'User Not Found') {
+        alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+        localStorage.removeItem('p_auth');
+        dispatch(logout());
+        dispatch(deleteUser());
+        dispatch(deleteSideData());
+        window.location.href = '/';
+      }
     }
 
     // 참여중인 채팅방일 경우 이동만. 아닐 경우 추가 후 이동

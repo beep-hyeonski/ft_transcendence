@@ -6,7 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { RootState } from '../modules';
 import SettingInputs from './SettingInputs';
-import { updateUser } from '../modules/user';
+import { deleteUser, updateUser } from '../modules/user';
+import { logout } from '../modules/auth';
+import { deleteSideData } from '../modules/sidebar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -77,15 +79,8 @@ function SettingMyData(): JSX.Element {
     if (file) {
       formData.set('image', file);
     }
-    try {
-      const ret = await axios.post(`/images`, formData);
-      setImage(ret.data.image);
-    } catch (error: any) {
-      console.log(error.response);
-      localStorage.removeItem('p_auth');
-      alert('인증 정보가 유효하지 않습니다');
-      history.push('/');
-    }
+    const ret = await axios.post(`/images`, formData);
+    setImage(ret.data.image);
   };
 
   const clickSaveButton = async (form: {
@@ -111,7 +106,14 @@ function SettingMyData(): JSX.Element {
       dispatch(updateUser(ret.data));
       alert('저장되었습니다.');
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.data.message === 'User Not Found') {
+        alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+        localStorage.removeItem('p_auth');
+        dispatch(logout());
+        dispatch(deleteUser());
+        dispatch(deleteSideData());
+        window.location.href = '/';
+      }
       if (error.response.data.message === 'Duplicated Nickname') {
         alert('이미 사용중인 닉네임입니다');
       } else {
