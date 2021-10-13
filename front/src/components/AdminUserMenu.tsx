@@ -4,7 +4,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { useHistory } from 'react-router';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
-import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import { IconButton, Menu, MenuItem, ThemeProvider, unstable_createMuiStrictModeTheme } from '@material-ui/core';
 import { getBanUsers, getUsers } from '../utils/Requests';
 import { RootState } from '../modules';
 
@@ -46,6 +46,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const mydata = useSelector((state: RootState) => state.userModule);
   const history = useHistory();
+  const theme = unstable_createMuiStrictModeTheme();
 
   useEffect(() => {
     setIsOwner(user.role === 'owner');
@@ -130,7 +131,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
   }
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <IconButton className={classes.menuIconLocation} onClick={onClickMenu}>
         <MenuIcon className={classes.menuIcon} />
       </IconButton>
@@ -144,7 +145,7 @@ const AdminUserMenu = ({ user, setUsers, setBanUsers }: UserData) => {
           <MenuItem onClick={onClickUserBan}>유저 추방</MenuItem>
         )}
       </Menu>
-    </>
+    </ThemeProvider>
   );
 };
 

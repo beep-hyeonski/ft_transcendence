@@ -34,10 +34,9 @@ function AdminUsers(): JSX.Element {
   const [users, setUsers] = useState<UserdataProps[]>([]);
   const [banUsers, setBanUsers] = useState<UserdataProps[]>([]);
   const history = useHistory();
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    setSubscribed(true);
+    let isSubscribed = true;
     (async () => {
       try {
         const usersRes = await getUsers();
@@ -53,7 +52,7 @@ function AdminUsers(): JSX.Element {
         }
       }
     })();
-    return () => setSubscribed(false);
+    return () => {isSubscribed = false};
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

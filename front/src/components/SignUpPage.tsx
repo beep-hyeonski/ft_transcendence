@@ -135,8 +135,12 @@ function SignUpPage(): JSX.Element {
     if (file) {
       formData.set('image', file);
     }
-    const ret = await axios.post(`/images`, formData);
-    setImage(ret.data.image);
+    try {
+      const ret = await axios.post(`/images`, formData);
+      setImage(ret.data.image);
+    } catch (err: any) {
+      alert('파일 형식을 지켜주세요');
+    }
   };
 
   return (
@@ -152,7 +156,7 @@ function SignUpPage(): JSX.Element {
         type="file"
         name="profileImage"
         onChange={changeImage}
-        accept=".jpg, .jpeg, .png, .gif"
+        accept=".jpg, .jpeg, .png"
       />
       <SignUpInputs onSubmit={clickSignUpButton} buttonName="Sign Up" />
     </div>

@@ -103,10 +103,9 @@ function ViewBoxProfileInfo(): JSX.Element {
   const classes = useStyles();
   const userdata = useSelector((state: RootState) => state.profileModule);
   const [record, setRecord] = useState([]);
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    setSubscribed(true);
+    let isSubscribed = true;
     (async () => {
       try {
         let { data } = await axios.get(`/match/${userdata.username}`);
@@ -122,7 +121,7 @@ function ViewBoxProfileInfo(): JSX.Element {
         }
       }
     })();
-    return () => setSubscribed(false);
+    return () => {isSubscribed = false};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userdata.username]);
 

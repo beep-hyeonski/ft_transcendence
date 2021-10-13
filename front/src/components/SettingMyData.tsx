@@ -79,8 +79,12 @@ function SettingMyData(): JSX.Element {
     if (file) {
       formData.set('image', file);
     }
-    const ret = await axios.post(`/images`, formData);
-    setImage(ret.data.image);
+    try {
+      const ret = await axios.post(`/images`, formData);
+      setImage(ret.data.image);
+    } catch (err: any) {
+      alert('파일 형식을 지켜주세요');
+    }
   };
 
   const clickSaveButton = async (form: {
@@ -137,7 +141,7 @@ function SettingMyData(): JSX.Element {
         type="file"
         name="profileImage"
         onChange={changeImage}
-        accept=".jpg, .jpeg, .png, .gif"
+        accept=".jpg, .jpeg, .png"
       />
       <SettingInputs
         onSubmit={clickSaveButton}

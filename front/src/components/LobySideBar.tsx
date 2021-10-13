@@ -56,11 +56,10 @@ function LobySideBar(): JSX.Element {
   const dispatch = useDispatch();
   const [users, setUsers] = useState<any[]>([]);
   const { index } = useSelector((state: RootState) => state.userModule);
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   // TODO: 에러 분기 나눠주기
   useEffect(() => {
-    setSubscribed(true);
+    let isSubscribed = true;
     (async () => {
       try {
         const data: any[] = await getUsers();
@@ -74,7 +73,7 @@ function LobySideBar(): JSX.Element {
         history.push('/');
       }
     })();
-    return () => setSubscribed(false);
+    return () => {isSubscribed = false};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -140,10 +140,9 @@ function AdminChannelModal({
     },
     mutedUsers: [],
   });
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    setSubscribed(true);
+    let isSubscribed = true;
     if (chatModal.open) {
       (async () => {
         try {
@@ -179,7 +178,7 @@ function AdminChannelModal({
         }
       })();
     }
-    return () => setSubscribed(false);
+    return () => {isSubscribed = false};
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatModal.chatIndex, chatModal.open, setChats]);
 

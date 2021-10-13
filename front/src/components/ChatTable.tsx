@@ -68,11 +68,10 @@ function ChatTable({ create }: ChatTableProps): JSX.Element {
     ownerUser: '',
   });
   const [chats, setChats] = useState<ChatInfoProps[]>([]);
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
   const mydata = useSelector((state: RootState) => state.userModule);
 
   useEffect(() => {
-    setSubscribed(true);
+    let isSubscribed = true;
     (async () => {
       const res = await getChats();
       const joinedChats = res.filter(
@@ -83,7 +82,7 @@ function ChatTable({ create }: ChatTableProps): JSX.Element {
         setChats(joinedChats);
       }
     })();
-    return () => setSubscribed(false);
+    return () => {isSubscribed = false};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [create, mydata.index, mydata.joinChannels]);
 

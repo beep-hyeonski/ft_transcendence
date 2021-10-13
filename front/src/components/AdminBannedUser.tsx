@@ -33,10 +33,9 @@ function AdminBannedUser(): JSX.Element {
   const classes = useStyles();
   const [banUsers, setBanUsers] = useState<UserdataProps[]>([]);
   const history = useHistory();
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    setSubscribed(true);
+    let isSubscribed = true;
     getBanUsers()
       .then((res) => {
         if (isSubscribed) setBanUsers(res);
@@ -47,7 +46,7 @@ function AdminBannedUser(): JSX.Element {
           history.push('/');
         }
       });
-    return () => setSubscribed(false);
+    return () => {isSubscribed = false};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -96,10 +96,9 @@ export default function DMRoom({
 
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [inputs, setInputs] = useState('');
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    setSubscribed(true);
+    let isSubscribed = true;
     dispatch(deleteSideData());
     (async () => {
       try {
@@ -134,7 +133,7 @@ export default function DMRoom({
     });
 
     return () => {
-      setSubscribed(false);
+      isSubscribed = false;
       socket?.off('onDM');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -17,14 +17,16 @@ function AdminUsers(): JSX.Element {
     open: false,
     chatIndex: -1,
   });
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    setSubscribed(true);
-    getChats().then((res) => {
-      if (isSubscribed) setChats(res);
-    });
-    return () => setSubscribed(false);
+    let isSubscribed = true;
+    (async () => {
+      const res = await getChats();
+      if (isSubscribed) {
+        setChats(res);
+      }
+    })();
+    return () => {isSubscribed = false};
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

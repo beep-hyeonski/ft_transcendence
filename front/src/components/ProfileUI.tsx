@@ -13,7 +13,6 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
   const dispatch = useDispatch();
   const { id } = props.match.params;
   const [isValid, setIsValid] = useState(true);
-  const [isSubscribed, setSubscribed] = useState<boolean>(false);
 
   const changeId = (userid: string): void => {
     props.history.push(`/profile/${userid}`);
@@ -21,7 +20,7 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
 
   useEffect(() => {
     dispatch(changeSideBar({ type: FOLLOW }));
-    setSubscribed(true);
+    let isSubscribed = true;
     axios
       .get(`/users/${id}`)
       .then((res) => {
@@ -33,7 +32,7 @@ function ProfileUI(props: RouteComponentProps<{ id: string }>): JSX.Element {
           if (isSubscribed) setIsValid(false);
         }
       });
-    return () => setSubscribed(false);
+    return () => {isSubscribed = false};
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
 
