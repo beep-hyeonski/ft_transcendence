@@ -151,6 +151,7 @@ export class AppGateway
 
       this.server.to(roomName).emit('onMessage', {
         sendUser: {
+          username: user.username,
           nickname: user.nickname,
           avatar: user.avatar,
         },
@@ -169,9 +170,7 @@ export class AppGateway
     const user = await this.getUserByJwt(
       client.handshake.headers.authorization,
     );
-    const receiveUser = await this.usersService.getUserByNickname(
-      payload.receiveUser,
-    );
+    const receiveUser = await this.usersService.getUser(payload.receiveUser);
 
     if (user.isBanned) throw new WsException('User is banned');
 
@@ -189,6 +188,7 @@ export class AppGateway
 
       const sendPayload = {
         sendUser: {
+          username: user.username,
           nickname: user.nickname,
           avatar: user.avatar,
         },
@@ -358,7 +358,7 @@ export class AppGateway
     client.emit('requestedGame', {
       status: 'SUCCESS',
       gameName: gameName,
-    })
+    });
     await this.usersService.statusChange(payload.receiveUserIndex, 'INQUEUE');
     await this.usersService.statusChange(sender.index, 'INQUEUE');
   }

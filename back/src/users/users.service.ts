@@ -62,15 +62,15 @@ export class UsersService {
     return user;
   }
 
-  async getUserByNickname(nickname: string) {
-    const user = await this.userRepository.findOne({
-      relations: ['followings', 'blockings'],
-      where: { nickname: nickname },
-    });
+  // async getUserByNickname(nickname: string) {
+  //   const user = await this.userRepository.findOne({
+  //     relations: ['followings', 'blockings'],
+  //     where: { nickname: nickname },
+  //   });
 
-    if (!user) throw new NotFoundException('User Not Found');
-    return user;
-  }
+  //   if (!user) throw new NotFoundException('User Not Found');
+  //   return user;
+  // }
 
   async patchUser(jwtPayloadDto: JwtPayloadDto, updateUserDto: UpdateUserDto) {
     const user = await this.getUser(jwtPayloadDto.username);

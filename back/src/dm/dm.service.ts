@@ -12,9 +12,9 @@ export class DmService {
     @InjectRepository(DM) private dmRepository: Repository<DM>,
   ) {}
 
-  async getDMByNickname(jwtPayloadDto: JwtPayloadDto, nickname: string) {
+  async getDMByUsername(jwtPayloadDto: JwtPayloadDto, username: string) {
     const otherUser = await this.userRepository.findOneOrFail({
-      where: { nickname },
+      where: { username },
     });
     const dms = await this.dmRepository.find({
       relations: ['sendUser', 'receiveUser'],

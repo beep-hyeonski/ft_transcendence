@@ -149,12 +149,12 @@ export class ChatController {
   async registerAdmin(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
-    @Body('nickname') nickname: string,
+    @Body('username') username: string,
   ) {
     return await this.chatService.registerAdmin(
       req.userData,
       chatIndex,
-      nickname,
+      username,
     );
   }
 
@@ -178,12 +178,12 @@ export class ChatController {
   async unRegisterAdmin(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
-    @Body('nickname') nickname: string,
+    @Body('username') username: string,
   ) {
     return await this.chatService.unRegisterAdmin(
       req.userData,
       chatIndex,
-      nickname,
+      username,
     );
   }
 
@@ -207,12 +207,12 @@ export class ChatController {
   async registerMuteUser(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
-    @Body('nickname') nickname: string,
+    @Body('username') username: string,
   ) {
     return await this.chatService.registerMuteUser(
       req.user,
       chatIndex,
-      nickname,
+      username,
     );
   }
 
@@ -233,12 +233,12 @@ export class ChatController {
   async unRegisterMuteUser(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
-    @Body('nickname') nickname: string,
+    @Body('username') username: string,
   ) {
     return await this.chatService.unRegisterMuteUser(
       req.user,
       chatIndex,
-      nickname,
+      username,
     );
   }
 
@@ -262,12 +262,12 @@ export class ChatController {
   async registerBanUser(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
-    @Body('nickname') nickname: string,
+    @Body('username') username: string,
   ) {
     return await this.chatService.registerBanUser(
       req.user,
       chatIndex,
-      nickname,
+      username,
     );
   }
 
@@ -288,12 +288,12 @@ export class ChatController {
   async unRegisterBanUser(
     @Req() req: any,
     @Param('chatIndex') chatIndex: number,
-    @Body('nickname') nickname: string,
+    @Body('username') username: string,
   ) {
     return await this.chatService.unRegisterBanUser(
       req.user,
       chatIndex,
-      nickname,
+      username,
     );
   }
 
