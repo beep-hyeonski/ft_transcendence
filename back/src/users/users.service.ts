@@ -35,7 +35,7 @@ export class UsersService {
   async getUser(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
       relations: ['followings', 'blockings'],
-      where: { username: username },
+      where: { username },
     });
 
     if (!user) throw new NotFoundException('User Not Found');
@@ -55,22 +55,22 @@ export class UsersService {
   async getUserWithChat(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
       relations: ['joinChannels'],
-      where: { username: username },
+      where: { username },
     });
 
     if (!user) throw new NotFoundException('User Not Found');
     return user;
   }
 
-  // async getUserByNickname(nickname: string) {
-  //   const user = await this.userRepository.findOne({
-  //     relations: ['followings', 'blockings'],
-  //     where: { nickname: nickname },
-  //   });
+  async getUserByNickname(nickname: string) {
+    const user = await this.userRepository.findOne({
+      relations: ['followings', 'blockings'],
+      where: { nickname },
+    });
 
-  //   if (!user) throw new NotFoundException('User Not Found');
-  //   return user;
-  // }
+    if (!user) throw new NotFoundException('User Not Found');
+    return user;
+  }
 
   async patchUser(jwtPayloadDto: JwtPayloadDto, updateUserDto: UpdateUserDto) {
     const user = await this.getUser(jwtPayloadDto.username);
@@ -107,7 +107,7 @@ export class UsersService {
 
   async statusChange(index: number, status: string) {
     const user = await this.userRepository.findOneOrFail({
-      where: { index: index },
+      where: { index },
     });
 
     switch (status) {

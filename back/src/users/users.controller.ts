@@ -8,6 +8,7 @@ import {
   Req,
   Post,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -27,16 +28,24 @@ import { JwtAuthGuard } from 'src/auth/strategy/jwt-auth.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: '전체 유저 조회' })
+  @ApiOperation({ summary: '유저 조회' })
   @ApiOkResponse({
-    description: '전체 유저 정보 배열',
-    type: User,
-    isArray: true,
+    description:
+      '전체 유저 정보 배열 || username 또는 nickname에 해당하는 유저 정보',
   })
   @UseGuards(JwtAuthGuard)
   @Get()
-  getUsers() {
-    return this.usersService.getUsers();
+  async getUsers(
+    @Query('username') username: string,
+    @Query('nickname') nickname: string,
+  ) {
+    if (username) {
+      return await this.usersService.getUser(username);
+    }
+    if (nickname) {
+      return await this.usersService.getUserByNickname(nickname);
+    }
+    return await this.usersService.getUsers();
   }
 
   @ApiOperation({ summary: '내 정보 검색' })
@@ -44,8 +53,8 @@ export class UsersController {
   @ApiNotFoundResponse({ description: '내 정보가 없는 경우 (User Not Found)' })
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getMe(@Req() req: any) {
-    return this.usersService.getUser(req.user.username);
+  async getMe(@Req() req: any) {
+    return await this.usersService.getUser(req.user.username);
   }
 
   @ApiOperation({ summary: '내 정보 수정' })
@@ -53,8 +62,8 @@ export class UsersController {
   @ApiNotFoundResponse({ description: '내 정보가 없는 경우 (User Not Found)' })
   @UseGuards(JwtAuthGuard)
   @Patch('me')
-  patchUser(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.patchUser(req.user, updateUserDto);
+  async patchUser(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
+    return await this.usersService.patchUser(req.user, updateUserDto);
   }
 
   @ApiOperation({ summary: '내 채팅 정보 조회' })
@@ -148,17 +157,17 @@ export class UsersController {
     return await this.usersService.unregisterAdmin(req.userData, username);
   }
 
-  @ApiOperation({
-    summary: 'username 검색',
-    description: 'username에 해당하는 user의 정보를 조회한다.',
-  })
-  @ApiOkResponse({ type: User })
-  @ApiNotFoundResponse({
-    description: '조회할 유저 정보 없음 (User Not Found)',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Get(':username')
-  getUser(@Param('username') username: string) {
-    return this.usersService.getUser(username);
-  }
+  // @ApiOperation({
+  //   summary: 'username 검색',
+  //   description: 'username에 해당하는 user의 정보를 조회한다.',
+  // })
+  // @ApiOkResponse({ type: User })
+  // @ApiNotFoundResponse({
+  //   description: '조회할 유저 정보 없음 (User Not Found)',
+  // })
+  // @UseGuards(JwtAuthGuard)
+  // @Get(':username')
+  // getUser(@Param('username') username: string) {
+  //   return this.usersService.getUser(username);
+  // }
 }
