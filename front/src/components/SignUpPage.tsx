@@ -87,7 +87,6 @@ function SignUpPage(): JSX.Element {
     email: string;
   }) => {
     const token = localStorage.getItem('p_auth');
-    console.log(form);
     if (!token) {
       alert('인증 정보가 유효하지 않습니다.');
       return;
