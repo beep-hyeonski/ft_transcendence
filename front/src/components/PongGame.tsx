@@ -213,7 +213,7 @@ function PongGame(): JSX.Element {
     if (player1.score >= 3 || player2.score >= 3) {
       if (gamedata.gameInfo.player1 === mydata.username) {
         (async () => {
-          const { data } = await getUserByUsername(gamedata.gameInfo.player2);
+          const data = await getUserByUsername(gamedata.gameInfo.player2);
           socket?.emit('matchResult', {
             gameName: gamedata.gameName,
             createMatchDto: {

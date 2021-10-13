@@ -126,7 +126,7 @@ export default function DMRoom({
 
     (async () => {
       try {
-        const { data } = await getUserByUsername(username);
+        const data = await getUserByUsername(username);
         setNickname(data.nickname);
       } catch (error: any) {
         if (error.response.data.message === 'User Not Found') {
