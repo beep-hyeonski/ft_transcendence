@@ -145,7 +145,9 @@ export default function DMRoom({
         },
         messageContent: message,
       };
-      setMsg((prev) => prev.concat(msg));
+      if (sendUser.username === username) {
+        setMsg((prev) => prev.concat(msg));
+      }
     });
 
     return () => {
