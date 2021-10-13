@@ -14,7 +14,7 @@ export class UpdateChatDto {
     example: 'Come in without Juyang!',
   })
   @IsString()
-  @MaxLength(20, { message: 'Invaild Chat Title Length' })
+  @MaxLength(20, { message: 'Invalid Chat Title Length' })
   title: string;
 
   @ApiProperty({ description: 'Chat Status', example: 'protected' })
@@ -27,7 +27,7 @@ export class UpdateChatDto {
   })
   @IsOptional()
   @IsString()
-  @MinLength(8, { message: 'Invaild Password Length' })
-  @MaxLength(20, { message: 'Invaild Password Length' })
+  @MinLength(8, { message: 'Invalid Password Length' })
+  @MaxLength(20, { message: 'Invalid Password Length' })
   password: string;
 }
