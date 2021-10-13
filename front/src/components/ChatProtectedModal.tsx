@@ -29,6 +29,7 @@ const useStyles = makeStyles(() =>
       marginTop: '0.5rem',
       marginLeft: '2rem',
       textShadow: '1px 1px 2px black',
+      overflow: 'auto',
     },
     input: {
       marginLeft: '4rem',

@@ -15,6 +15,7 @@ const useStyles = makeStyles(() =>
       borderRadius: '10px',
       border: '1px solid lightgray',
       boxShadow: '1px 1px 1px gray',
+      overflow: 'auto',
     },
     title: {
       paddingLeft: '1rem',

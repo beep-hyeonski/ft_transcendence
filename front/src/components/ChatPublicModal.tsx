@@ -30,6 +30,7 @@ const useStyles = makeStyles(() =>
       marginTop: '1rem',
       marginLeft: '3rem',
       textShadow: '1px 1px 2px black',
+      overflow: 'auto',
     },
     content: {
       marginTop: '1rem',
