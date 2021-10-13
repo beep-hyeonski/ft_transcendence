@@ -69,11 +69,11 @@ const AdminUsersElem = ({
     <div className={classes.root}>
       <Avatar className={classes.image} src={user.avatar} />
       <div className={classes.username}>{user.nickname}</div>
-      <AdminUserMenu
+      {user.role !== 'owner' && <AdminUserMenu
         user={user}
         setUsers={setUsers}
         setBanUsers={setBanUsers}
-      />
+      />}
     </div>
   );
 };
