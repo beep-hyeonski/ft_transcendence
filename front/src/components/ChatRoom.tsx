@@ -183,6 +183,7 @@ export default function ChatRoom(): JSX.Element {
       if (payload.message === 'User Not Joined in the Chat Socket') {
         alert('채팅방에서 추방되었습니다.');
         dispatch(exitChatRoom());
+        return;
       }
       if (payload.message === 'User Banned from the Chat') {
         alert('채팅방에서 추방되었습니다.');
