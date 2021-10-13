@@ -476,6 +476,11 @@ export class AppGateway
       throw new WsGameException('Not in Game');
     }
     const game = this.gameService.getGame(gameName);
+
+    if (!game) {
+      throw new WsGameException('Invalid Game');
+    }
+
     client.emit('matchComplete', {
       status: 'GAME_START',
       gameName: gameName,

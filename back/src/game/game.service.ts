@@ -177,7 +177,12 @@ export class GameService {
   }
 
   applyEvent(gameName: string, sender: string, keyState: KeyState) {
-    const game: Game = this.gameList.get(gameName);
+    const game: Game = this.getGame(gameName);
+
+    if (!game) {
+      throw new WsGameException('Invalid Game');
+    }
+
     let playerNumber: number;
     if (game.gameInfo.player1 === sender) {
       playerNumber = 0;
