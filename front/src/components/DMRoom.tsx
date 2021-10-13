@@ -96,6 +96,7 @@ export default function DMRoom({
   const [nickname, setNickname] = useState('');
   const history = useHistory();
   const dispatch = useDispatch();
+  const mydata = useSelector((state: RootState) => state.userModule);
 
   const [messages, setMsg] = useState<MessageProps[]>([]);
   const [inputs, setInputs] = useState('');
@@ -145,9 +146,8 @@ export default function DMRoom({
         },
         messageContent: message,
       };
-      if (sendUser.username === username) {
+      if (sendUser.username === mydata.username || sendUser.username === username)
         setMsg((prev) => prev.concat(msg));
-      }
     });
 
     return () => {
