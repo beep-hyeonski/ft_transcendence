@@ -50,7 +50,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       where: { index: request.user.sub },
     });
 
-    if (request.user.sub !== -1 && !request.userData) {
+    if (
+      (request.user.sub !== -1 && !request.userData) ||
+      request.user.username !== request.userData.username
+    ) {
       throw new UnauthorizedException('invalid token');
     }
 
