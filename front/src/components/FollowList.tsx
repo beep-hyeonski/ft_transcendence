@@ -77,7 +77,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
 
   const onClickFollowUser = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
-    history.push(`/profile/${user.nickname}`);
+    history.push(`/profile/${user.username}`);
   };
 
   const rightClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -87,7 +87,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
 
   const clickDM = (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
-    history.push(`/dm/${user.nickname}`);
+    history.push(`/dm/${user.username}`);
     setMenuAnchor(null);
     e.stopPropagation();
   };
@@ -138,9 +138,10 @@ function FollowList({ user }: UserdataProps): JSX.Element {
       >
         <DrawAvatar
           type="sideBarImage"
-          username={user.nickname}
+          username={user.username}
           src={user.avatar}
           status={user.status}
+          nickname={user.nickname}
         />
         <ListItemText
           primary={user.nickname}

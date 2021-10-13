@@ -103,6 +103,7 @@ const useStyles = makeStyles(() => ({
 interface MessageProps {
   timestamp: Date;
   sendUser: {
+    username: string;
     nickname: string;
     avatar: string;
   };
@@ -133,6 +134,7 @@ export default function ChatRoom(): JSX.Element {
         const msgs = data.map((message: any) => ({
           timestamp: new Date(message.createdAt),
           sendUser: {
+            username: message.sendUser.username,
             nickname: message.sendUser.nickname,
             avatar: message.sendUser.avatar,
           },
@@ -142,7 +144,7 @@ export default function ChatRoom(): JSX.Element {
           msgs.filter(
             (message: MessageProps) =>
               !mydata.blockings.find(
-                (block: any) => block.nickname === message.sendUser.nickname,
+                (block: any) => block.username === message.sendUser.username,
               ),
           ),
         );
@@ -164,6 +166,7 @@ export default function ChatRoom(): JSX.Element {
       const msg = {
         timestamp: new Date(),
         sendUser: {
+          username: sendUser.username,
           nickname: sendUser.nickname,
           avatar: sendUser.avatar,
         },
@@ -171,7 +174,7 @@ export default function ChatRoom(): JSX.Element {
       };
       if (
         !mydata.blockings.find(
-          (block: any) => block.nickname === msg.sendUser.nickname,
+          (block: any) => block.username === msg.sendUser.username,
         )
       )
         setMsg((prev) => prev.concat(msg));
@@ -257,8 +260,8 @@ export default function ChatRoom(): JSX.Element {
   }, [chatData.index, socket]);
 
   useEffect(() => {
-    setIsOwner(chatData.ownerUser === mydata.nickname);
-  }, [chatData.ownerUser, mydata.nickname]);
+    setIsOwner(chatData.ownerUser === mydata.username);
+  }, [chatData.ownerUser, mydata.username]);
 
   const onChange = (e: any) => {
     setInputs(e.target.value);
@@ -344,7 +347,7 @@ export default function ChatRoom(): JSX.Element {
           roomAdmins: data.adminUsers,
           roomBannedUsers: data.bannedUsers,
           roomMuted: data.mutedUsers,
-          roomOwner: data.ownerUser.nickname,
+          roomOwner: data.ownerUser.username,
         }),
       );
       setOpenJoinedMenu(true);

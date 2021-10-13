@@ -49,7 +49,7 @@ function ViewBoxProfileTitle({ changeId, isValid }: UserDataProps): JSX.Element 
 
   const searchUser = (form: { input: string }) => {
     if (form.input === 'me') {
-      changeId(mydata.nickname);
+      changeId(mydata.username);
       dispatch(changeUser(mydata));
       return;
     }
@@ -69,7 +69,7 @@ function ViewBoxProfileTitle({ changeId, isValid }: UserDataProps): JSX.Element 
       </div>
     );
   }
-  if (userdata.nickname === mydata.nickname) {
+  if (userdata.username === mydata.username) {
     return (
       <div>
         <div className={classes.profileTitle}>My Profile</div>

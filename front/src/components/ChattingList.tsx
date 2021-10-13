@@ -27,6 +27,7 @@ interface ChattingListProps {
   data: {
     messageContent: string;
     sendUser: {
+      username: string;
       nickname: string;
       avatar: string;
     };
@@ -41,9 +42,10 @@ function ChattingList({ data }: ChattingListProps): JSX.Element {
     <ListItem className={classes.root}>
       <DrawAvatar
         type="sideBarImage"
-        username={data.sendUser.nickname}
+        username={data.sendUser.username}
         src={data.sendUser.avatar}
         status="online"
+        nickname={data.sendUser.nickname}
       />
       <ListItemText
         className={classes.textArea}

@@ -45,6 +45,7 @@ interface UserdataProps {
   avatar: string;
   index: number;
   nickname: string;
+  username: string;
   status: string;
 }
 

@@ -75,7 +75,7 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
 
   const onClickLobyUser = () => {
     dispatch(changeSideBar({ type: FOLLOW }));
-    history.push(`/profile/${user.nickname}`);
+    history.push(`/profile/${user.username}`);
   };
 
   const rightClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -85,7 +85,7 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
 
   const clickDM = (e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
-    history.push(`/dm/${user.nickname}`);
+    history.push(`/dm/${user.username}`);
     setMenuAnchor(null);
     e.stopPropagation();
   };
@@ -130,15 +130,16 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
     <ThemeProvider theme={theme}>
       <ListItem
         button
-        key={user.nickname}
+        key={user.username}
         onClick={onClickLobyUser}
         onContextMenu={rightClick}
       >
         <DrawAvatar
           type="sideBarImage"
-          username={user.nickname}
+          username={user.username}
           src={user.avatar}
           status={user.status}
+          nickname={user.nickname}
         />
         <ListItemText
           primary={user.nickname}

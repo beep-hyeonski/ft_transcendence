@@ -219,7 +219,7 @@ function PongGame(): JSX.Element {
       if (gamedata.gameInfo.player1 === mydata.username) {
         (async () => {
           const { data } = await axios.get(
-            `/users/${gamedata.gameInfo.player2Nickname}`,
+            `/users/${gamedata.gameInfo.player2}`,
           );
           socket?.emit('matchResult', {
             gameName: gamedata.gameName,

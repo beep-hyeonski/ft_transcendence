@@ -37,7 +37,7 @@ function ChatJoinedList({ index, title }: SideBarProps): JSX.Element {
           roomBannedUsers: data.bannedUsers,
           roomAdmins: data.adminUsers,
           roomMuted: data.mutedUsers,
-          roomOwner: data.ownerUser.nickname,
+          roomOwner: data.ownerUser.username,
         }),
       );
     } catch (error: any) {

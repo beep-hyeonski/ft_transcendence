@@ -61,7 +61,7 @@ const AdminUsersElem = ({
     return <></>;
   }
 
-  if (mydata.nickname === user.nickname) {
+  if (mydata.username === user.username) {
     return <></>;
   }
 

@@ -92,12 +92,12 @@ function ChatUserMenu({ open, setOpen, isOwner }: ModalProps): JSX.Element {
   useEffect(() => {
     let isSubscribed = true;
     const res = chatData.adminUsers.find(
-      (user: any) => user.nickname === mydata.nickname,
+      (user: any) => user.username === mydata.username,
     );
     if (isSubscribed) setIsManager(res !== undefined);
     return () => {isSubscribed = false};
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatData.adminUsers, mydata.nickname]);
+  }, [chatData.adminUsers, mydata.username]);
 
   return (
     <div>

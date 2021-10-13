@@ -39,6 +39,7 @@ interface ChatDataProps {
   adminUsers: string[];
   ownerUser: {
     nickname: string;
+    username: string;
   };
   mutedUsers: string[];
 }
@@ -47,6 +48,7 @@ interface UserdataProps {
   avatar: string;
   index: number;
   nickname: string;
+  username: string;
   status: string;
 }
 
@@ -65,8 +67,8 @@ const AdminChannelJoinUserElem = ({
   const [isOwner, setIsOwner] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsOwner(chatData.ownerUser.nickname === user.nickname);
-  }, [chatData.ownerUser, user.nickname]);
+    setIsOwner(chatData.ownerUser.username === user.username);
+  }, [chatData.ownerUser, user.username]);
 
   return (
     <div className={classes.root}>

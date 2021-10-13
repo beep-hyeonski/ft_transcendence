@@ -113,15 +113,15 @@ function ViewBoxProfileImage(): JSX.Element {
   useEffect(() => {
     const isFollow =
       mydata.followings.find(
-        (value: any) => value.nickname === userdata.nickname,
+        (value: any) => value.username === userdata.username,
       ) !== undefined;
     setFollow(isFollow);
     const isBlock =
       mydata.blockings.find(
-        (value: any) => value.nickname === userdata.nickname,
+        (value: any) => value.username === userdata.username,
       ) !== undefined;
     setBlock(isBlock);
-  }, [mydata.blockings, mydata.followings, userdata.nickname]);
+  }, [mydata.blockings, mydata.followings, userdata.username]);
 
   const clickFollowButton = async () => {
     if (block) {
@@ -228,7 +228,7 @@ function ViewBoxProfileImage(): JSX.Element {
   return (
     <>
       <Avatar className={classes.profileImage} src={userdata.avatar} />
-      {userdata.nickname !== mydata.nickname && follow && (
+      {userdata.username !== mydata.username && follow && (
         <Button
           className={classes.unfollowButton}
           variant="contained"
@@ -237,7 +237,7 @@ function ViewBoxProfileImage(): JSX.Element {
           Unfollow
         </Button>
       )}
-      {userdata.nickname !== mydata.nickname && !follow && (
+      {userdata.username !== mydata.username && !follow && (
         <Button
           className={classes.followButton}
           variant="contained"
@@ -246,7 +246,7 @@ function ViewBoxProfileImage(): JSX.Element {
           Follow
         </Button>
       )}
-      {userdata.nickname !== mydata.nickname && !block && (
+      {userdata.username !== mydata.username && !block && (
         <Button
           className={classes.BlockButton}
           variant="contained"
@@ -255,7 +255,7 @@ function ViewBoxProfileImage(): JSX.Element {
           Block
         </Button>
       )}
-      {userdata.nickname !== mydata.nickname && block && (
+      {userdata.username !== mydata.username && block && (
         <Button
           className={classes.UnBlockButton}
           variant="contained"

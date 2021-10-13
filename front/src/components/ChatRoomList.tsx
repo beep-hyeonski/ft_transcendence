@@ -80,7 +80,7 @@ function ChatRoomList({ roomdata, setModal }: Roomdata): JSX.Element {
         bannedUsers: res.bannedUsers,
         mutedUsers: res.mutedUsers,
         adminUsers: res.adminUsers,
-        ownerUser: res.ownerUser.nickname,
+        ownerUser: res.ownerUser.username,
       });
     } catch (error: any) {
       if (error.response.data.message === 'Not Found') {

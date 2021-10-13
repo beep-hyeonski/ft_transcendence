@@ -35,6 +35,7 @@ interface ChatDataProps {
   adminUsers: string[];
   ownerUser: {
     nickname: string;
+    username: string;
   };
   mutedUsers: string[];
 }
@@ -43,6 +44,7 @@ interface UserdataProps {
   avatar: string;
   index: number;
   nickname: string;
+  username: string;
   status: string;
 }
 
@@ -64,7 +66,7 @@ const AdminJoinUserMenu = ({
 
   useEffect(() => {
     const adminUser = chatData.adminUsers.find(
-      (admin: any) => admin.nickname === user.nickname,
+      (admin: any) => admin.username === user.username,
     );
     setIsAdmin(adminUser !== undefined);
   }, [chatData.adminUsers, user, menuAnchor]);
@@ -78,7 +80,7 @@ const AdminJoinUserMenu = ({
     e.preventDefault();
     try {
       const { data } = await axios.post(`/chat/${chatData.index}/admin`, {
-        nickname: user.nickname,
+        username: user.username,
       });
       setChatData(data);
     } catch (error: any) {
@@ -106,7 +108,7 @@ const AdminJoinUserMenu = ({
     e.preventDefault();
     try {
       const { data } = await axios.delete(`/chat/${chatData.index}/admin`, {
-        data: { nickname: user.nickname },
+        data: { username: user.username },
       });
       setChatData(data);
     } catch (error: any) {

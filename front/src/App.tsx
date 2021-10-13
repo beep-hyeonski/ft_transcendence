@@ -47,13 +47,13 @@ function App(): JSX.Element {
             <Route path="/" exact component={MainUI} />
             <Route path="/chat" exact component={ChatUI} />
             <Route path="/profile" exact>
-              <Redirect to={`/profile/${userState.nickname}`} />
+              <Redirect to={`/profile/${userState.username}`} />
             </Route>
             <Route path="/profile/:id" exact component={ProfileUI} />
             <Route path="/setting" exact component={Setting} />
             <Route path="/game" exact component={PongGame} />
             <Route path="/admin" exact component={Admin} />
-            <Route path="/dm/:nickname" exact component={DMRoom} />
+            <Route path="/dm/:username" exact component={DMRoom} />
             <GameManager />
             <GameSpeedDialog />
           </>

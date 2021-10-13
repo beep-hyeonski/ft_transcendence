@@ -75,6 +75,7 @@ const useStyles = makeStyles(() => ({
 interface MessageProps {
   timestamp: Date;
   sendUser: {
+    username: string;
     nickname: string;
     avatar: string;
   };
@@ -82,7 +83,7 @@ interface MessageProps {
 }
 
 interface DMProps {
-  nickname: string;
+  username: string;
 }
 
 export default function DMRoom({
@@ -90,7 +91,8 @@ export default function DMRoom({
 }: RouteComponentProps<DMProps>): JSX.Element {
   const classes = useStyles();
   const { socket } = useSelector((state: RootState) => state.socketModule);
-  const { nickname } = match.params;
+  const { username } = match.params;
+  const [nickname, setNickname] = useState('');
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -102,10 +104,11 @@ export default function DMRoom({
     dispatch(deleteSideData());
     (async () => {
       try {
-        const { data } = await axios.get(`/dm/${nickname}`);
+        const { data } = await axios.get(`/dm/${username}`);
         const msgs = data.map((message: any) => ({
           timestamp: new Date(message.createdAt),
           sendUser: {
+            username: message.sendUser.username,
             nickname: message.sendUser.nickname,
             avatar: message.sendUser.avatar,
           },
@@ -120,10 +123,22 @@ export default function DMRoom({
       }
     })();
 
+    (async () => {
+      try {
+        const { data } = await axios.get(`/users/${username}`);
+        setNickname(data.nickname);
+      } catch (error: any) {
+        if (error.response.data.message === 'User Not Found') {
+          alert('존재하지 않는 유저입니다');
+        }
+      }
+    })();
+
     socket?.on('onDM', ({ sendUser, message }) => {
       const msg = {
         timestamp: new Date(),
         sendUser: {
+          username: sendUser.username,
           nickname: sendUser.nickname,
           avatar: sendUser.avatar,
         },
@@ -136,8 +151,8 @@ export default function DMRoom({
       isSubscribed = false;
       socket?.off('onDM');
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nickname, dispatch, socket]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onChange = (e: any) => {
     setInputs(e.target.value);
@@ -149,7 +164,7 @@ export default function DMRoom({
       return;
     }
     const data = {
-      receiveUser: nickname,
+      receiveUser: username,
       message: inputs,
     };
     if (e.key === 'Enter') {
@@ -164,7 +179,7 @@ export default function DMRoom({
       return;
     }
     const data = {
-      receiveUser: nickname,
+      receiveUser: username,
       message: inputs,
     };
     socket?.emit('onDM', data);

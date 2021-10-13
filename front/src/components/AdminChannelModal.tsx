@@ -87,6 +87,7 @@ interface ChatDataProps {
   adminUsers: string[];
   ownerUser: {
     nickname: string;
+    username: string;
   };
   mutedUsers: string[];
 }
@@ -94,6 +95,7 @@ interface ChatDataProps {
 interface MessageProps {
   timestamp: Date;
   sendUser: {
+    username: string;
     nickname: string;
     avatar: string;
   };
@@ -137,6 +139,7 @@ function AdminChannelModal({
     adminUsers: [],
     ownerUser: {
       nickname: '',
+      username: '',
     },
     mutedUsers: [],
   });
@@ -162,6 +165,7 @@ function AdminChannelModal({
           const msgs = data.map((message: any) => ({
             timestamp: new Date(message.createdAt),
             sendUser: {
+              username: message.sendUser.username,
               nickname: message.sendUser.nickname,
               avatar: message.sendUser.avatar,
             },

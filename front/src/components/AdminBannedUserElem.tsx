@@ -70,7 +70,7 @@ const AdminBannedUserElem = ({
   const mydata = useSelector((state: RootState) => state.userModule);
   const history = useHistory();
 
-  if (mydata.nickname === banUser.nickname) {
+  if (mydata.username === banUser.username) {
     return <></>;
   }
 
