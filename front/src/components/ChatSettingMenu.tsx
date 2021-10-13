@@ -224,7 +224,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
         status: res.data.status,
       });
     } catch (error: any) {
-      if (error.response.data.message[0] === 'Invaild Chat Title Length') {
+      if (error.response.data.message[0] === 'Invalid Chat Title Length') {
         alert('방 제목은 20자 이하여야합니다.');
         setForm({
           ...form,
