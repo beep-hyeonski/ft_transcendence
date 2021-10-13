@@ -51,8 +51,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     });
 
     if (
-      (request.user.sub !== -1 && !request.userData) ||
-      request.user.username !== request.userData.username
+      request.user.sub !== -1 &&
+      (!request.userData || request.user.username !== request.userData.username)
     ) {
       throw new UnauthorizedException('invalid token');
     }
