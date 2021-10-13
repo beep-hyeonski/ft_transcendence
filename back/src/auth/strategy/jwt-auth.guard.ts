@@ -50,6 +50,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       where: { index: request.user.sub },
     });
 
+    if (request.user.sub !== -1 && !request.userData) {
+      throw new UnauthorizedException('invalid token');
+    }
+
     if (request.userData && request.userData.isBanned)
       throw new ForbiddenException('User is banned');
 

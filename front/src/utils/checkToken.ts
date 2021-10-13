@@ -33,6 +33,8 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
         }
         if (error.response.data.message === 'User is banned') {
           bannedUserHandler(dispatch);
+        } else if (error.response.status === 401) {
+          tokenErrorHandler(dispatch);
         } else if (unauthMessages.includes(error.response.data.message)) {
           tokenErrorHandler(dispatch);
         }
