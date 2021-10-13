@@ -14,15 +14,13 @@ function GameQueuing(): JSX.Element {
   );
 
   useEffect(() => {
-    const callback = (payload: IGameDataProps) => {
-      if (payload.status === 'GAME_START') {
-        dispatch(setGameData(payload));
-        dispatch(ingGame());
-      }
-    };
-
     if (gamestate === 'PVPQUEUE' || gamestate === 'MATCHQUEUE') {
-      socket?.on('matchComplete', callback);
+      socket?.on('matchComplete', (payload: IGameDataProps) => {
+        if (payload.status === 'GAME_START') {
+          dispatch(setGameData(payload));
+          dispatch(ingGame());
+        }
+      });
     }
     if (gamestate === 'ING') {
       history.push('/game');

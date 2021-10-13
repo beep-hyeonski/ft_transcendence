@@ -13,7 +13,7 @@ import { RootState } from '../modules';
 import { pvpQueueGame, settingGame } from '../modules/gamestate';
 
 function GameSpeedDialog(): JSX.Element {
-  const socket = useSelector((state: RootState) => state.socketModule);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
   const theme = unstable_createMuiStrictModeTheme();
   const { dialog, receiveUserIndex } = useSelector(
     (state: RootState) => state.gameStateMoudle,
@@ -25,10 +25,10 @@ function GameSpeedDialog(): JSX.Element {
   };
 
   const handleListItemClick = (value: string) => {
-    socket?.socket?.on('requestedGame', (payload: any) => {
+    socket?.on('requestedGame', (payload: any) => {
       dispatch(pvpQueueGame(payload.gameName));
     })
-    socket?.socket?.emit('matchRequest', {
+    socket?.emit('matchRequest', {
       receiveUserIndex,
       ballSpeed: value,
     });

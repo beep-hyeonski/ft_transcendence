@@ -152,7 +152,7 @@ export default function DMRoom({
       isSubscribed = false;
       socket?.off('onDM');
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onChange = (e: any) => {
@@ -217,6 +217,7 @@ export default function DMRoom({
         onChange={onChange}
         onKeyPress={handleKeyPress}
         value={inputs}
+        autoComplete="off"
       />
       <Button
         variant="contained"

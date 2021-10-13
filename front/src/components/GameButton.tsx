@@ -23,19 +23,19 @@ const useStyles = makeStyles((theme) => ({
 
 function GameButton(): JSX.Element {
   const classes = useStyles();
-  const socket = useSelector((state: RootState) => state.socketModule);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
   const { gamestate } = useSelector(
     (state: RootState) => state.gameStateMoudle,
   );
   const dispatch = useDispatch();
 
   const clickGamestartButton = () => {
-    if (!socket || !socket.socket || gamestate !== 'WAIT') {
+    if (!socket || gamestate !== 'WAIT') {
       // gamestate가 WAIT이 아니라는 것은 게임중이거나 게임 큐를 기다리고 있는 상태
       return;
     }
     dispatch(matchQueueGame());
-    socket.socket.emit('matchQueue', () => {});
+    socket.emit('matchQueue', () => {});
   };
 
   return (

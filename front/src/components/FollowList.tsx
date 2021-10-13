@@ -107,15 +107,14 @@ function FollowList({ user }: UserdataProps): JSX.Element {
     e.preventDefault();
     setMenuAnchor(null);
     e.stopPropagation();
-    const callback = (payload: any) => {
+
+    socket?.on('matchComplete', (payload: any) => {
       if (payload.status === 'GAME_START') {
         dispatch(setGameData(payload));
         dispatch(ingGame());
       }
-    };
-    socket?.on('matchComplete', callback);
+    });
     socket?.emit('observeMatch', {
-      // number
       matchInUserIndex: user.index,
     });
     return () => {

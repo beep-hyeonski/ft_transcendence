@@ -70,7 +70,7 @@ function GameManager(): JSX.Element {
         dispatch(waitGame());
         alert('취소 된 게임입니다.');
       }
-    })
+    });
   }, [dispatch, socket]);
 
   useEffect(() => {
@@ -118,10 +118,10 @@ function GameManager(): JSX.Element {
   const clickCancleButton = () => {
     socket?.emit('cancelQueue', () => {});
   };
-  
+
   const clickPVPCancleButton = () => {
-    socket?.emit('cancelRequest', { gameName, });
-  }
+    socket?.emit('cancelRequest', { gameName });
+  };
 
   return (
     <>

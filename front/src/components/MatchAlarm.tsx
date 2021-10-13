@@ -70,11 +70,11 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
   const [rejectCheck, setRejectCheck] = useState<NodeJS.Timeout>();
   const classes = useStyles();
   const dispatch = useDispatch();
-  const socket = useSelector((state: RootState) => state.socketModule);
+  const { socket } = useSelector((state: RootState) => state.socketModule);
 
   const autoReject = useCallback(() => {
     if (data.status === 'REQUEST_MATCH') {
-      socket?.socket?.emit('matchResponse', {
+      socket?.emit('matchResponse', {
         status: 'REJECT',
         gameName: data.matchData.gameName,
         sendUserIndex: data.matchData.sendUserIndex,
@@ -109,7 +109,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
     if (rejectCheck) {
       clearTimeout(rejectCheck);
     }
-    socket?.socket?.emit('matchResponse', {
+    socket?.emit('matchResponse', {
       status: 'ACCEPT',
       gameName: data.matchData.gameName,
       sendUserIndex: data.matchData.sendUserIndex,
@@ -126,16 +126,14 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
       },
     });
 
-    const callback = (payload: IGameDataProps) => {
+    socket?.on('matchComplete', (payload: IGameDataProps) => {
       if (payload.status === 'GAME_START') {
         dispatch(setGameData(payload));
         dispatch(ingGame());
       }
-    };
-
-    socket?.socket?.on('matchComplete', callback);
+    });
     return () => {
-      socket?.socket?.off('matchComplete');
+      socket?.off('matchComplete');
     };
   };
 
@@ -143,7 +141,7 @@ const MatchAlarm = ({ data, setData }: MatchAlarmProps) => {
     if (rejectCheck) {
       clearTimeout(rejectCheck);
     }
-    socket?.socket?.emit('matchResponse', {
+    socket?.emit('matchResponse', {
       status: 'REJECT',
       gameName: data.matchData.gameName,
       sendUserIndex: data.matchData.sendUserIndex,

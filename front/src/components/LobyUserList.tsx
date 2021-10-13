@@ -105,13 +105,13 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
     e.preventDefault();
     setMenuAnchor(null);
     e.stopPropagation();
-    const callback = (payload: IGameDataProps) => {
+
+    socket?.on('matchComplete', (payload: IGameDataProps) => {
       if (payload.status === 'GAME_START') {
         dispatch(setGameData(payload));
         dispatch(ingGame());
       }
-    };
-    socket?.on('matchComplete', callback);
+    });
     socket?.emit('observeMatch', {
       // number
       matchInUserIndex: user.index,
