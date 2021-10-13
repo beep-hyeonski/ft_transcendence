@@ -6,9 +6,8 @@ import List from '@material-ui/core/List';
 import ChatJoinedList from './ChatJoinedList';
 import { RootState } from '../modules';
 import { getUsermeChat } from '../utils/Requests';
-import { deleteUser, updateUser } from '../modules/user';
-import { logout } from '../modules/auth';
-import { deleteSideData } from '../modules/sidebar';
+import { updateUser } from '../modules/user';
+import { logoutSequence } from '../utils/logoutSequence';
 
 const drawerWidth = '17%';
 
@@ -69,10 +68,7 @@ function ChatSideBar(): JSX.Element {
       .catch((err: any) => {
         if (err.response.data.message === 'User Not Found') {
           alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
-          localStorage.removeItem('p_auth');
-          dispatch(logout());
-          dispatch(deleteUser());
-          dispatch(deleteSideData());
+          logoutSequence(dispatch);
           window.location.href = '/';
         }
       });

@@ -13,9 +13,7 @@ import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
 import { getUserme } from '../utils/Requests';
 import { updateUser } from '../modules/user';
-import { logout } from '../modules/auth';
-import { deleteUser } from '../modules/profile';
-import { deleteSideData } from '../modules/sidebar';
+import { logoutSequence } from '../utils/logoutSequence';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -251,10 +249,7 @@ function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
       }
       if (error.response.data.message === 'User Not Found') {
         alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
-        localStorage.removeItem('p_auth');
-        dispatch(logout());
-        dispatch(deleteUser());
-        dispatch(deleteSideData());
+        logoutSequence(dispatch);
         window.location.href = '/';
       }
     }

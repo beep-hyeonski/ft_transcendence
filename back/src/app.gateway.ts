@@ -60,23 +60,18 @@ export class AppGateway
   handleConnection(client: Socket) {
     const jwtDecoded = this.jwtService.verify(
       client.handshake.headers.authorization,
-    );
-    if (this.wsClients.has(jwtDecoded.sub)) {
-      client.emit('exception', {
-        status: 'error',
-        message: 'Already Connected User',
-      });
-      client.disconnect();
-      this.usersService.statusChange(jwtDecoded.sub, 'ONLINE').catch(() => {
-        throw new WsException('User Not Found');
-      });
-      return;
-    }
-    this.wsClients.set(jwtDecoded.sub, client);
-    this.usersService.statusChange(jwtDecoded.sub, 'ONLINE').catch(() => {
-      throw new WsException('User Not Found');
-    });;
-    this.logger.log(`Client ${jwtDecoded.username} Connected`);
+      );
+      if (this.wsClients.has(jwtDecoded.sub)) {
+        client.emit('exception', {
+          status: 'error',
+          message: 'Already Connected User',
+        });
+        client.disconnect();
+        return;
+      }
+      this.wsClients.set(jwtDecoded.sub, client);
+      this.usersService.statusChange(jwtDecoded.sub, 'ONLINE');
+      this.logger.log(`Client ${jwtDecoded.username} Connected`);
   }
 
   handleDisconnect(client: Socket) {

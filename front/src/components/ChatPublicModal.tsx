@@ -7,9 +7,8 @@ import axios from 'axios';
 import ChatJoinedUser from './ChatJoinedUser';
 import { joinChatRoom } from '../modules/chat';
 import { getUsermeChat } from '../utils/Requests';
-import { deleteUser, updateUser } from '../modules/user';
-import { logout } from '../modules/auth';
-import { deleteSideData } from '../modules/sidebar';
+import { updateUser } from '../modules/user';
+import { logoutSequence } from '../utils/logoutSequence';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -174,10 +173,7 @@ function ChatPublicModal({ modal, setModal }: ModalProps): JSX.Element {
     } catch (error: any) {
       if (error.response.data.message === 'User Not Found') {
         alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
-        localStorage.removeItem('p_auth');
-        dispatch(logout());
-        dispatch(deleteUser());
-        dispatch(deleteSideData());
+        logoutSequence(dispatch);
         window.location.href = '/';
       }
     }

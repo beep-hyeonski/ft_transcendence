@@ -3,11 +3,11 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 import { updateUser } from '../modules/user';
 import { getUserme } from './Requests';
-import { loginCheck, loginSuccess, logout } from '../modules/auth';
+import { loginCheck, loginSuccess } from '../modules/auth';
 import { deleteUser } from '../modules/profile';
 import { bannedUserHandler, tokenErrorHandler } from './errorHandler';
 import { initSocket } from '../modules/socket';
-import { deleteSideData } from '../modules/sidebar';
+import { logoutSequence } from './logoutSequence';
 
 async function checkToken(dispatch: Dispatch): Promise<void> {
   const token = localStorage.getItem('p_auth');
@@ -48,25 +48,27 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
 
     const socketInstance = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
       extraHeaders: { Authorization: `${String(token)}` },
+      autoConnect: false,
     });
+    socketInstance.connect();
 
-    socketInstance?.on('exception', ({ message }) => {
+    socketInstance.on('exception', ({ message }) => {
       if (message === 'User is banned') {
         bannedUserHandler(dispatch);
+      } else if (message === 'Already Connected User') {
+        logoutSequence(dispatch);
+        alert('이미 접속한 사용자입니다. 이전 연결을 해제해주세요.');
       }
     });
     dispatch(initSocket(socketInstance));
   } catch (err: any) {
     dispatch(deleteUser());
-    if (err?.response?.status !== 403) {
+    if (err.response.status !== 403) {
       localStorage.removeItem('p_auth');
     }
     if (err.response.data.message === 'User Not Found') {
       alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
-      localStorage.removeItem('p_auth');
-      dispatch(logout());
-      dispatch(deleteUser());
-      dispatch(deleteSideData());
+      logoutSequence(dispatch);
       window.location.href = '/';
     }
     dispatch(loginCheck());

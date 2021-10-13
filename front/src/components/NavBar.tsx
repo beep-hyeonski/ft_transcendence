@@ -8,10 +8,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
-import { deleteUser } from '../modules/user';
-import { deleteSideData } from '../modules/sidebar';
-import { logout } from '../modules/auth';
 import { exitChatRoom } from '../modules/chat';
+import { logoutSequence } from '../utils/logoutSequence';
 
 const useStyles = makeStyles({
   ListItemIconNoWidth: {
@@ -37,10 +35,7 @@ const NavBar = () => {
 
   const onClickLogout = async () => {
     await axios.post(`/auth/logout`);
-    localStorage.removeItem('p_auth');
-    dispatch(deleteUser());
-    dispatch(logout());
-    dispatch(deleteSideData());
+    logoutSequence(dispatch);
   };
 
   const onClickChat = () => {

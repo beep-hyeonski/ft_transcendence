@@ -3,11 +3,10 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { ImageList } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
-import { deleteUser, updateUser } from '../modules/user';
+import { updateUser } from '../modules/user';
 import { getBlock } from '../utils/Requests';
 import BlockedUserElem from './BlockedUserElem';
-import { logout } from '../modules/auth';
-import { deleteSideData } from '../modules/sidebar';
+import { logoutSequence } from '../utils/logoutSequence';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -44,10 +43,7 @@ function SettingBlockedUsers(): JSX.Element {
       .catch((err: any) => {
         if (err.response.data.message === 'Not Found') {
           alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
-          localStorage.removeItem('p_auth');
-          dispatch(logout());
-          dispatch(deleteUser());
-          dispatch(deleteSideData());
+          logoutSequence(dispatch);
           window.location.href = '/';
         }
       });

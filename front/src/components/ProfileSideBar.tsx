@@ -6,10 +6,9 @@ import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import FollowList from './FollowList';
-import { deleteUser, updateUser } from '../modules/user';
+import { updateUser } from '../modules/user';
 import { getUserme } from '../utils/Requests';
-import { logout } from '../modules/auth';
-import { deleteSideData } from '../modules/sidebar';
+import { logoutSequence } from '../utils/logoutSequence';
 
 const drawerWidth = '17%';
 
@@ -67,10 +66,7 @@ function ProfileSideBar(): JSX.Element {
       .catch((err: any) => {
         if (err.response.data.message === 'User Not Found') {
           alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
-          localStorage.removeItem('p_auth');
-          dispatch(logout());
-          dispatch(deleteUser());
-          dispatch(deleteSideData());
+          logoutSequence(dispatch);
           history.push('/');
         }
       });
