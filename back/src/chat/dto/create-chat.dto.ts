@@ -14,6 +14,7 @@ export class CreateChatDto {
     example: 'Come in without Hyeonski!',
   })
   @IsString()
+  @MaxLength(20, { message: 'Invaild Chat Title Length' })
   title: string;
 
   @ApiProperty({ description: 'Chat Status', example: 'public' })
