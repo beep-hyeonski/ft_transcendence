@@ -6,9 +6,9 @@ COPY package-lock.json /app/
 
 RUN apk update && apk add bash
 RUN npm install
-
 COPY . /app/
-RUN npm run-script build
+RUN npm run build
+RUN npm install -g serve
 
-EXPOSE 8000
-CMD ["npm", "run", "start:prod"]
+EXPOSE 3000
+CMD ["serve", "-s", "build", "-l", "3000"]
