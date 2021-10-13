@@ -50,6 +50,8 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
     const socketInstance = io(`${String(process.env.REACT_APP_SOCKET_URL)}`, {
       extraHeaders: { Authorization: `${String(token)}` },
     });
+    if (!socketInstance) console.log('socket connection error');
+
     socketInstance?.on('exception', ({ message }) => {
       if (message === 'User is banned') {
         bannedUserHandler(dispatch);

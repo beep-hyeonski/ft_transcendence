@@ -211,14 +211,20 @@ function PongGame(): JSX.Element {
 
     drawPong();
     if (player1.score >= 3 || player2.score >= 3) {
-      if (gamedata.gameInfo.player1 === mydata.username) {
+      const { player1: player1Name, player2: player2Name } = gamedata.gameInfo;
+      const winnerName = player1.score >= 3 ? player1Name : player2Name;
+      const loserName = player1.score >= 3 ? player2Name : player1Name;
+
+      if (winnerName === mydata.username) {
         (async () => {
-          const data = await getUserByUsername(gamedata.gameInfo.player2);
+          const data = await getUserByUsername(loserName);
           socket?.emit('matchResult', {
             gameName: gamedata.gameName,
             createMatchDto: {
-              player1Index: mydata.index,
-              player2Index: data.index,
+              player1Index:
+                player1Name === mydata.username ? mydata.index : data.index,
+              player2Index:
+                player2Name === mydata.username ? mydata.index : data.index,
               player1Score: player1.score,
               player2Score: player2.score,
             },
