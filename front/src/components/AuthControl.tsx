@@ -1,52 +1,30 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 import React, { useEffect } from 'react';
 import qs from 'qs';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import { Cookies } from 'react-cookie';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { updateData } from '../modules/userme';
+import checkToken from '../utils/checkToken';
 
-interface AuthControlProps {
-  location: {
-    hash: string;
-    pathname: string;
-    search: string;
-    state: string;
-  }
-}
-
-const getMyInfo = async () => {
-  axios.defaults.headers.common.Authorization = localStorage.getItem('p_auth');
-  const response = await axios.get(`${String(process.env.REACT_APP_API_URL)}/users/me`);
-  return response;
-};
-
-function AuthControl({ location }: AuthControlProps) {
+function AuthControl(): JSX.Element {
   const dispatch = useDispatch();
-  const history = useHistory();
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const history = useHistory();
 
   useEffect(() => {
     const cookie = new Cookies();
-    localStorage.setItem('p_auth', String(cookie.get('p_auth')));
-    cookie.remove('p_auth');
-
-    if (!localStorage.getItem('p_auth')) {
-      alert('인증 정보가 유효하지 않습니다');
+    if (query.type === 'banned') {
+      alert('접근 권한이 유효하지 않습니다. 다시 로그인 해주세요');
+      cookie.remove('p_auth');
+      localStorage.removeItem('p_auth');
       history.push('/');
     }
-
-    if (query.type === 'success') {
-      getMyInfo().then((res) => {
-        dispatch(updateData(res.data));
-      }).catch((err) => {
-        console.log(err);
-      });
-    }
-  }, [history, query, dispatch]);
+    const token = cookie.get('p_auth');
+    localStorage.setItem('p_auth', String(token));
+    cookie.remove('p_auth');
+    checkToken(dispatch);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   switch (query.type) {
     case 'success':

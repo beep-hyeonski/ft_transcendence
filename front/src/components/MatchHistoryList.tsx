@@ -1,68 +1,87 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
+import { RootState } from '../modules';
 
-// TODO: CSS 설정하기
-const useStyles = makeStyles(() => createStyles({
-  root: {
-    paddingLeft: '10px',
-    paddingRight: '5px',
-    fontSize: 25,
-    marginTop: '5px',
-  },
-  timestamp: {
-    letterSpacing: '1px',
-    backgroundColor: 'inherit',
-  },
-  recordBox: {
-    width: 400,
-    display: 'inline-block',
-  },
-  scoreBox: {
-    width: 150,
-    display: 'inline-block',
-    textAlign: 'center',
-  },
-  winnerBox: {
-    width: 100,
-    display: 'inline-block',
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      paddingLeft: '5px',
+      fontSize: 18,
+      marginTop: '15px',
+      display: 'flex',
+      flexWrap: 'nowrap',
+    },
+    timestamp: {
+      flexBasis: '250px',
+    },
+    scoreBox: {
+      flexBasis: '60px',
+    },
+    userBox: {
+      flexBasis: '180px',
+    },
+    userBox2: {
+      flexBasis: '180px',
+      color: 'blue',
+    },
+  }),
+);
+
+interface IMatchHistoryPlayerInfo {
+  avatar: string;
+  createdAt: string;
+  defeat: number;
+  email: string;
+  index: number;
+  isBanned: boolean;
+  nickname: string;
+  role: string;
+  score: number;
+  status: string;
+  twoFAToken: string;
+  useTwoFA: boolean;
+  username: string;
+  victory: number;
+}
 
 interface MatchHistoryListProps {
   history: {
-    index: number,
-    score1: string;
-    score2: string,
-    winner: string,
-    loser: string,
-    timestamp: string,
-  }
+    index: number;
+    loser: IMatchHistoryPlayerInfo;
+    loserScore: number;
+    winner: IMatchHistoryPlayerInfo;
+    winnerScore: string;
+    createdAt: Date;
+  };
 }
 
-function MatchHistoryList({ history }: MatchHistoryListProps) {
+function MatchHistoryList({ history }: MatchHistoryListProps): JSX.Element {
   const classes = useStyles();
+  const mydata = useSelector((state: RootState) => state.userModule);
 
-  if (history.index > 5) {
-    return null;
-  }
   return (
     <div className={classes.root}>
-      <span className={classes.recordBox}>
-        <span className={classes.winnerBox}>
-          {history.winner}
-        </span>
-        <span className={classes.scoreBox}>
-          {history.score1}
-          &nbsp; : &nbsp;
-          {history.score2}
-        </span>
-        {history.loser}
-      </span>
-      <span className={classes.timestamp}>
-        (
-        {history.timestamp}
-        )
-      </span>
+      {mydata.nickname !== history.winner.nickname && (
+        <div className={classes.userBox}>{history.winner.nickname}</div>
+      )}
+      {mydata.nickname === history.winner.nickname && (
+        <div className={classes.userBox2}>{history.winner.nickname}</div>
+      )}
+      <div className={classes.scoreBox}>
+        {history.winnerScore}
+        &nbsp; : &nbsp;
+        {history.loserScore}
+      </div>
+      {mydata.nickname !== history.loser.nickname && (
+        <div className={classes.userBox}>{history.loser.nickname}</div>
+      )}
+      {mydata.nickname === history.loser.nickname && (
+        <div className={classes.userBox2}>{history.loser.nickname}</div>
+      )}
+      <div className={classes.timestamp}>
+        ({history.createdAt.toLocaleString()})
+      </div>
     </div>
   );
 }

@@ -1,30 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import {
-  combineReducers,
-  createStore,
-  Store,
-} from 'redux';
-import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { combineReducers } from 'redux';
 import profileModule from './profile';
-import usermeModule from './userme';
-
-const persistConfig = {
-  key: 'root',
-  storage,
-};
+import userModule from './user';
+import sidebarModule from './sidebar';
+import authModule from './auth';
+import socketModule from './socket';
+import gameStateMoudle from './gamestate';
+import gameDataMoudle from './gamedata';
+import chatModule from './chat';
 
 const rootReducer = combineReducers({
   profileModule,
-  usermeModule,
+  userModule,
+  sidebarModule,
+  socketModule,
+  authModule,
+  gameStateMoudle,
+  gameDataMoudle,
+  chatModule,
 });
 
-const enhancedReducer = persistReducer(persistConfig, rootReducer);
-
-export default function configureStore() {
-  const store: Store = createStore(enhancedReducer);
-  const persistor = persistStore(store);
-  return { store, persistor };
-}
+export default rootReducer;
 
 export type RootState = ReturnType<typeof rootReducer>;

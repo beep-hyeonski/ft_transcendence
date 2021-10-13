@@ -1,58 +1,78 @@
-import React from 'react';
-import {
-  createStyles,
-  makeStyles,
-} from '@material-ui/core/styles';
+import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { List } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
-import { useSelector } from 'react-redux';
-import List from '@material-ui/core/List';
-import ChatRoomList from './ChatRoomList';
-import FollowList from './FollowList';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
+import FollowList from './FollowList';
+import { updateUser } from '../modules/user';
+import { getUserme } from '../utils/Requests';
+import { logoutSequence } from '../utils/logoutSequence';
 
-const drawerWidth = 250;
+const drawerWidth = '17%';
 
-const useStyles = makeStyles(() => createStyles({
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    marginRight: '73.1px',
-    backgroundColor: '#3f446e',
-    color: '#F4F3FF',
-    width: drawerWidth,
-  },
-  usernameMargin: {
-    margin: '15px',
-  },
-  statusCircle: {
-    backgroundColor: '#FF0000',
-    color: '#FF0000',
-    width: '10px',
-    height: '10px',
-    borderRadius: '50%',
-  },
-  changeButton: {
-    margin: '7.5px',
-    backgroundColor: '#F4F3FF',
-    fontSize: 20,
-    color: '#282E4E',
-    width: 230,
-    height: 40,
-    textTransform: 'none',
-    textShadow: '0.5px 0.5px 0.5px gray',
-    boxShadow: '1px 1px 0.5px gray',
-    '&:hover': {
-      backgroundColor: '#e3e0ff',
+const useStyles = makeStyles(() =>
+  createStyles({
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0,
     },
-  },
-}));
+    drawerPaper: {
+      marginRight: '73.1px',
+      backgroundColor: '#3f446e',
+      color: '#F4F3FF',
+      width: drawerWidth,
+    },
+    usernameMargin: {
+      margin: '15px',
+    },
+    statusCircle: {
+      backgroundColor: '#FF0000',
+      color: '#FF0000',
+      width: '10px',
+      height: '10px',
+      borderRadius: '50%',
+    },
+    changeButton: {
+      margin: '7.5px',
+      backgroundColor: '#F4F3FF',
+      fontSize: 20,
+      color: '#282E4E',
+      width: 230,
+      height: 40,
+      textTransform: 'none',
+      textShadow: '0.5px 0.5px 0.5px gray',
+      boxShadow: '1px 1px 0.5px gray',
+      '&:hover': {
+        backgroundColor: '#e3e0ff',
+      },
+    },
+  }),
+);
 
-function ProfileSideBar() {
+function ProfileSideBar(): JSX.Element {
   const classes = useStyles();
-  const mydata = useSelector((state: RootState) => state.usermeModule);
-  const myFollowings = mydata.followings;
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const mydata = useSelector((state: RootState) => state.userModule);
+
+  useEffect(() => {
+    let isSubscribed = true;
+    getUserme()
+      .then((res) => {
+        if (isSubscribed) dispatch(updateUser(res));
+      })
+      .catch((err: any) => {
+        if (err.response.data.message === 'User Not Found') {
+          alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
+          logoutSequence(dispatch);
+          history.push('/');
+        }
+      });
+    return () => {isSubscribed = false};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Drawer
@@ -64,8 +84,8 @@ function ProfileSideBar() {
       anchor="right"
     >
       <List>
-        {myFollowings.map((user) => (
-          <FollowList user={user} />
+        {mydata.followings.map((user: any) => (
+          <FollowList key={user.index} user={user} />
         ))}
       </List>
     </Drawer>

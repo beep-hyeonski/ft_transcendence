@@ -1,34 +1,42 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayloadDto } from 'src/auth/dto/jwt-payload.dto';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserRole } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
-import { ChatRoom, ChatRoomStatus } from './entities/chat-room.entity';
+import { Chat, ChatStatus } from './entities/chat.entity';
 import { Message } from './entities/message.entity';
+import { hash, isHashValid } from '../utils/encrypt';
+import { Server } from 'socket.io';
 
 @Injectable()
 export class ChatService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(ChatRoom)
-    private chatRoomRepository: Repository<ChatRoom>,
+    @InjectRepository(Chat)
+    private chatRepository: Repository<Chat>,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
   ) {}
 
+  server: Server;
+
+  attachServer(server: Server) {
+    this.server = server;
+  }
+
   async getChats() {
-    return await this.chatRoomRepository.find({
-      relations: ['ownerUser'],
+    return await this.chatRepository.find({
+      relations: ['ownerUser', 'joinUsers'],
     });
   }
 
-  async getChat(chatIndex: number): Promise<ChatRoom> {
-    return await this.chatRoomRepository.findOneOrFail({
+  async getChat(chatIndex: number): Promise<Chat> {
+    return await this.chatRepository.findOneOrFail({
       relations: [
         'ownerUser',
         'adminUsers',
@@ -46,25 +54,30 @@ export class ChatService {
       where: { index: jwtPayloadDto.sub },
     });
 
-    if (user.username !== createChatDto.owner)
-      throw new BadRequestException('Invalid Owner');
     if (
-      createChatDto.password &&
-      createChatDto.status !== ChatRoomStatus.PROTECTED
-    )
-      throw new BadRequestException('Invalid Room Status');
+      createChatDto.status === ChatStatus.PROTECTED &&
+      !createChatDto.password
+    ) {
+      throw new BadRequestException('Password Required');
+    }
 
-    const createChat = new ChatRoom();
+    if (createChatDto.password) {
+      if (createChatDto.status !== ChatStatus.PROTECTED)
+        throw new BadRequestException('Invalid Chat Status');
+      createChatDto.password = await hash(createChatDto.password);
+    }
+
+    const createChat = new Chat();
 
     for (const fieldName in createChatDto) {
       createChat[fieldName] = createChatDto[fieldName];
     }
 
-    createChat.adminUsers.push(user);
-    await this.userRepository.save(user);
-    await this.chatRoomRepository.save(createChat);
+    createChat.ownerUser = user;
+    createChat.adminUsers = [user];
+    createChat.joinUsers = [user];
 
-    return createChat;
+    return await this.chatRepository.save(createChat);
   }
 
   async updateChat(
@@ -72,155 +85,185 @@ export class ChatService {
     chatIndex: number,
     updateChatDto: UpdateChatDto,
   ) {
-    const chat = await this.chatRoomRepository.findOneOrFail({
+    const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser'],
       where: { index: chatIndex },
     });
 
     if (chat.ownerUser.index !== jwtPayloadDto.sub)
-      throw new UnauthorizedException('No Permission');
-    if (
-      updateChatDto.status !== ChatRoomStatus.PROTECTED &&
-      updateChatDto.password
-    )
+      throw new ForbiddenException('Permission Denied');
+    if (updateChatDto.status !== ChatStatus.PROTECTED && updateChatDto.password)
       throw new BadRequestException('Do Not set Password if not protected');
+    if (
+      chat.status === ChatStatus.PUBLIC &&
+      updateChatDto.status === ChatStatus.PROTECTED &&
+      (!updateChatDto.password ||
+        !(
+          updateChatDto.password.length >= 8 &&
+          updateChatDto.password.length <= 20
+        ))
+    ) {
+      throw new BadRequestException(
+        'Valid 8 ~ 20 Characters of Password Required',
+      );
+    }
+    if (
+      chat.status === ChatStatus.PROTECTED &&
+      updateChatDto.status === ChatStatus.PROTECTED &&
+      updateChatDto.password
+    ) {
+      if (
+        !(
+          updateChatDto.password.length >= 8 &&
+          updateChatDto.password.length <= 20
+        )
+      ) {
+        throw new BadRequestException(
+          'Valid 8 ~ 20 Characters of Password Required',
+        );
+      }
+    }
+
+    if (updateChatDto.password) {
+      updateChatDto.password = await hash(updateChatDto.password);
+    }
 
     for (const fieldName in updateChatDto) {
       chat[fieldName] = updateChatDto[fieldName];
     }
 
-    await this.chatRoomRepository.save(chat);
+    await this.chatRepository.save(chat);
     return chat;
   }
 
-  async deleteChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
-    const chat = await this.chatRoomRepository.findOneOrFail({
-      relations: ['ownerUser'],
+  async deleteChat(user: User, chatIndex: number) {
+    if (user.role === UserRole.USER) {
+      throw new ForbiddenException('Permission Denied');
+    }
+
+    const chat = await this.chatRepository.findOneOrFail({
       where: { index: chatIndex },
     });
 
-    if (chat.ownerUser.index !== jwtPayloadDto.sub)
-      throw new UnauthorizedException('No Permission');
+    this.server.to(String(chat.index)).emit('deleteChat', chat);
 
-    return await this.chatRoomRepository.delete(chat);
+    return await this.chatRepository.remove(chat);
   }
 
-  async joinChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
-    const chat = await this.chatRoomRepository.findOneOrFail({
-      relations: ['joinUsers'],
+  async joinChat(user: User, chatIndex: number, password: string) {
+    const chat = await this.chatRepository.findOneOrFail({
+      relations: ['joinUsers', 'bannedUsers'],
       where: { index: chatIndex },
     });
 
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: jwtPayloadDto.sub },
-    });
+    if (chat.joinUsers.find((joinUser) => joinUser.index === user.index)) {
+      throw new BadRequestException('Already joined user');
+    }
 
     if (
-      chat.joinUsers.find((joinUser) => {
-        if (joinUser.index === user.index) {
-          return true;
-        }
-      })
-    ) {
-      throw new BadRequestException('Already user joined');
+      chat.bannedUsers &&
+      chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
+    )
+      throw new BadRequestException('User Banned');
+
+    if (chat.status === ChatStatus.PROTECTED) {
+      if (!password) {
+        throw new BadRequestException('Password Required');
+      }
+
+      if (!(await isHashValid(password, chat.password))) {
+        throw new BadRequestException('Invalid Password');
+      }
     }
 
     chat.joinUsers.push(user);
-    await this.chatRoomRepository.save(chat);
+    await this.chatRepository.save(chat);
 
     return chat;
   }
 
-  async leaveChat(jwtPayloadDto: JwtPayloadDto, chatIndex: number) {
-    const chat = await this.chatRoomRepository.findOneOrFail({
-      relations: ['joinUsers'],
+  async leaveChat(user: User, chatIndex: number) {
+    const chat = await this.chatRepository.findOneOrFail({
+      relations: ['ownerUser', 'adminUsers', 'joinUsers'],
       where: { index: chatIndex },
     });
 
-    const user = await this.userRepository.findOneOrFail({
-      where: { index: jwtPayloadDto.sub },
-    });
-
-    if (
-      !chat.joinUsers.find((joinUser) => {
-        if (joinUser.index === user.index) {
-          return true;
-        }
-      })
-    ) {
+    if (!chat.joinUsers.find((joinUser) => joinUser.index === user.index)) {
       throw new BadRequestException('User Not Entered this chat');
     }
 
-    chat.joinUsers = chat.joinUsers.filter((joinUser) => {
-      joinUser.index !== user.index;
-    });
-    await this.chatRoomRepository.save(chat);
+    if (chat.joinUsers.length === 1) {
+      this.chatRepository.remove(chat);
+    } else {
+      chat.joinUsers = chat.joinUsers.filter(
+        (joinUser) => joinUser.index !== user.index,
+      );
+      chat.adminUsers = chat.adminUsers.filter(
+        (adminUser) => adminUser.index !== user.index,
+      );
+      if (chat.ownerUser.index === user.index) {
+        chat.ownerUser = chat.joinUsers[0];
+        chat.adminUsers.push(chat.ownerUser);
+      }
 
-    return chat;
-  }
-
-  async registerAdmin(
-    jwtPayloadDto: JwtPayloadDto,
-    chatIndex: number,
-    username: string,
-  ) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
-    });
-    const chat = await this.chatRoomRepository.findOneOrFail({
-      relations: ['ownerUser', 'adminUsers', 'joinUsers'],
-      where: { index: chatIndex },
-    });
-
-    if (jwtPayloadDto.sub !== chat.ownerUser.index)
-      throw new UnauthorizedException('No Permission');
-    // if (this.existUserInChat(user.index, chat) === false)
-    // 	throw new BadRequestException('Do not join user this chat');
-    if (
-      chat.adminUsers.find((adminUser) => {
-        if (adminUser.index === user.index) {
-          return true;
-        }
-      })
-    ) {
-      throw new BadRequestException('User is already admin');
+      return await this.chatRepository.save(chat);
     }
-
-    chat.adminUsers.push(user);
-    await this.chatRoomRepository.save(chat);
-
-    return chat;
   }
 
-  async unRegisterAdmin(
-    jwtPayloadDto: JwtPayloadDto,
-    chatIndex: number,
-    username: string,
-  ) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+  async registerAdmin(user: User, chatIndex: number, username: string) {
+    const toBeAdmin = await this.userRepository.findOneOrFail({
+      where: { username },
     });
-    const chat = await this.chatRoomRepository.findOneOrFail({
+    const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers'],
       where: { index: chatIndex },
     });
 
-    if (jwtPayloadDto.sub !== chat.ownerUser.index)
-      throw new UnauthorizedException('No Permission');
+    if (user.index !== chat.ownerUser.index && user.role === UserRole.USER)
+      throw new ForbiddenException('Permission Denied');
+
+    if (!this.existUserInChat(toBeAdmin.index, chat))
+      throw new BadRequestException('User is not in the chat');
+
     if (
-      !chat.adminUsers.find((adminUser) => {
-        if (adminUser.index === user.index) {
-          return true;
-        }
-      })
+      chat.adminUsers.find((adminUser) => adminUser.index === toBeAdmin.index)
+    )
+      throw new BadRequestException('User is already admin');
+
+    chat.adminUsers.push(toBeAdmin);
+    await this.chatRepository.save(chat);
+
+    return chat;
+  }
+
+  async unRegisterAdmin(user: User, chatIndex: number, username: string) {
+    const toNotBeAdmin = await this.userRepository.findOneOrFail({
+      where: { username },
+    });
+    const chat = await this.chatRepository.findOneOrFail({
+      relations: ['ownerUser', 'adminUsers', 'joinUsers'],
+      where: { index: chatIndex },
+    });
+
+    if (user.index !== chat.ownerUser.index && user.role === UserRole.USER)
+      throw new ForbiddenException('Permission Denied');
+
+    if (
+      !chat.adminUsers.find(
+        (adminUser) => adminUser.index === toNotBeAdmin.index,
+      )
     ) {
       throw new BadRequestException('User is not admin');
     }
 
-    chat.adminUsers = chat.adminUsers.filter((adminUser) => {
-      adminUser.index !== user.index;
-    });
-    await this.chatRoomRepository.save(chat);
+    if (chat.ownerUser.index === toNotBeAdmin.index) {
+      throw new BadRequestException('Owner cannot be removed from admin');
+    }
+
+    chat.adminUsers = chat.adminUsers.filter(
+      (adminUser) => adminUser.index !== toNotBeAdmin.index,
+    );
+    await this.chatRepository.save(chat);
 
     return chat;
   }
@@ -231,47 +274,35 @@ export class ChatService {
     username: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { username },
     });
-    const chat = await this.chatRoomRepository.findOneOrFail({
+    const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers', 'mutedUsers'],
       where: { index: chatIndex },
     });
 
-    if (jwtPayloadDto.sub !== chat.ownerUser.index) {
-      if (
-        !chat.adminUsers.find((adminUser) => {
-          if (adminUser.index === jwtPayloadDto.sub) {
-            return true;
-          }
-        })
-      ) {
-        throw new UnauthorizedException('No Permission');
-      }
-    }
     if (
-      chat.adminUsers.find((adminUser) => {
-        if (adminUser.index === user.index) {
-          return true;
-        }
-      })
+      jwtPayloadDto.sub !== chat.ownerUser.index &&
+      !chat.adminUsers.find(
+        (adminUser) => adminUser.index === jwtPayloadDto.sub,
+      )
     ) {
-      throw new BadRequestException('Impossible mute for owner / admin user');
+      throw new ForbiddenException('Permission Denied');
     }
-    // if (this.existUserInChat(user.index, chat) === false)
-    // 	throw new BadRequestException('Do not join user this chat');
-    if (
-      chat.mutedUsers.find((mutedUser) => {
-        if (mutedUser.index === user.index) {
-          return true;
-        }
-      })
-    ) {
+
+    if (chat.adminUsers.find((adminUser) => adminUser.index === user.index)) {
+      throw new BadRequestException('Impossible to mute owner or admin');
+    }
+
+    if (chat.mutedUsers.find((mutedUser) => mutedUser.index === user.index)) {
       throw new BadRequestException('User have already been muted');
     }
 
+    if (!this.existUserInChat(user.index, chat))
+      throw new BadRequestException('User is not in the chat');
+
     chat.mutedUsers.push(user);
-    await this.chatRoomRepository.save(chat);
+    await this.chatRepository.save(chat);
 
     return chat;
   }
@@ -282,38 +313,31 @@ export class ChatService {
     username: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { username },
     });
-    const chat = await this.chatRoomRepository.findOneOrFail({
+    const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers', 'mutedUsers'],
       where: { index: chatIndex },
     });
 
     if (jwtPayloadDto.sub !== chat.ownerUser.index) {
       if (
-        !chat.adminUsers.find((adminUser) => {
-          if (adminUser.index === jwtPayloadDto.sub) {
-            return true;
-          }
-        })
+        !chat.adminUsers.find(
+          (adminUser) => adminUser.index === jwtPayloadDto.sub,
+        )
       ) {
-        throw new UnauthorizedException('No Permission');
+        throw new ForbiddenException('Permission Denied');
       }
     }
-    if (
-      !chat.mutedUsers.find((mutedUser) => {
-        if (mutedUser.index === user.index) {
-          return true;
-        }
-      })
-    ) {
+    if (!chat.mutedUsers.find((mutedUser) => mutedUser.index === user.index)) {
       throw new BadRequestException('User have not been muted');
     }
 
-    chat.mutedUsers = chat.mutedUsers.filter((mutedUser) => {
-      mutedUser.index !== user.index;
-    });
-    await this.chatRoomRepository.save(chat);
+    chat.mutedUsers = chat.mutedUsers.filter(
+      (mutedUser) => mutedUser.index !== user.index,
+    );
+
+    await this.chatRepository.save(chat);
 
     return chat;
   }
@@ -324,47 +348,41 @@ export class ChatService {
     username: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { username },
     });
-    const chat = await this.chatRoomRepository.findOneOrFail({
+
+    const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers', 'bannedUsers'],
       where: { index: chatIndex },
     });
 
-    if (jwtPayloadDto.username !== chat.ownerUser.username) {
-      if (
-        !chat.adminUsers.find((adminUser) => {
-          if (adminUser.index === jwtPayloadDto.sub) {
-            return true;
-          }
-        })
-      ) {
-        throw new UnauthorizedException('No Permission');
-      }
-    }
     if (
-      chat.adminUsers.find((adminUser) => {
-        if (adminUser.index === user.index) {
-          return true;
-        }
-      })
+      jwtPayloadDto.username !== chat.ownerUser.username &&
+      !chat.adminUsers.find(
+        (adminUser) => adminUser.index === jwtPayloadDto.sub,
+      )
     ) {
-      throw new BadRequestException('Impossible ban for owner / admin user');
+      throw new ForbiddenException('Permission Denied');
     }
-    // if (this.existUserInChat(user.index, chat) === false)
-    // 	throw new BadRequestException('Do not join user this chat');
+
+    if (chat.adminUsers.find((adminUser) => adminUser.index === user.index)) {
+      throw new BadRequestException('Impossible to ban owner or admin');
+    }
+
     if (
-      chat.bannedUsers.find((bannedUser) => {
-        if (bannedUser.index === user.index) {
-          return true;
-        }
-      })
+      chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
     ) {
       throw new BadRequestException('User have already been banned');
     }
 
+    if (this.existUserInChat(user.index, chat) === false)
+      throw new BadRequestException('User is not in the chat');
+
     chat.bannedUsers.push(user);
-    await this.chatRoomRepository.save(chat);
+    chat.joinUsers = chat.joinUsers.filter(
+      (joinUser) => joinUser.index !== user.index,
+    );
+    await this.chatRepository.save(chat);
 
     return chat;
   }
@@ -375,54 +393,59 @@ export class ChatService {
     username: string,
   ) {
     const user = await this.userRepository.findOneOrFail({
-      where: { username: username },
+      where: { username },
     });
-    const chat = await this.chatRoomRepository.findOneOrFail({
+    const chat = await this.chatRepository.findOneOrFail({
       relations: ['ownerUser', 'adminUsers', 'joinUsers', 'bannedUsers'],
       where: { index: chatIndex },
     });
 
-    if (jwtPayloadDto.username !== chat.ownerUser.username) {
-      if (
-        !chat.adminUsers.find((adminUser) => {
-          if (adminUser.index === jwtPayloadDto.sub) {
-            return true;
-          }
-        })
-      ) {
-        throw new UnauthorizedException('No Permission');
-      }
-    }
     if (
-      !chat.bannedUsers.find((bannedUser) => {
-        if (bannedUser.index === user.index) {
-          return true;
-        }
-      })
+      jwtPayloadDto.username !== chat.ownerUser.username &&
+      !chat.adminUsers.find(
+        (adminUser) => adminUser.index === jwtPayloadDto.sub,
+      )
+    ) {
+      throw new ForbiddenException('Permission Denied');
+    }
+
+    if (
+      !chat.bannedUsers.find((bannedUser) => bannedUser.index === user.index)
     ) {
       throw new BadRequestException('User have not been banned');
     }
 
-    chat.bannedUsers = chat.bannedUsers.filter((bannedUser) => {
-      bannedUser.index !== user.index;
-    });
-    await this.chatRoomRepository.save(chat);
+    chat.bannedUsers = chat.bannedUsers.filter(
+      (bannedUser) => bannedUser.index !== user.index,
+    );
+    await this.chatRepository.save(chat);
 
     return chat;
   }
 
-  async getMessages(chatIndex: number) {
-    const chat = await this.chatRoomRepository.findOneOrFail({
-      relations: ['messages'],
+  async getMessages(user: User, chatIndex: number) {
+    const chat = await this.chatRepository.findOneOrFail({
+      relations: ['joinUsers'],
       where: { index: chatIndex },
     });
 
-    return chat.messages;
+    if (
+      user.role !== UserRole.USER ||
+      chat.joinUsers.find((joinUser) => joinUser.index === user.index)
+    ) {
+      return await this.messageRepository.find({
+        where: { chat: chat },
+        relations: ['sendUser'],
+        order: { createdAt: 'ASC' },
+      });
+    } else {
+      throw new ForbiddenException('Permission Denied');
+    }
   }
 
-  existUserInChat(userIndex: number, chatRoom: ChatRoom): boolean {
-    for (let index = 0; index < chatRoom.joinUsers.length; index++) {
-      if (chatRoom.joinUsers[index].index === userIndex) return true;
+  existUserInChat(userIndex: number, chat: Chat): boolean {
+    for (let index = 0; index < chat.joinUsers.length; index++) {
+      if (chat.joinUsers[index].index === userIndex) return true;
     }
     return false;
   }

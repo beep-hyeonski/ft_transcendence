@@ -26,17 +26,17 @@ export class TypeOrmExceptionFilter implements ExceptionFilter {
           message: 'Duplicated Nickname',
         });
       } else {
-        this.logger.log(exception.message, exception.driverError);
-        response.status(409).json({
-          statusCode: 409,
+        this.logger.log(exception.message, exception.name);
+        response.status(500).json({
+          statusCode: 500,
           path: request.url,
           message: exception.message,
         });
       }
     } else {
       this.logger.log(exception.message, exception.name);
-      response.status(409).json({
-        statusCode: 409,
+      response.status(500).json({
+        statusCode: 500,
         path: request.url,
         message: exception.message,
       });

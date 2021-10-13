@@ -10,9 +10,15 @@ import { AppLoggerMiddleware } from './app-logger.middleware';
 import { FollowModule } from './follow/follow.module';
 import { BlockModule } from './block/block.module';
 import { ChatModule } from './chat/chat.module';
-import { ChatRoom } from './chat/entities/chat-room.entity';
+import { Chat } from './chat/entities/chat.entity';
 import { Message } from './chat/entities/message.entity';
 import { AppGateway } from './app.gateway';
+import { Match } from './match/entities/match.entity';
+import { MatchModule } from './match/match.module';
+import { GameModule } from './game/game.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { DmModule } from './dm/dm.module';
+import { DM } from './dm/entities/dm.entity';
 
 @Module({
   imports: [
@@ -26,14 +32,19 @@ import { AppGateway } from './app.gateway';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
-      entities: [User, ChatRoom, Message],
+      entities: [User, Chat, Message, Match, DM],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([Message, DM, User]),
     UsersModule,
     AuthModule,
     FollowModule,
     BlockModule,
     ChatModule,
+    MatchModule,
+    GameModule,
+    ScheduleModule.forRoot(),
+    DmModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],

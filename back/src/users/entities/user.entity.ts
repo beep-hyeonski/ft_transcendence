@@ -9,12 +9,20 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { ChatRoom } from 'src/chat/entities/chat-room.entity';
+import { Chat } from 'src/chat/entities/chat.entity';
 import { Message } from 'src/chat/entities/message.entity';
 
 export enum UserStatus {
   ONLINE = 'online',
   OFFLINE = 'offline',
+  INQUEUE = 'inqueue',
+  INGAME = 'ingame',
+}
+
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+  OWNER = 'owner',
 }
 
 @Entity()
@@ -151,40 +159,40 @@ export class User extends BaseEntity {
     example: '[1, 2, 3]',
     description: 'owner 로 참가하고 있는 채팅방 INDEX 리스트',
   })
-  @OneToMany(() => ChatRoom, (ownerChannels) => ownerChannels.ownerUser)
-  ownerChannels: ChatRoom[];
+  @OneToMany(() => Chat, (ownerChannels) => ownerChannels.ownerUser)
+  ownerChannels: Chat[];
 
   @ApiProperty({
     example: '[1, 2, 3]',
     description: 'admin 으로 참가하고 있는 채팅방 index 리스트',
   })
-  @ManyToMany(() => ChatRoom, (adminChannels) => adminChannels.adminUsers)
-  adminChannels: ChatRoom[];
+  @ManyToMany(() => Chat, (adminChannels) => adminChannels.adminUsers)
+  adminChannels: Chat[];
 
   @ApiProperty({
     example: '[2, 3]',
     description: '현재 참가하고 있는 채널 리스트',
   })
-  @ManyToMany(() => ChatRoom, (joinChannels) => joinChannels.joinUsers)
-  joinChannels: ChatRoom[];
+  @ManyToMany(() => Chat, (joinChannels) => joinChannels.joinUsers)
+  joinChannels: Chat[];
 
   @ApiProperty({
     example: '[1, 2]',
     description: '현재 Mute 처리 된 채널 Index 리스트',
   })
-  @ManyToMany(() => ChatRoom, (mutedChannels) => mutedChannels.mutedUsers)
-  mutedChannels: ChatRoom[];
+  @ManyToMany(() => Chat, (mutedChannels) => mutedChannels.mutedUsers)
+  mutedChannels: Chat[];
 
   @ApiProperty({
     example: '[1, 3]',
-    description: '현재 Ban 처리 된 채널 Index 리스트'
+    description: '현재 Ban 처리 된 채널 Index 리스트',
   })
-  @ManyToMany(() => ChatRoom, (bannedChannels) => bannedChannels.bannedUsers)
-  bannedChannels: ChatRoom[];
+  @ManyToMany(() => Chat, (bannedChannels) => bannedChannels.bannedUsers)
+  bannedChannels: Chat[];
 
   @ApiProperty({
     example: '[1, 2, 3]',
-    description: 'User 가 전송한 메시지 Index 리스트'
+    description: 'User 가 전송한 메시지 Index 리스트',
   })
   @OneToMany(() => Message, (sendMessages) => sendMessages.sendUser)
   sendMessages: Message[];
@@ -223,12 +231,34 @@ export class User extends BaseEntity {
   status: UserStatus;
 
   @ApiProperty({
+    example: 'admin',
+    description: '유저의 역할, owner/admin/user',
+  })
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
+
+  @ApiProperty({
+    example: 'true',
+    description: '유저의 ban 여부',
+  })
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  isBanned: boolean;
+
+  @ApiProperty({
     example: '2021-03-18 00:00:00',
     description: 'user 생성 시간',
   })
   @CreateDateColumn({
-    type: 'timestamp',
+    type: 'timestamptz',
+    name: 'created_at',
     default: () => 'now()',
   })
-  created_at: Date;
+  createdAt: Date;
 }

@@ -1,7 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { Button } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   text: {
     position: 'absolute',
     top: '47%',
@@ -34,6 +35,12 @@ const useStyles = makeStyles((theme) => ({
     left: '17%',
     transform: 'translate(-50%, -50%)',
   },
+  homeButton: {
+		position: 'absolute',
+		top: '85%',
+		left: '50%',
+		transform: 'translate(-50%, -50%)',
+	},
 }));
 
 function NotFoundPage(): JSX.Element {
@@ -46,12 +53,18 @@ function NotFoundPage(): JSX.Element {
       <img className={classes.mococo} src="/notfound_mococo.png" alt="mococo" />
       <img className={classes.runcoco} src="/run_mococo.png" alt="run_mococo" />
       <img className={classes.avrel} src="/avrel.png" alt="run_mococo" />
-      <div className={classes.text}>
-        404 나빠운드
-      </div>
-      <div className={classes.backcoco}>
-        길을 잘못찾은 모코코는 돌아가세요.
-      </div>
+      <div className={classes.text}>404 나빠운드</div>
+      <div className={classes.backcoco}>길을 잘못찾은 모코코는 돌아가세요.</div>
+      <Button
+				type="button"
+				variant="text"
+				className={classes.homeButton}
+				onClick={() => {
+					window.location.href = '/';
+				}}
+			>
+				홈으로
+			</Button>
     </div>
   );
 }
