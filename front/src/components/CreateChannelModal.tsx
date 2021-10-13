@@ -193,15 +193,20 @@ function CreateChannelModal({ create, setCreate }: CreateProps): JSX.Element {
       setCreate(false);
       const data = await getUsermeChat();
       dispatch(updateUser(data));
+      setForm({
+        title: '',
+        password: '',
+        status: 'public',
+      });
     } catch (error: any) {
-      if (error.response.data.message[0] === 'Invaild Chat Title Length') {
+      if (error.response.data.message[0] === 'Invalid Chat Title Length') {
         alert('방 제목은 20자 이하여야합니다.');
         setForm({
           ...form,
           password: '',
         });
       }
-      if (error.response.data.message[0] === 'Invaid Password Length') {
+      if (error.response.data.message[0] === 'Invalid Password Length') {
         alert('비밀번호는 8자 이상이어야 합니다.');
         setForm({
           ...form,
@@ -242,7 +247,14 @@ function CreateChannelModal({ create, setCreate }: CreateProps): JSX.Element {
     <div>
       <Modal
         open={create}
-        onClose={() => setCreate(false)}
+        onClose={() => {
+          setCreate(false)
+          setForm({
+            title: '',
+            password: '',
+            status: 'public',
+          });
+        }}
       >
         <div className={classes.root}>
           <IconButton
