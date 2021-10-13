@@ -218,6 +218,8 @@ export class GameService {
 
   @Interval('gameLoop', 20)
   gameLoop() {
+    const closeGameList: Array<string> = [];
+
     this.gameList.forEach((game, gameName) => {
       const playerNumber: 1 | 2 =
         game.ballInfo.x + game.ballInfo.radius < game.frameInfo.frameWidth / 2
@@ -262,6 +264,13 @@ export class GameService {
         player1Info: game.playerInfo[0],
         player2Info: game.playerInfo[1],
       });
+      if (game.playerInfo[0].score >= 3 || game.playerInfo[1].score >= 3) {
+        closeGameList.push(gameName);
+      }
+    });
+
+    closeGameList.forEach((gameName) => {
+      this.closeGame(gameName);
     });
   }
 }

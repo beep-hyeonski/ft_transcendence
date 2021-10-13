@@ -170,7 +170,7 @@ export class ChatService {
       if (!password) {
         throw new BadRequestException('Password Required');
       }
-      console.log(password, chat.password);
+
       if (!(await isHashValid(password, chat.password))) {
         throw new BadRequestException('Invalid Password');
       }
