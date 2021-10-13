@@ -146,7 +146,7 @@ function SettingMyData(): JSX.Element {
       <SettingInputs
         onSubmit={clickSaveButton}
         buttonName="Save"
-        username={mydata.nickname}
+        nickname={mydata.nickname}
         isTwofa={mydata.useTwoFA}
       />
     </>

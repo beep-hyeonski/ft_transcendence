@@ -69,14 +69,14 @@ const useStyles = makeStyles(() =>
 interface UserSignUpProps {
   onSubmit: (form: { nickname: string; twofa: boolean }) => void;
   buttonName: string;
-  username: string;
+  nickname: string;
   isTwofa: boolean;
 }
 
 function SignUpInputs({
   onSubmit,
   buttonName,
-  username,
+  nickname,
   isTwofa,
 }: UserSignUpProps): JSX.Element {
   const classes = useStyles();
@@ -124,7 +124,7 @@ function SignUpInputs({
           className={classes.nickName}
           type="text"
           name="nickname"
-          placeholder={username}
+          placeholder={nickname}
           onChange={onChange}
         />
         <FormControlLabel

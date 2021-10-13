@@ -17,6 +17,7 @@ import axios from 'axios';
 import ChattingList from './ChattingList';
 import { RootState } from '../modules';
 import { deleteSideData } from '../modules/sidebar';
+import { getUserByUsername } from '../utils/Requests';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -125,7 +126,7 @@ export default function DMRoom({
 
     (async () => {
       try {
-        const { data } = await axios.get(`/users/${username}`);
+        const { data } = await getUserByUsername(username);
         setNickname(data.nickname);
       } catch (error: any) {
         if (error.response.data.message === 'User Not Found') {

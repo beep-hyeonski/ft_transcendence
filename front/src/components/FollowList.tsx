@@ -77,7 +77,7 @@ function FollowList({ user }: UserdataProps): JSX.Element {
 
   const onClickFollowUser = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
-    history.push(`/profile/${user.username}`);
+    history.push(`/profile/?username=${user.username}`);
   };
 
   const rightClick = (e: React.MouseEvent<HTMLDivElement>) => {

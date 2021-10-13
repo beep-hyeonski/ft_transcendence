@@ -6,10 +6,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
 import { RootState } from '../modules';
 import { waitGame } from '../modules/gamestate';
 import { IGameDataProps, initGameData } from '../modules/gamedata';
+import { getUserByUsername } from '../utils/Requests';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -218,9 +218,7 @@ function PongGame(): JSX.Element {
     if (player1.score >= 3 || player2.score >= 3) {
       if (gamedata.gameInfo.player1 === mydata.username) {
         (async () => {
-          const { data } = await axios.get(
-            `/users/${gamedata.gameInfo.player2}`,
-          );
+          const { data } = await getUserByUsername(gamedata.gameInfo.player2);
           socket?.emit('matchResult', {
             gameName: gamedata.gameName,
             createMatchDto: {

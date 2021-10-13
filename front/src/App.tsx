@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import ProfileUI from './components/ProfileUI';
 import LoginPage from './components/LoginPage';
 import SignUpPage from './components/SignUpPage';
@@ -24,7 +24,6 @@ import ServerError from './components/ServerError';
 function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
   const authState = useSelector((state: RootState) => state.authModule);
-  const userState = useSelector((state: RootState) => state.userModule);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -46,10 +45,7 @@ function App(): JSX.Element {
             <Route path="/" component={SideMenu} />
             <Route path="/" exact component={MainUI} />
             <Route path="/chat" exact component={ChatUI} />
-            <Route path="/profile" exact>
-              <Redirect to={`/profile/${userState.username}`} />
-            </Route>
-            <Route path="/profile/:id" exact component={ProfileUI} />
+            <Route path="/profile" exact component={ProfileUI} />
             <Route path="/setting" exact component={Setting} />
             <Route path="/game" exact component={PongGame} />
             <Route path="/admin" exact component={Admin} />

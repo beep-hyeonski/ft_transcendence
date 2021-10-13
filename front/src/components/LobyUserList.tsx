@@ -75,7 +75,7 @@ function LobyUserList({ user }: UserdataProps): JSX.Element {
 
   const onClickLobyUser = () => {
     dispatch(changeSideBar({ type: FOLLOW }));
-    history.push(`/profile/${user.username}`);
+    history.push(`/profile/?username=${user.username}`);
   };
 
   const rightClick = (e: React.MouseEvent<HTMLDivElement>) => {

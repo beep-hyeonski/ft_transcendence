@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const getUserme = async (): Promise<any> => {
+export async function getUserme(): Promise<any> {
   const response = await axios.get(`/users/me`);
   return response.data;
 };
@@ -32,5 +32,15 @@ export async function getChatInfo(index: number): Promise<any> {
 
 export async function getBanUsers(): Promise<any> {
   const response = await axios.get(`/users/ban`);
+  return response.data;
+}
+
+export async function getUserByUsername(username: string): Promise<any> {
+  const response = await axios.get(`/users?username=${username}`);
+  return response.data;
+}
+
+export async function getUserByNickname(nickname: string): Promise<any> {
+  const response = await axios.get(`/users?nickname=${nickname}`);
   return response.data;
 }

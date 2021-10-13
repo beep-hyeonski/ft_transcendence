@@ -227,7 +227,7 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
 
   const onClickProfile = () => {
     dispatch(changeSideBar({ type: FOLLOW }));
-    history.push(`/profile/${user.username}`);
+    history.push(`/profile/?username=${user.username}`);
   };
 
   const onClickBan = async (e: React.MouseEvent<HTMLLIElement>) => {

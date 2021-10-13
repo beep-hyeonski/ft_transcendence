@@ -66,7 +66,7 @@ const NavBar = () => {
             </ListItemIcon>
           </ListItem>
         </Link>
-        <Link to={`/profile/${mydata.username}`}>
+        <Link to={`/profile/?username=${mydata.username}`}>
           <ListItem button>
             <ListItemIcon className={classes.ListItemIconNoWidth}>
               <Person className={classes.fontsizeManager} />
