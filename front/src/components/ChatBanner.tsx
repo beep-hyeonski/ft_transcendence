@@ -15,7 +15,7 @@ const useStyles = makeStyles(() => ({
   createButton: {
     position: 'absolute',
     marginTop: '25px',
-    right: '22rem',
+    marginLeft: '60%',
     color: '#F4F3FF',
     fontSize: '25px',
     backgroundColor: '#282E4E',

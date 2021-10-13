@@ -224,6 +224,13 @@ function ChatSettingMenu({ open, setOpen }: CreateProps): JSX.Element {
         status: res.data.status,
       });
     } catch (error: any) {
+      if (error.response.data.message[0] === 'Invaild Chat Title Length') {
+        alert('방 제목은 20자 이하여야합니다.');
+        setForm({
+          ...form,
+          password: '',
+        });
+      }
       if (error.response.data.message === 'Do Not set Password if not protected') {
         alert('공개 채널에서는 비밀번호를 사용할 수 없습니다.');
         setForm({
