@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../modules';
 import { joinChatRoom } from '../modules/chat';
 import { changeSideBar, FOLLOW } from '../modules/sidebar';
+import { ingGame, settingGame } from '../modules/gamestate';
+import { setGameData } from '../modules/gamedata';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -42,6 +44,10 @@ interface UserData {
 const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
+  const { gamestate } = useSelector(
+    (state: RootState) => state.gameStateMoudle,
+  );
+  const { socket } = useSelector((state: RootState) => state.socketModule);
   const dispatch = useDispatch();
   const history = useHistory();
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
@@ -110,7 +116,9 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       if (error.response.data.message === 'User is not admin') {
         alert('관리자가 아닌 유저입니다.');
       }
-      if (error.response.data.message === 'Owner cannot be removed from admin') {
+      if (
+        error.response.data.message === 'Owner cannot be removed from admin'
+      ) {
         alert('오너 유저는 권한 제거가 불가능 합니다.');
       }
       if (error.response.data.message === 'Permission Denied') {
@@ -159,7 +167,6 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       if (error.response.data.message === 'Not Found') {
         alert('존재하지 않습니다.');
       }
-
     }
   };
 
@@ -264,8 +271,37 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
       if (error.response.data.message === 'Not Found') {
         alert('존재하지 않습니다.');
       }
-      
     }
+  };
+
+  const clickPVP = (e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault();
+    if (gamestate !== 'WAIT') {
+      alert('이미 게임 중이거나 게임 큐 대기중입니다.');
+      return;
+    }
+    dispatch(settingGame(true, user.index));
+    setMenuAnchor(null);
+    e.stopPropagation();
+  };
+
+  const clickObserve = (e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault();
+    setMenuAnchor(null);
+    e.stopPropagation();
+
+    socket?.on('matchComplete', (payload: any) => {
+      if (payload.status === 'GAME_START') {
+        dispatch(setGameData(payload));
+        dispatch(ingGame());
+      }
+    });
+    socket?.emit('observeMatch', {
+      matchInUserIndex: user.index,
+    });
+    return () => {
+      socket?.off('matchComplete');
+    };
   };
 
   return (
@@ -279,6 +315,12 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         onClose={() => setMenuAnchor(null)}
       >
         <MenuItem onClick={onClickProfile}>프로필 보기</MenuItem>
+        {gamestate === 'WAIT' && user.status === 'online' && (
+          <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>
+        )}
+        {gamestate === 'WAIT' && user.status === 'ingame' && (
+          <MenuItem onClick={clickObserve}>관전하기</MenuItem>
+        )}
         {isOwner && chatData.ownerUser !== user.username ? adminMenu() : null}
         {chatData.ownerUser !== user.username && isAdmin && isManager
           ? muteMenu()
