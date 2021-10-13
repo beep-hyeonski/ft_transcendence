@@ -88,6 +88,11 @@ function SignUpInputs({ onSubmit, buttonName }: UserSignUpProps): JSX.Element {
             nickname: value.replace(nicknameReg, ''),
           })
           e.currentTarget.value = value.replace(nicknameReg, '');
+        } else {
+          setForm({
+            ...form,
+            nickname: value,
+          })
         }
         break;
       case 'email':
@@ -98,13 +103,14 @@ function SignUpInputs({ onSubmit, buttonName }: UserSignUpProps): JSX.Element {
             nickname: value.replace(emailReg, ''),
           })
           e.currentTarget.value = value.replace(emailReg, '');
+        } else {
+          setForm({
+            ...form,
+            email: value,
+          })
         }
         break;
       default:
-        setForm({
-          ...form,
-          [name]: value,
-        });
         break;
     }
   };
