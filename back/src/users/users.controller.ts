@@ -156,18 +156,4 @@ export class UsersController {
   async unregisterAdmin(@Req() req: any, @Param('username') username: string) {
     return await this.usersService.unregisterAdmin(req.userData, username);
   }
-
-  // @ApiOperation({
-  //   summary: 'username 검색',
-  //   description: 'username에 해당하는 user의 정보를 조회한다.',
-  // })
-  // @ApiOkResponse({ type: User })
-  // @ApiNotFoundResponse({
-  //   description: '조회할 유저 정보 없음 (User Not Found)',
-  // })
-  // @UseGuards(JwtAuthGuard)
-  // @Get(':username')
-  // getUser(@Param('username') username: string) {
-  //   return this.usersService.getUser(username);
-  // }
 }

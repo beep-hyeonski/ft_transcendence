@@ -77,7 +77,6 @@ export class ChatService {
     createChat.adminUsers = [user];
     createChat.joinUsers = [user];
 
-    // await this.userRepository.save(user);
     return await this.chatRepository.save(createChat);
   }
 
@@ -146,7 +145,7 @@ export class ChatService {
       where: { index: chatIndex },
     });
 
-    this.server.to(String(chat.index)).emit('deleteChat', chat); // 이벤트 이름 고민 필요
+    this.server.to(String(chat.index)).emit('deleteChat', chat);
 
     return await this.chatRepository.remove(chat);
   }

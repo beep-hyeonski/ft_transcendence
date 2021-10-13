@@ -57,7 +57,6 @@ function LobySideBar(): JSX.Element {
   const [users, setUsers] = useState<any[]>([]);
   const { index } = useSelector((state: RootState) => state.userModule);
 
-  // TODO: 에러 분기 나눠주기
   useEffect(() => {
     let isSubscribed = true;
     (async () => {

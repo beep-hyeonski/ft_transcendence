@@ -3,7 +3,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import { RootState } from '../modules';
 
-// TODO: CSS 설정하기
 const useStyles = makeStyles(() =>
   createStyles({
     root: {

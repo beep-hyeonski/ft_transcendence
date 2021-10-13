@@ -56,7 +56,6 @@ interface ChannelProps {
   title: string;
 }
 
-// TODO: 채팅 채널 입장 또는 퇴장 시 sidebar 업데이트 안되는 문제 잡기
 function ChatSideBar(): JSX.Element {
   const classes = useStyles();
   const mydata = useSelector((state: RootState) => state.userModule);

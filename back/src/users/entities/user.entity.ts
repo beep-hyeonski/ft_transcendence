@@ -197,22 +197,6 @@ export class User extends BaseEntity {
   @OneToMany(() => Message, (sendMessages) => sendMessages.sendUser)
   sendMessages: Message[];
 
-  // @ApiProperty({
-  //   example: '[1, 2, 3]',
-  //   description: 'User 가 참가한 Match 리스트',
-  // })
-  // @OneToMany(() => Match, (myMatches) => {
-  //   return {
-  //     "winMatches": myMatches.winner,
-  //     "loseMatches": myMatches.loser,
-  //   }
-  // })
-  // // @OneToMany(() => Match, (myMatches) => myMatches.winner)
-  // myMatches: {
-  //   "winMatches": Match[],
-  //   "loseMatches": Match[],
-  // };
-
   @ApiProperty({
     example: 'true',
     description: '2-factor 인증 사용 여부, true/false',

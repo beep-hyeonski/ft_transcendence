@@ -51,8 +51,6 @@ export class Game {
   frameInfo: IFrameInfo;
   gameInfo: IGameInfo;
   playerInfo: Array<IPlayerInfo> = [];
-  // player1Info: IPlayerInfo;
-  // player2Info: IPlayerInfo;
   ballInfo: IBallInfo;
   collidePoint: number;
   angle: number;
@@ -241,7 +239,6 @@ export class GameService {
         game.ballInfo.velocityX =
           Math.cos(angle) * game.ballInfo.speed * direction;
         game.ballInfo.velocityY = Math.sin(angle) * game.ballInfo.speed;
-        // game.ballInfo.speed += 0.2;
       }
       if (
         game.ballInfo.y + game.ballInfo.radius >= game.frameInfo.frameHeight ||
