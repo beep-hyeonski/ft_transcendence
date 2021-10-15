@@ -1,7 +1,7 @@
 version: '3'
 services:
   db:
-    image: postgres
+    image: postgres:10.2
     networks:
       - database
     ports:
@@ -9,7 +9,7 @@ services:
     env_file:
       - ./db/.env
     volumes:
-      - ./db/initdb.d/:/docker-entrypoint-initdb.d
+      - ./db/data:/var/lib/postgresql/data
     restart: always
     container_name: db
   back:
