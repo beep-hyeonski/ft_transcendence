@@ -44,6 +44,7 @@ interface UserData {
 const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
   const classes = useStyles();
   const chatData = useSelector((state: RootState) => state.chatModule);
+  const mydata = useSelector((state: RootState) => state.userModule);
   const { gamestate } = useSelector(
     (state: RootState) => state.gameStateMoudle,
   );
@@ -315,12 +316,16 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
         onClose={() => setMenuAnchor(null)}
       >
         <MenuItem onClick={onClickProfile}>프로필 보기</MenuItem>
-        {gamestate === 'WAIT' && user.status === 'online' && (
-          <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>
-        )}
-        {gamestate === 'WAIT' && user.status === 'ingame' && (
-          <MenuItem onClick={clickObserve}>관전하기</MenuItem>
-        )}
+        {user.username !== mydata.username &&
+          gamestate === 'WAIT' &&
+          user.status === 'online' && (
+            <MenuItem onClick={clickPVP}>PVP 신청</MenuItem>
+          )}
+        {user.username !== mydata.username &&
+          gamestate === 'WAIT' &&
+          user.status === 'ingame' && (
+            <MenuItem onClick={clickObserve}>관전하기</MenuItem>
+          )}
         {isOwner && chatData.ownerUser !== user.username ? adminMenu() : null}
         {chatData.ownerUser !== user.username && isAdmin && isManager
           ? muteMenu()

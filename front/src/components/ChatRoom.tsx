@@ -115,6 +115,7 @@ export default function ChatRoom(): JSX.Element {
   const { socket } = useSelector((state: RootState) => state.socketModule);
   const mydata = useSelector((state: RootState) => state.userModule);
   const [isOwner, setIsOwner] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const dispatch = useDispatch();
   const theme = unstable_createMuiStrictModeTheme();
 
@@ -250,7 +251,10 @@ export default function ChatRoom(): JSX.Element {
   }, [chatData.index, socket]);
 
   useEffect(() => {
+    const index = chatData.adminUsers.find((user: any) => user.index === mydata.index);
+    setIsAdmin(Boolean(index));
     setIsOwner(chatData.ownerUser === mydata.username);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatData.ownerUser, mydata.username]);
 
   const onChange = (e: any) => {
@@ -383,7 +387,7 @@ export default function ChatRoom(): JSX.Element {
             <MenuItem onClick={onClickMenuRoom}>채팅방 관리</MenuItem>
           ) : null}
           <MenuItem onClick={onClickMenuUser}>유저 정보</MenuItem>
-          {isOwner ? (
+          {isOwner || isAdmin ? (
             <MenuItem onClick={onClickBannedUser}>추방 유저 관리</MenuItem>
           ) : null}
           <MenuItem onClick={onClickMenuExit}>나가기</MenuItem>
