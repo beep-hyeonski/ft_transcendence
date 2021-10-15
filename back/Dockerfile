@@ -1,11 +1,11 @@
-FROM node:alpine
+FROM node:14.17.1-alpine
 
 WORKDIR /app
 COPY package.json /app/
-# COPY package-lock.json /app/
+COPY package-lock.json /app/
 
 RUN apk update && apk add bash
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 COPY . /app/
 RUN npm run-script build
