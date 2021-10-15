@@ -212,25 +212,25 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
     const adminUser = chatData.adminUsers?.find(
       (admin: any) => admin.username === user.username,
     );
-    setIsAdmin(adminUser === undefined);
+    setIsAdmin(adminUser !== undefined);
     const mutedUser = chatData.mutedUsers?.find(
       (muted: any) => muted.username === user.username,
     );
-    setIsMuted(mutedUser === undefined);
+    setIsMuted(mutedUser !== undefined);
   }, [chatData.adminUsers, chatData.mutedUsers, menuAnchor, user.username]);
 
   function adminMenu(): JSX.Element {
     if (isAdmin) {
-      return <MenuItem onClick={onClickAddAdmin}>관리자 권한 부여 </MenuItem>;
+      return <MenuItem onClick={onClickDeleteAdmin}>관리자 권한 해제</MenuItem>;
     }
-    return <MenuItem onClick={onClickDeleteAdmin}>관리자 권한 해제</MenuItem>;
+    return <MenuItem onClick={onClickAddAdmin}>관리자 권한 부여 </MenuItem>;
   }
 
   function muteMenu(): JSX.Element {
     if (isMuted) {
-      return <MenuItem onClick={onClickMuteUser}>채팅 금지</MenuItem>;
+      return <MenuItem onClick={onClickUnMuteUser}>채팅 금지 해제</MenuItem>;
     }
-    return <MenuItem onClick={onClickUnMuteUser}>채팅 금지 해제</MenuItem>;
+    return <MenuItem onClick={onClickMuteUser}>채팅 금지</MenuItem>;
   }
 
   const onClickProfile = () => {
@@ -327,13 +327,10 @@ const JoinedUserMenu = ({ user, isOwner, isManager }: UserData) => {
             <MenuItem onClick={clickObserve}>관전하기</MenuItem>
           )}
         {isOwner && chatData.ownerUser !== user.username ? adminMenu() : null}
-        {chatData.ownerUser !== user.username && isAdmin && isManager
+        {chatData.ownerUser !== user.username && !isAdmin && isManager
           ? muteMenu()
           : null}
-        {isOwner &&
-        chatData.ownerUser !== user.username &&
-        isAdmin &&
-        isManager ? (
+        {isManager && chatData.ownerUser !== user.username && !isAdmin ? (
           <MenuItem onClick={onClickBan}>유저 추방</MenuItem>
         ) : null}
       </Menu>
