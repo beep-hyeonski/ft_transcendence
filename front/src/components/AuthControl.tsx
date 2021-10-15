@@ -22,7 +22,7 @@ function AuthControl(): JSX.Element {
     const token = cookie.get('p_auth');
     localStorage.setItem('p_auth', String(token));
     cookie.remove('p_auth');
-    checkToken(dispatch);
+    checkToken(dispatch, history);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
@@ -34,7 +34,7 @@ function AuthControl(): JSX.Element {
     case 'twofa':
       return <Redirect to="/twofa" />;
     default:
-      return <Redirect to="/notfound" />;
+      return <Redirect to="/server_error" />;
   }
 }
 

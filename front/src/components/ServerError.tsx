@@ -53,7 +53,7 @@ function NotFoundPage(): JSX.Element {
       <img className={classes.mococo} src="/notfound_mococo.png" alt="mococo" />
       <img className={classes.runcoco} src="/run_mococo.png" alt="run_mococo" />
       <img className={classes.avrel} src="/avrel.png" alt="run_mococo" />
-      <div className={classes.text}>500 서버에러</div>
+      <div className={classes.text}>서버 에러</div>
       <div className={classes.backcoco}>우리 서버가 좀 아파요....</div>
 			<Button
 				type="button"

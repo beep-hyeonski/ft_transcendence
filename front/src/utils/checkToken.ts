@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Dispatch } from 'redux';
 import axios from 'axios';
 import { io } from 'socket.io-client';
@@ -9,7 +11,7 @@ import { bannedUserHandler, tokenErrorHandler } from './errorHandler';
 import { initSocket } from '../modules/socket';
 import { logoutSequence } from './logoutSequence';
 
-async function checkToken(dispatch: Dispatch): Promise<void> {
+async function checkToken(dispatch: Dispatch, history: any): Promise<void> {
   const token = localStorage.getItem('p_auth');
   if (!token) {
     dispatch(deleteUser());
@@ -30,7 +32,7 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
           'Invalid user',
         ];
         if (!error.response) {
-          window.location.href = '/server_error';
+          history.push('/server_error');
         }
         if (error.response.data.message === 'User is banned') {
           bannedUserHandler(dispatch);
@@ -69,7 +71,7 @@ async function checkToken(dispatch: Dispatch): Promise<void> {
     if (err.response.data.message === 'User Not Found') {
       alert('로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요');
       logoutSequence(dispatch);
-      window.location.href = '/';
+      history.push('/');
     }
     dispatch(loginCheck());
   }

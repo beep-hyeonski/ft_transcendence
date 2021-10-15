@@ -99,7 +99,7 @@ function EmailVerifyPage(): JSX.Element {
     try {
       const ret = await axios.post(`/auth/twofa`, twofaForm);
       localStorage.setItem('p_auth', String(ret.data.jwt));
-      await checkToken(dispatch);
+      await checkToken(dispatch, history);
       history.push('/');
     } catch (error: any) {
       if (error.response.data.message === 'Invalid 2-Factor Token') {

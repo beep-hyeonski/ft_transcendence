@@ -67,7 +67,7 @@ function LobySideBar(): JSX.Element {
         );
         if (isSubscribed) setUsers(onlineUsers);
       } catch (err: any) {
-        checkToken(dispatch);
+        checkToken(dispatch, history);
         alert('인증 정보가 유효하지 않습니다');
         history.push('/');
       }

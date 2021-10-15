@@ -1,7 +1,13 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  withRouter,
+  useHistory,
+  Redirect,
+} from 'react-router-dom';
 import ProfileUI from './components/ProfileUI';
 import LoginPage from './components/LoginPage';
 import SignUpPage from './components/SignUpPage';
@@ -25,10 +31,12 @@ function App(): JSX.Element {
   document.body.style.backgroundColor = '#F4F3FF';
   const authState = useSelector((state: RootState) => state.authModule);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
-    checkToken(dispatch);
-  }, [dispatch]);
+    checkToken(dispatch, history);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Switch>
@@ -38,6 +46,7 @@ function App(): JSX.Element {
       <Route exact path="/signup" component={SignUpPage} />
       <Route exact path="/twofa" component={EmailVerifyPage} />
       <Route exact path="/notfound" component={NotFoundPage} />
+      <Route exact path="/server_error" component={ServerError} />
       <Route exact path="/auth" component={AuthControl} />
       <Route path="/">
         {authState.isLoggedIn ? (
@@ -56,8 +65,7 @@ function App(): JSX.Element {
         ) : (
           <>
             <Route path="/" exact component={LoginPage} />
-            <Route path="/server_error" component={ServerError} />
-            <Route path="/notfound" component={NotFoundPage} />
+            <Route render={() => <Redirect to="/" />} />
           </>
         )}
       </Route>

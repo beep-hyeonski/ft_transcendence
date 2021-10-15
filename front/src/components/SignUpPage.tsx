@@ -108,7 +108,7 @@ function SignUpPage(): JSX.Element {
     try {
       const data = await axios.post(`/auth/signup`, signupForm);
       localStorage.setItem('p_auth', String(data.data.jwt));
-      await checkToken(dispatch);
+      await checkToken(dispatch, history);
       history.push('/');
     } catch (error: any) {
       if (error.response.data.message === 'Duplicated Nickname') {
